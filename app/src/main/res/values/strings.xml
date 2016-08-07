@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">My Application Data</string>
+    <string name="desc_firebase_lockup">Firebase logo and name</string>
+    <string name="loading">Loading…</string>
+    <string name="desc_google_sign_in">Use a Google Sign In credential to authenticate with Firebase.</string>
+    <string name="title_activity_main">Main</string>
+    <string name="action_logout">Logout</string>
+    <string name="label_detail_activity">Details</string>
+    <string name="title_activity_detail2">Details</string>
+    <string name="google_title_text">Google Sign In</string>
+    <string name="signed_out">Signed Out</string>
+
+    <string name="google_status_fmt">Google User: %s</string>
+    <string name="firebase_status_fmt">Firebase User: %s</string>
+    <string name="user_node">user</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="user_posts_node">user-posts</string>
+    <string name="hint_edit_text1">Title</string>
+
+</resources>
