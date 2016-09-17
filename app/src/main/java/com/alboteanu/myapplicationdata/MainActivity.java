@@ -92,7 +92,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     }
 
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
     }

@@ -20,6 +20,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class BaseActivity extends AppCompatActivity implements
@@ -29,6 +30,8 @@ public class BaseActivity extends AppCompatActivity implements
     @VisibleForTesting
     public ProgressDialog mProgressDialog;
     public GoogleApiClient mGoogleApiClient;
+    public FirebaseAuth mAuth;
+    public FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,6 +45,7 @@ public class BaseActivity extends AppCompatActivity implements
                 .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+
 
     }
 
@@ -60,6 +64,7 @@ public class BaseActivity extends AppCompatActivity implements
             mProgressDialog.dismiss();
         }
     }
+
 
     @Override
     public void onStop() {
@@ -127,6 +132,4 @@ public class BaseActivity extends AppCompatActivity implements
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
-
-
 }

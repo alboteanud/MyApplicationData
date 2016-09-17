@@ -144,8 +144,4 @@ public class DetailActivity extends BaseActivity implements View.OnClickListener
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
 }
