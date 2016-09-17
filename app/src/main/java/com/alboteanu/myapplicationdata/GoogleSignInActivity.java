@@ -110,9 +110,7 @@ public class GoogleSignInActivity extends BaseActivity implements
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
-        // [START_EXCLUDE silent]
         showProgressDialog();
-        // [END_EXCLUDE]
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -138,9 +136,7 @@ public class GoogleSignInActivity extends BaseActivity implements
 
         // Write new user
         writeNewUser(user.getUid(), username, user.getEmail());
-
-        // Go to MainActivity
-        startActivity(new Intent(GoogleSignInActivity.this, MainActivity.class));
+        sendUserToMainActivity();
         finish();
     }
 
@@ -209,13 +205,6 @@ public class GoogleSignInActivity extends BaseActivity implements
         getDatabase().getReference().child(userId).child(getString(R.string.user_node)).setValue(user);
     }
 
-    private void sendUserToMainActivity() {
-        /* Move user to LoginActivity, and remove the backstack */
-        Intent intent = new Intent(GoogleSignInActivity.this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
 
 
     @Override

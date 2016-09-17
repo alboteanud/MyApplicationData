@@ -19,5 +19,6 @@
     <string name="posts">posts</string>
     <string name="posts_details">posts-details</string>
     <string name="fixed_posts">fixed-posts</string>
+    <string name="action_delete">Delete</string>
 
 </resources>

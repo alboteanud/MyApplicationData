@@ -1,11 +1,11 @@
 package com.alboteanu.myapplicationdata;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -13,10 +13,8 @@ import android.widget.EditText;
 import com.alboteanu.myapplicationdata.models.FixedPost;
 import com.alboteanu.myapplicationdata.models.Post;
 import com.alboteanu.myapplicationdata.models.PostDetails;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
@@ -28,6 +26,7 @@ public class DetailActivity extends BaseActivity implements View.OnClickListener
     public static final String EXTRA_POST_KEY = "post_key";
     private String postKey;
     EditText editText1, editText2, editText3, editText4, editText5, editText6;
+    Menu mMenu;
 
 
     @Override
@@ -48,11 +47,12 @@ public class DetailActivity extends BaseActivity implements View.OnClickListener
 
         updateFixedFields();
         postKey = getIntent().getStringExtra(EXTRA_POST_KEY);
-        if(postKey != null){
-                updateFields();
+        if(postKey == null){
+
+        }else {
+            updateVariableFields();
         }
-    /*    editText2.setSelection(editText2.getText().length());
-        editText2.requestFocus();*/
+        editText2.requestFocus();
     }
 
     private void updateFixedFields() {
@@ -75,7 +75,7 @@ public class DetailActivity extends BaseActivity implements View.OnClickListener
                 });
     }
 
-    private void updateFields() {
+    private void updateVariableFields() {
         getDatabase().getReference().child(getUid()).child(getString(R.string.posts_details)).child(postKey)
                 .addValueEventListener(new ValueEventListener() {
            @Override
@@ -86,7 +86,6 @@ public class DetailActivity extends BaseActivity implements View.OnClickListener
                    editText4.setText(postDetails.text4);
                    editText6.setText(postDetails.text6);
 
-                   editText2.requestFocus();
                    editText2.setSelection(editText2.getText().length());
                }
            }
@@ -144,4 +143,34 @@ public class DetailActivity extends BaseActivity implements View.OnClickListener
         }
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_details, menu);
+        if (postKey == null){
+            menu.findItem(R.id.action_delete_post).setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_delete_post) {
+            deletePost();
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void deletePost() {
+        getDatabase().getReference().child(getUid()+ "/" + getString(R.string.posts) + "/" + postKey).removeValue();
+        getDatabase().getReference().child(getUid()+ "/" + getString(R.string.posts_details) + "/" + postKey).removeValue();
+    }
 }

@@ -87,12 +87,6 @@ public class BaseActivity extends AppCompatActivity implements
         return mDatabase;
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (!(this instanceof GoogleSignInActivity))
-            getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -121,7 +115,18 @@ public class BaseActivity extends AppCompatActivity implements
     }
 
     private void takeUserToGoogleSignInActivity() {
-        startActivity(new Intent(this, GoogleSignInActivity.class));
+        Intent intent = new Intent(this, GoogleSignInActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+
+    public void sendUserToMainActivity() {
+        /* Move user to LoginActivity, and remove the backstack */
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
         finish();
     }
 

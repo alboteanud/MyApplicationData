@@ -34,6 +34,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(FirebaseAuth.getInstance().getCurrentUser().getEmail());
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -45,8 +46,6 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         });
 
         populateRecyclerView();
-
-
     }
 
     private void populateRecyclerView() {
@@ -106,5 +105,10 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         }
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+            getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
 
 }
