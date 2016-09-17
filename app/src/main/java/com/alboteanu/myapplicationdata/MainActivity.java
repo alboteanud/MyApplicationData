@@ -14,7 +14,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.alboteanu.myapplicationdata.models.Post;
-import com.alboteanu.myapplicationdata.viewholder.ListPostViewHolder;
+import com.alboteanu.myapplicationdata.viewholder.PostHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.ConnectionResult;
@@ -27,9 +27,7 @@ import com.google.firebase.database.Query;
 
 public class MainActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "MainActivity";
-    private FirebaseRecyclerAdapter<Post, ListPostViewHolder> firebaseRecyclerAdapter;
-    private RecyclerView mRecycler;
-    private LinearLayoutManager mManager;
+    private FirebaseRecyclerAdapter<Post, PostHolder> firebaseRecyclerAdapter;
     GoogleApiClient mGoogleApiClient;
 
     @Override
@@ -57,21 +55,21 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     }
 
     private void populateRecyclerView() {
-        mRecycler = (RecyclerView) findViewById(R.id.posts_list);
+        RecyclerView mRecycler = (RecyclerView) findViewById(R.id.posts_list);
         mRecycler.setHasFixedSize(true);
 
         // Set up Layout Manager, reverse layout
-        mManager = new LinearLayoutManager(this);
+        LinearLayoutManager mManager = new LinearLayoutManager(this);
         mManager.setReverseLayout(true);
         mManager.setStackFromEnd(true);
         mRecycler.setLayoutManager(mManager);
 
         // Set up FirebaseRecyclerAdapter with the Query
         Query postsQuery = getQuery();
-        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Post, ListPostViewHolder>(Post.class, R.layout.list_item,
-                ListPostViewHolder.class, postsQuery) {
+        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Post, PostHolder>(Post.class, R.layout.post_item,
+                PostHolder.class, postsQuery) {
             @Override
-            protected void populateViewHolder(final ListPostViewHolder viewHolder, final Post post, final int position) {
+            protected void populateViewHolder(final PostHolder viewHolder, final Post post, final int position) {
                 final DatabaseReference postRef = getRef(position);
 
                 // Set click listener for the whole post view
@@ -93,16 +91,18 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         mRecycler.setAdapter(firebaseRecyclerAdapter);
     }
 
+    public Query getQuery() {
+        return getDatabase().getReference()
+                .child(getUid()).child(getString(R.string.posts));
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
     }
 
-    public Query getQuery() {
-        // All my posts
-        return getDatabase().getReference().child(getUid()).child(getString(R.string.user_posts_node));
-    }
+
 
     @Override
     public void onDestroy() {

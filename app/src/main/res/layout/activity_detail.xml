@@ -21,7 +21,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_detail" />
+    <include layout="@layout/content_detail2" />
 
     <Button
         android:layout_width="match_parent"

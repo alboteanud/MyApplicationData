@@ -4,12 +4,18 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
 
+import com.alboteanu.myapplicationdata.models.FixedPost;
+import com.alboteanu.myapplicationdata.models.Post;
 import com.alboteanu.myapplicationdata.models.PostDetails;
-import com.alboteanu.myapplicationdata.viewholder.DetailPostViewHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
@@ -20,11 +26,8 @@ public class DetailActivity extends BaseActivity implements View.OnClickListener
     private static final String TAG = "DetailActivity";
     private static final String REQUIRED = "Required";
     public static final String EXTRA_POST_KEY = "post_key";
-    private String existingPostKey;
-    private ValueEventListener mPostListener;
-    private FirebaseRecyclerAdapter<PostDetails, DetailPostViewHolder> firebaseRecyclerAdapter;
-    private RecyclerView mRecycler;
-    private LinearLayoutManager mManager;
+    private String postKey;
+    EditText editText1, editText2, editText3, editText4, editText5, editText6;
 
 
     @Override
@@ -36,67 +39,97 @@ public class DetailActivity extends BaseActivity implements View.OnClickListener
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         findViewById(R.id.save_button).setOnClickListener(this);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        existingPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
-        if(existingPostKey != null)
-            populateRecyclerView();
+        editText1 = ((EditText) findViewById(R.id.edit_text1));
+        editText2 = ((EditText) findViewById(R.id.edit_text2));
+        editText3 = ((EditText) findViewById(R.id.edit_text3));
+        editText4 = ((EditText) findViewById(R.id.edit_text4));
+        editText5 = ((EditText) findViewById(R.id.edit_text5));
+        editText6 = ((EditText) findViewById(R.id.edit_text6));
+
+        updateFixedFields();
+        postKey = getIntent().getStringExtra(EXTRA_POST_KEY);
+        if(postKey != null){
+                updateFields();
+        }
+    /*    editText2.setSelection(editText2.getText().length());
+        editText2.requestFocus();*/
     }
 
-    private void populateRecyclerView() {
-        mRecycler = (RecyclerView) findViewById(R.id.detail_posts_list);
-        mRecycler.setHasFixedSize(true);
+    private void updateFixedFields() {
+        getDatabase().getReference().child(getUid()).child(getString(R.string.fixed_posts))
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        FixedPost fixedPost = dataSnapshot.getValue(FixedPost.class);
+                        if(fixedPost != null){
+                            editText1.setText(fixedPost.text1);
+                            editText3.setText(fixedPost.text3);
+                            editText5.setText(fixedPost.text5);
+                        }
+                    }
 
-        // Set up Layout Manager, reverse layout
-        mManager = new LinearLayoutManager(this);
-        mManager.setReverseLayout(true);
-        mManager.setStackFromEnd(true);
-        mRecycler.setLayoutManager(mManager);
-
-        // Set up FirebaseRecyclerAdapter with the Query
-        Query postsQuery = getQuery();
-        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<PostDetails, DetailPostViewHolder>(PostDetails.class, R.layout.detail_list_item,
-                DetailPostViewHolder.class, postsQuery) {
-            @Override
-            protected void populateViewHolder(final DetailPostViewHolder viewHolder, final PostDetails postDetails, final int position) {
-                viewHolder.bindToDetailPost(postDetails);
-            }
-        };
-        mRecycler.setAdapter(firebaseRecyclerAdapter);
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e(TAG, databaseError.getMessage());
+                    }
+                });
     }
 
-    public Query getQuery() {
-        // All my posts
-        return getDatabase().getReference().child(getUid()).child(getString(R.string.user_posts_node)).child(existingPostKey);
-    }
+    private void updateFields() {
+        getDatabase().getReference().child(getUid()).child(getString(R.string.posts_details)).child(postKey)
+                .addValueEventListener(new ValueEventListener() {
+           @Override
+           public void onDataChange(DataSnapshot dataSnapshot) {
+               PostDetails postDetails = dataSnapshot.getValue(PostDetails.class);
+               if(postDetails != null){
+                   editText2.setText(postDetails.text2);
+                   editText4.setText(postDetails.text4);
+                   editText6.setText(postDetails.text6);
 
+                   editText2.requestFocus();
+                   editText2.setSelection(editText2.getText().length());
+               }
+           }
+
+           @Override
+           public void onCancelled(DatabaseError databaseError) {
+               Log.e(TAG, databaseError.getMessage());
+           }
+       });
+    }
 
 
     private void submitPost() {
-//        final String text4 = mText1.getText().toString();
-//        final String text2 = mText2.getText().toString();
-//
-//        // Title is required
-//        if (TextUtils.isEmpty(text4)) {
-//            mText1.setError(REQUIRED);
-//            return;
-//        }
+        final String text1 = editText1.getText().toString();
+        final String text2 = editText2.getText().toString();
+        final String text3 = editText3.getText().toString();
+        final String text4 = editText4.getText().toString();
+        final String text5 = editText5.getText().toString();
+        final String text6 = editText6.getText().toString();
 
-//TODO
-// create a Post and a PostDetails object and push it to diffrent nodes
+        // Title is required
+        if (TextUtils.isEmpty(text2)) {
+            ((EditText) findViewById(R.id.edit_text2)).setError(REQUIRED);
+            return;
+        }
 
-        String key;
-        if(existingPostKey == null)
-            key = getDatabase().getReference().push().getKey();
-        else
-            key = existingPostKey;
+        if(postKey == null)
+            postKey = getDatabase().getReference().push().getKey();
 
-        PostDetails postDetails = new PostDetails("text4", "text2");
+        Post post = new Post(text2, text4);
+        PostDetails postDetails = new PostDetails(text2, text4, text6);
+        FixedPost fixedPost = new FixedPost(text1, text3, text5);
 
-        Map<String, Object> postValues = postDetails.toMap();
-        Map<String, Object> childUpdates = new HashMap<>();
-//        childUpdates.put("/posts/" + key, postValues);
-        childUpdates.put(getUid() + "/" + getString(R.string.user_posts_node) + "/" + key, postValues);
+        Map<String, Object> postMap = post.toMap();
+        Map<String, Object> detailMap = postDetails.toMap();
+        Map<String, Object> fixedMap = fixedPost.toMap();
 
-        getDatabase().getReference().updateChildren(childUpdates);
+        Map<String, Object> updates = new HashMap<>();
+        updates.put(getUid()+ "/" + getString(R.string.posts) + "/" + postKey, postMap);
+        updates.put(getUid()+ "/" + getString(R.string.posts_details) + "/" + postKey, detailMap);
+        updates.put(getUid()+ "/" + getString(R.string.fixed_posts), fixedMap);
+
+        getDatabase().getReference().updateChildren(updates);
 
         finish();
     }
@@ -114,8 +147,5 @@ public class DetailActivity extends BaseActivity implements View.OnClickListener
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (firebaseRecyclerAdapter != null) {
-            firebaseRecyclerAdapter.cleanup();
-        }
     }
 }

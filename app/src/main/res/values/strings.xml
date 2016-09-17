@@ -15,7 +15,9 @@
     <string name="user_node">user</string>
     <string name="sign_out">Sign Out</string>
     <string name="disconnect">Disconnect</string>
-    <string name="user_posts_node">user-posts</string>
-    <string name="hint_edit_text1">Title</string>
+    <string name="hint_edit_text1">Name</string>
+    <string name="posts">posts</string>
+    <string name="posts_details">posts-details</string>
+    <string name="fixed_posts">fixed-posts</string>
 
 </resources>

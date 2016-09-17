@@ -7,12 +7,12 @@ import android.widget.TextView;
 import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.models.Post;
 
-public class ListPostViewHolder extends RecyclerView.ViewHolder {
+public class PostHolder extends RecyclerView.ViewHolder {
 
     public TextView text1;
     public TextView text2;
 
-    public ListPostViewHolder(View itemView) {
+    public PostHolder(View itemView) {
         super(itemView);
 
         text1 = (TextView) itemView.findViewById(R.id.text1);
@@ -20,7 +20,7 @@ public class ListPostViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindToPost(Post post) {
-        text1.setText(post.text4);
-        text2.setText(post.text2);
+        text1.setText(post.text2);
+        text2.setText(post.text4);
     }
 }

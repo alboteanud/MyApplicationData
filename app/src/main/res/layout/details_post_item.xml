@@ -10,11 +10,14 @@
         android:layout_weight="1"
         android:layout_marginEnd="@dimen/edit_text_margin"
         android:background="@color/grey_300"
-        android:hint="@string/hint_edit_text1"/>
+        android:hint="@string/hint_edit_text1"
+        android:text="Title"/>
 
     <EditText
         android:id="@+id/edit_text2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="2" />
+        android:layout_weight="2"
+        android:hint="detail"
+        android:text="detail"/>
 </LinearLayout>
