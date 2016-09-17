@@ -28,7 +28,6 @@ import com.google.firebase.database.Query;
 public class MainActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "MainActivity";
     private FirebaseRecyclerAdapter<Post, PostHolder> firebaseRecyclerAdapter;
-    GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,10 +47,6 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         populateRecyclerView();
 
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API)
-                .build();
     }
 
     private void populateRecyclerView() {
@@ -103,7 +98,6 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     }
 
 
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -113,49 +107,4 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_logout) {
-            signOut();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    private void signOut() {
-        // Firebase sign out
-        FirebaseAuth.getInstance().signOut();
-
-        // Google sign out
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(@NonNull Status status) {
-                       takeUserToGoogleSignInActivity();
-                    }
-                });
-    }
-
-    private void takeUserToGoogleSignInActivity() {
-        startActivity(new Intent(this, GoogleSignInActivity.class));
-        finish();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-        // be available.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
-    }
 }

@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,7 +46,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
  * Demonstrate Firebase Authentication using a Google ID Token.
  */
 public class GoogleSignInActivity extends BaseActivity implements
-        GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener {
 
     private static final String TAG = "GoogleActivity";
@@ -59,7 +59,7 @@ public class GoogleSignInActivity extends BaseActivity implements
     private FirebaseAuth.AuthStateListener mAuthListener;
     // [END declare_auth_listener]
 
-    private GoogleApiClient mGoogleApiClient;
+
     private TextView mStatusTextView;
     private TextView mDetailTextView;
 
@@ -67,18 +67,8 @@ public class GoogleSignInActivity extends BaseActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // [START config_signin]
-        // Configure Google Sign In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        // [END config_signin]
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+
 
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
@@ -209,21 +199,6 @@ public class GoogleSignInActivity extends BaseActivity implements
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
-    // [END signin]
-
-    private void signOut() {
-        // Firebase sign out
-        mAuth.signOut();
-
-        // Google sign out
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(@NonNull Status status) {
-                        updateUI(null);
-                    }
-                });
-    }
 
     private void revokeAccess() {
         // Firebase sign out
@@ -272,9 +247,6 @@ public class GoogleSignInActivity extends BaseActivity implements
             case R.id.sign_in_button:
                 signIn();
                 break;
-            case R.id.sign_out_button:
-                signOut();
-                break;
             case R.id.disconnect_button:
                 revokeAccess();
                 break;
@@ -293,4 +265,5 @@ public class GoogleSignInActivity extends BaseActivity implements
         startActivity(intent);
         finish();
     }
+
 }
