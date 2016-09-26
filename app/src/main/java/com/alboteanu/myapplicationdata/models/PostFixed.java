@@ -7,16 +7,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 @IgnoreExtraProperties
-public class FixedPost {
+public class PostFixed {
     public String text1;
     public String text3;
     public String text5;
 
-    public FixedPost() {
+    public PostFixed() {
         // Default constructor required for calls to DataSnapshot.getValue(Post.class)
     }
 
-    public FixedPost(String text1, String text3, String text5) {
+    public PostFixed(String text1, String text3, String text5) {
         this.text1 = text1;
         this.text3 = text3;
         this.text5 = text5;

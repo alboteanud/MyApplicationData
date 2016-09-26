@@ -1,6 +1,8 @@
 package com.alboteanu.myapplicationdata;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -8,9 +10,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 
-import com.alboteanu.myapplicationdata.models.FixedPost;
+import com.alboteanu.myapplicationdata.models.PostFixed;
 import com.alboteanu.myapplicationdata.models.Post;
 import com.alboteanu.myapplicationdata.models.PostDetails;
 import com.google.firebase.database.DataSnapshot;
@@ -20,14 +23,14 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DetailActivity extends BaseActivity implements View.OnClickListener {
+public class DetailActivity extends BaseActivity  implements View.OnClickListener{
     private static final String TAG = "DetailActivity";
     private static final String REQUIRED = "Required";
     public static final String EXTRA_POST_KEY = "post_key";
+    public static final String EXTRA_POST_TEXT2 = "post_text2";
+    public static final String EXTRA_POST_TEXT4 = "post_text4";
     private String postKey;
     EditText editText1, editText2, editText3, editText4, editText5, editText6;
-    Menu mMenu;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +39,6 @@ public class DetailActivity extends BaseActivity implements View.OnClickListener
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        findViewById(R.id.save_button).setOnClickListener(this);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         editText1 = ((EditText) findViewById(R.id.edit_text1));
         editText2 = ((EditText) findViewById(R.id.edit_text2));
         editText3 = ((EditText) findViewById(R.id.edit_text3));
@@ -45,26 +46,27 @@ public class DetailActivity extends BaseActivity implements View.OnClickListener
         editText5 = ((EditText) findViewById(R.id.edit_text5));
         editText6 = ((EditText) findViewById(R.id.edit_text6));
 
-        updateFixedFields();
+        linkFixedFieldsToFirebase();
         postKey = getIntent().getStringExtra(EXTRA_POST_KEY);
-        if(postKey == null){
-
-        }else {
-            updateVariableFields();
-        }
+        editText2.setText(getIntent().getStringExtra(EXTRA_POST_TEXT2));
+        editText4.setText(getIntent().getStringExtra(EXTRA_POST_TEXT4));
+        if(postKey != null)
+            linkVariableFieldsToFirebase();
         editText2.requestFocus();
+        (findViewById(R.id.save_button)).setOnClickListener(this);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);            //hide keyboard
     }
 
-    private void updateFixedFields() {
-        getDatabase().getReference().child(getUid()).child(getString(R.string.fixed_posts))
+    private void linkFixedFieldsToFirebase() {
+        getUserNode().child(getString(R.string.posts_fixed))
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        FixedPost fixedPost = dataSnapshot.getValue(FixedPost.class);
-                        if(fixedPost != null){
-                            editText1.setText(fixedPost.text1);
-                            editText3.setText(fixedPost.text3);
-                            editText5.setText(fixedPost.text5);
+                        PostFixed postFixed = dataSnapshot.getValue(PostFixed.class);
+                        if(postFixed != null){
+                            editText1.setText(postFixed.text1);
+                            editText3.setText(postFixed.text3);
+                            editText5.setText(postFixed.text5);
                         }
                     }
 
@@ -75,8 +77,8 @@ public class DetailActivity extends BaseActivity implements View.OnClickListener
                 });
     }
 
-    private void updateVariableFields() {
-        getDatabase().getReference().child(getUid()).child(getString(R.string.posts_details)).child(postKey)
+    private void linkVariableFieldsToFirebase() {
+        getUserNode().child(getString(R.string.posts_details)).child(postKey)
                 .addValueEventListener(new ValueEventListener() {
            @Override
            public void onDataChange(DataSnapshot dataSnapshot) {
@@ -97,8 +99,7 @@ public class DetailActivity extends BaseActivity implements View.OnClickListener
        });
     }
 
-
-    private void submitPost() {
+    private boolean submitPost() {
         final String text1 = editText1.getText().toString();
         final String text2 = editText2.getText().toString();
         final String text3 = editText3.getText().toString();
@@ -109,36 +110,36 @@ public class DetailActivity extends BaseActivity implements View.OnClickListener
         // Title is required
         if (TextUtils.isEmpty(text2)) {
             ((EditText) findViewById(R.id.edit_text2)).setError(REQUIRED);
-            return;
+            return false;
         }
 
         if(postKey == null)
-            postKey = getDatabase().getReference().push().getKey();
+            postKey = getUserNode().child(getString(R.string.posts_title)).push().getKey();
 
         Post post = new Post(text2, text4);
         PostDetails postDetails = new PostDetails(text2, text4, text6);
-        FixedPost fixedPost = new FixedPost(text1, text3, text5);
+        PostFixed postFixed = new PostFixed(text1, text3, text5);
 
         Map<String, Object> postMap = post.toMap();
         Map<String, Object> detailMap = postDetails.toMap();
-        Map<String, Object> fixedMap = fixedPost.toMap();
+        Map<String, Object> fixedMap = postFixed.toMap();
 
         Map<String, Object> updates = new HashMap<>();
-        updates.put(getUid()+ "/" + getString(R.string.posts) + "/" + postKey, postMap);
-        updates.put(getUid()+ "/" + getString(R.string.posts_details) + "/" + postKey, detailMap);
-        updates.put(getUid()+ "/" + getString(R.string.fixed_posts), fixedMap);
+        updates.put(getString(R.string.posts_title) + "/" + postKey, postMap);
+        updates.put( getString(R.string.posts_details) + "/" + postKey, detailMap);
+        updates.put(getString(R.string.posts_fixed), fixedMap);
 
-        getDatabase().getReference().updateChildren(updates);
-
-        finish();
+        getUserNode().updateChildren(updates);
+        return true;
     }
 
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.save_button:
-                submitPost();
+                if (submitPost())
+                    finish();
                 break;
         }
     }
@@ -170,7 +171,8 @@ public class DetailActivity extends BaseActivity implements View.OnClickListener
     }
 
     private void deletePost() {
-        getDatabase().getReference().child(getUid()+ "/" + getString(R.string.posts) + "/" + postKey).removeValue();
-        getDatabase().getReference().child(getUid()+ "/" + getString(R.string.posts_details) + "/" + postKey).removeValue();
+        getUserNode().child(getString(R.string.posts_title) + "/" + postKey).removeValue();
+        getUserNode().child( getString(R.string.posts_details) + "/" + postKey).removeValue();
     }
+
 }

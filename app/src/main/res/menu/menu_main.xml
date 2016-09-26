@@ -2,6 +2,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.alboteanu.mylist.MainActivity">
+
+    <item
+        android:title="@string/action_settings"
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:text="@string/action_settings"
+        app:showAsAction="never"
+        />
+
     <item
         android:title="@string/action_logout"
         android:id="@+id/action_logout"

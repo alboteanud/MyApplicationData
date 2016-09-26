@@ -2,25 +2,18 @@ package com.alboteanu.myapplicationdata;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.alboteanu.myapplicationdata.models.Post;
 import com.alboteanu.myapplicationdata.viewholder.PostHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
@@ -59,7 +52,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         mRecycler.setLayoutManager(mManager);
 
         // Set up FirebaseRecyclerAdapter with the Query
-        Query postsQuery = getQuery();
+        Query postsQuery = getUserNode().child(getString(R.string.posts_title));
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Post, PostHolder>(Post.class, R.layout.post_item,
                 PostHolder.class, postsQuery) {
             @Override
@@ -74,6 +67,8 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
                         // Launch DetailActivity
                         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
                         intent.putExtra(DetailActivity.EXTRA_POST_KEY, postKey);
+                        intent.putExtra(DetailActivity.EXTRA_POST_TEXT4, post.text2);
+                        intent.putExtra(DetailActivity.EXTRA_POST_TEXT4, post.text4);
                         startActivity(intent);
                     }
                 });
@@ -85,10 +80,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         mRecycler.setAdapter(firebaseRecyclerAdapter);
     }
 
-    public Query getQuery() {
-        return getDatabase().getReference()
-                .child(getUid()).child(getString(R.string.posts));
-    }
+
 
     @Override
     public void onStart() {
@@ -109,6 +101,17 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
     public boolean onCreateOptionsMenu(Menu menu) {
             getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
 }
