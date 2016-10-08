@@ -10,24 +10,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp">
+        android:layout_margin="@dimen/text_margin">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/text1"
             android:text="text1"
-            android:layout_marginTop="@dimen/text_margin"
             android:textAppearance="?attr/textAppearanceListItem"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="marquee"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/text2"
             android:text="text2"
-            android:layout_marginBottom="@dimen/text_margin"
+            android:maxLines="1"
+            android:ellipsize="marquee"
             android:textAppearance="?attr/textAppearanceListItemSmall" />
 
     </LinearLayout>

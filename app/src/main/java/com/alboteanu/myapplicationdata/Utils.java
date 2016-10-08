@@ -31,4 +31,20 @@ public class Utils {
         return storedVal;
     }
 
+ public static String getSavedTitle(Context context){
+        SharedPreferences sharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        String key = context.getString(R.string.title_text);
+        String storedVal = sharedPrefs.getString(key, "");
+        return storedVal;
+    }
+
+ public static boolean getListStateView(Context context){
+        SharedPreferences sharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        String key = context.getString(R.string.simple_list_switch);
+        Boolean storedVal = sharedPrefs.getBoolean(key, true);
+        return storedVal;
+    }
+
 }

@@ -14,5 +14,9 @@
     <color name="colorPrimary3">#aaaaaa</color>
     <color name="colorPrimaryDark3">#000000</color>
     <color name="colorAccent3">#e63f77</color>
+
+    <color name="colorMyGray">#797979</color>
+
+
 </resources>
 

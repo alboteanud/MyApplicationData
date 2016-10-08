@@ -1,17 +1,17 @@
 <resources>
-    <string name="app_name">My Application Data</string>
-    <string name="desc_firebase_lockup">Firebase logo and name</string>
+    <string name="app_name">My Clients</string>
+    <string name="desc_firebase_lockup">logo and name</string>
     <string name="loading">Loading…</string>
-    <string name="desc_google_sign_in">Use a Google Sign In credential to authenticate with Firebase.</string>
+    <string name="desc_google_sign_in">Use a Google Sign In credential to authenticate</string>
     <string name="title_activity_main">Main</string>
     <string name="action_logout">Logout</string>
     <string name="label_detail_activity">Details</string>
-    <string name="title_activity_detail2">Details</string>
-    <string name="google_title_text">Google Sign In</string>
+    <string name="title_activity_detail">Details</string>
+    <string name="google_title_text"></string>
     <string name="signed_out">Signed Out</string>
 
     <string name="google_status_fmt">Google User: %s</string>
-    <string name="firebase_status_fmt">Firebase User: %s</string>
+    <string name="firebase_status_fmt">User: %s</string>
     <string name="user_node">a-user</string>
     <string name="sign_out">Sign Out</string>
     <string name="disconnect">Disconnect</string>
@@ -27,13 +27,11 @@
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
-    </string>
+    <string name="pref_title_social_recommendations">Enable detailed list</string>
+    <string name="pref_description_social_recommendations">Show detail under each name</string>
 
     <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
+    <string name="pref_default_display_name">My Clients</string>
 
     <string name="pref_title_add_themes">Themes</string>
     <string-array name="pref_themes_list_titles">
@@ -80,5 +78,8 @@
     <string name="action_settings">Settings</string>
     <string name="themes_list">themes</string>
     <string name="save_button_text">save</string>
+    <string name="action_save">Save</string>
+    <string name="title_text">My Clients</string>
+    <string name="simple_list_switch">simple_list</string>
 
 </resources>

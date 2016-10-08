@@ -26,11 +26,12 @@ import java.util.Map;
 public class DetailActivity extends BaseActivity  implements View.OnClickListener{
     private static final String TAG = "DetailActivity";
     private static final String REQUIRED = "Required";
+    private static final String INVALID_EMAIL = "Invalid email";
     public static final String EXTRA_POST_KEY = "post_key";
     public static final String EXTRA_POST_TEXT2 = "post_text2";
     public static final String EXTRA_POST_TEXT4 = "post_text4";
     private String postKey;
-    EditText editText1, editText2, editText3, editText4, editText5, editText6;
+    EditText editText1, editText2, editText3, editText4, editText5, editText6, editText7, editText8;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,21 +46,24 @@ public class DetailActivity extends BaseActivity  implements View.OnClickListene
         editText4 = ((EditText) findViewById(R.id.edit_text4));
         editText5 = ((EditText) findViewById(R.id.edit_text5));
         editText6 = ((EditText) findViewById(R.id.edit_text6));
+        editText7 = ((EditText) findViewById(R.id.edit_text7));
+        editText8 = ((EditText) findViewById(R.id.edit_text8));
 
         linkFixedFieldsToFirebase();
         postKey = getIntent().getStringExtra(EXTRA_POST_KEY);
         editText2.setText(getIntent().getStringExtra(EXTRA_POST_TEXT2));
         editText4.setText(getIntent().getStringExtra(EXTRA_POST_TEXT4));
-        if(postKey != null)
+        if(postKey != null){
             linkVariableFieldsToFirebase();
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);            //hide keyboard
+        }
         editText2.requestFocus();
         (findViewById(R.id.save_button)).setOnClickListener(this);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);            //hide keyboard
     }
 
     private void linkFixedFieldsToFirebase() {
         getUserNode().child(getString(R.string.posts_fixed))
-                .addValueEventListener(new ValueEventListener() {
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         PostFixed postFixed = dataSnapshot.getValue(PostFixed.class);
@@ -67,6 +71,7 @@ public class DetailActivity extends BaseActivity  implements View.OnClickListene
                             editText1.setText(postFixed.text1);
                             editText3.setText(postFixed.text3);
                             editText5.setText(postFixed.text5);
+                            editText7.setText(postFixed.text7);
                         }
                     }
 
@@ -79,7 +84,7 @@ public class DetailActivity extends BaseActivity  implements View.OnClickListene
 
     private void linkVariableFieldsToFirebase() {
         getUserNode().child(getString(R.string.posts_details)).child(postKey)
-                .addValueEventListener(new ValueEventListener() {
+                .addListenerForSingleValueEvent(new ValueEventListener() {
            @Override
            public void onDataChange(DataSnapshot dataSnapshot) {
                PostDetails postDetails = dataSnapshot.getValue(PostDetails.class);
@@ -87,6 +92,7 @@ public class DetailActivity extends BaseActivity  implements View.OnClickListene
                    editText2.setText(postDetails.text2);
                    editText4.setText(postDetails.text4);
                    editText6.setText(postDetails.text6);
+                   editText8.setText(postDetails.text8);
 
                    editText2.setSelection(editText2.getText().length());
                }
@@ -106,6 +112,8 @@ public class DetailActivity extends BaseActivity  implements View.OnClickListene
         final String text4 = editText4.getText().toString();
         final String text5 = editText5.getText().toString();
         final String text6 = editText6.getText().toString();
+        final String text7 = editText7.getText().toString();
+        final String text8 = editText8.getText().toString();
 
         // Title is required
         if (TextUtils.isEmpty(text2)) {
@@ -113,12 +121,20 @@ public class DetailActivity extends BaseActivity  implements View.OnClickListene
             return false;
         }
 
+        //check email
+        if(!TextUtils.isEmpty(text6)){
+            if(!isValidEmail(text6)){
+                ((EditText) findViewById(R.id.edit_text6)).setError(INVALID_EMAIL);
+                return false;
+            }
+        }
+
         if(postKey == null)
             postKey = getUserNode().child(getString(R.string.posts_title)).push().getKey();
 
         Post post = new Post(text2, text4);
-        PostDetails postDetails = new PostDetails(text2, text4, text6);
-        PostFixed postFixed = new PostFixed(text1, text3, text5);
+        PostDetails postDetails = new PostDetails(text2, text4, text6, text8);
+        PostFixed postFixed = new PostFixed(text1, text3, text5, text7);
 
         Map<String, Object> postMap = post.toMap();
         Map<String, Object> detailMap = postDetails.toMap();
@@ -173,6 +189,14 @@ public class DetailActivity extends BaseActivity  implements View.OnClickListene
     private void deletePost() {
         getUserNode().child(getString(R.string.posts_title) + "/" + postKey).removeValue();
         getUserNode().child( getString(R.string.posts_details) + "/" + postKey).removeValue();
+    }
+
+    public final static boolean isValidEmail(CharSequence target) {
+        if (target == null) {
+            return false;
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+        }
     }
 
 }

@@ -22,5 +22,12 @@ public class PostHolder extends RecyclerView.ViewHolder {
     public void bindToPost(Post post) {
         text1.setText(post.text2);
         text2.setText(post.text4);
+
+//     itemView.findViewById(R.id.text2).setVisibility(View.GONE);
+    }
+
+    public void bindToPostSimple(Post post) {
+        text1.setText(post.text2);
+        itemView.findViewById(R.id.text2).setVisibility(View.GONE);
     }
 }

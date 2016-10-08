@@ -1,7 +1,9 @@
 package com.alboteanu.myapplicationdata;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,7 +29,11 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+        String title = Utils.getSavedTitle(this);
+        if(title.equals(getString(R.string.pref_default_display_name)))
+            title = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        toolbar.setTitle(title);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -50,7 +56,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         mManager.setReverseLayout(true);
         mManager.setStackFromEnd(true);
         mRecycler.setLayoutManager(mManager);
-
+        final boolean detailedList = Utils.getListStateView(this);
         // Set up FirebaseRecyclerAdapter with the Query
         Query postsQuery = getUserNode().child(getString(R.string.posts_title));
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Post, PostHolder>(Post.class, R.layout.post_item,
@@ -74,7 +80,10 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
                 });
 
                 // Bind Post to ViewHolder, setting OnClickListener for the star button
-                viewHolder.bindToPost(post);
+                if(detailedList)
+                    viewHolder.bindToPost(post);
+                else
+                    viewHolder.bindToPostSimple(post);
             }
         };
         mRecycler.setAdapter(firebaseRecyclerAdapter);
