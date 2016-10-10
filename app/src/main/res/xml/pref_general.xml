@@ -9,7 +9,7 @@
 
     <EditTextPreference
         android:capitalize="words"
-        android:defaultValue="@string/pref_default_display_name"
+        android:defaultValue="@string/app_name"
         android:inputType="textCapWords"
         android:key="@string/title_text"
         android:maxLines="1"

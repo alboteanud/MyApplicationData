@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Clients</string>
+    <string name="app_name">My Customers</string>
     <string name="desc_firebase_lockup">logo and name</string>
     <string name="loading">Loading…</string>
     <string name="desc_google_sign_in">Use a Google Sign In credential to authenticate</string>
@@ -31,7 +31,6 @@
     <string name="pref_description_social_recommendations">Show detail under each name</string>
 
     <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">My Clients</string>
 
     <string name="pref_title_add_themes">Themes</string>
     <string-array name="pref_themes_list_titles">
@@ -79,7 +78,9 @@
     <string name="themes_list">themes</string>
     <string name="save_button_text">save</string>
     <string name="action_save">Save</string>
-    <string name="title_text">My Clients</string>
+    <string name="title_text">DisplayName</string>
     <string name="simple_list_switch">simple_list</string>
+    <string name="action_send_email_to_all">Send email to all</string>
+    <string name="posts_emails">emails</string>
 
 </resources>

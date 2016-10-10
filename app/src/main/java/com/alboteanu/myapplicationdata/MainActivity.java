@@ -2,6 +2,7 @@ package com.alboteanu.myapplicationdata;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -17,8 +18,16 @@ import com.alboteanu.myapplicationdata.viewholder.PostHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "MainActivity";
@@ -29,9 +38,9 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
+//        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
         String title = Utils.getSavedTitle(this);
-        if(title.equals(getString(R.string.pref_default_display_name)))
+        if(title.equals(""))
             title = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         toolbar.setTitle(title);
         setSupportActionBar(toolbar);
@@ -73,8 +82,8 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
                         // Launch DetailActivity
                         Intent intent = new Intent(MainActivity.this, DetailActivity.class);
                         intent.putExtra(DetailActivity.EXTRA_POST_KEY, postKey);
-                        intent.putExtra(DetailActivity.EXTRA_POST_TEXT4, post.text2);
-                        intent.putExtra(DetailActivity.EXTRA_POST_TEXT4, post.text4);
+//                        intent.putExtra(DetailActivity.EXTRA_POST_TEXT4, post.text2);
+//                        intent.putExtra(DetailActivity.EXTRA_POST_TEXT4, post.text4);
                         startActivity(intent);
                     }
                 });
@@ -118,9 +127,39 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         if (id == R.id.action_settings) {
             startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             return true;
+        }if (id == R.id.action_send_email_to_all) {
+            getUserNode().child(getString(R.string.posts_emails))
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+
+                                                        @Override
+                                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                                            Map<String, String> map = (HashMap<String, String>) dataSnapshot.getValue();
+                                                            Collection<String> values = map.values();
+                                                            String[] emails = values.toArray(new String[0]);
+                                                            composeEmail( emails, "subject");
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(DatabaseError databaseError) {
+
+                                                        }
+                                                    });
+
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+
+    public void composeEmail(String[] addresses, String subject) {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+        intent.putExtra(Intent.EXTRA_EMAIL, addresses);
+//        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
 }

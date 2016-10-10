@@ -4,6 +4,14 @@
     tools:context="com.alboteanu.mylist.MainActivity">
 
     <item
+        android:title="@string/action_send_email_to_all"
+        android:id="@+id/action_send_email_to_all"
+        android:orderInCategory="100"
+        android:text="@string/action_send_email_to_all"
+        app:showAsAction="never"
+        />
+
+ <item
         android:title="@string/action_settings"
         android:id="@+id/action_settings"
         android:orderInCategory="100"

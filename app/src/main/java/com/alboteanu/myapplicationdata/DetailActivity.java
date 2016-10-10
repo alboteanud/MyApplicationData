@@ -28,8 +28,8 @@ public class DetailActivity extends BaseActivity  implements View.OnClickListene
     private static final String REQUIRED = "Required";
     private static final String INVALID_EMAIL = "Invalid email";
     public static final String EXTRA_POST_KEY = "post_key";
-    public static final String EXTRA_POST_TEXT2 = "post_text2";
-    public static final String EXTRA_POST_TEXT4 = "post_text4";
+//    public static final String EXTRA_POST_TEXT2 = "post_text2";
+//    public static final String EXTRA_POST_TEXT4 = "post_text4";
     private String postKey;
     EditText editText1, editText2, editText3, editText4, editText5, editText6, editText7, editText8;
 
@@ -51,8 +51,8 @@ public class DetailActivity extends BaseActivity  implements View.OnClickListene
 
         linkFixedFieldsToFirebase();
         postKey = getIntent().getStringExtra(EXTRA_POST_KEY);
-        editText2.setText(getIntent().getStringExtra(EXTRA_POST_TEXT2));
-        editText4.setText(getIntent().getStringExtra(EXTRA_POST_TEXT4));
+//        editText2.setText(getIntent().getStringExtra(EXTRA_POST_TEXT2));
+//        editText4.setText(getIntent().getStringExtra(EXTRA_POST_TEXT4));
         if(postKey != null){
             linkVariableFieldsToFirebase();
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);            //hide keyboard
@@ -111,7 +111,7 @@ public class DetailActivity extends BaseActivity  implements View.OnClickListene
         final String text3 = editText3.getText().toString();
         final String text4 = editText4.getText().toString();
         final String text5 = editText5.getText().toString();
-        final String text6 = editText6.getText().toString();
+        final String text6 = editText6.getText().toString();  //email
         final String text7 = editText7.getText().toString();
         final String text8 = editText8.getText().toString();
 
@@ -121,11 +121,14 @@ public class DetailActivity extends BaseActivity  implements View.OnClickListene
             return false;
         }
 
+        boolean isEmailOK = false;
         //check email
         if(!TextUtils.isEmpty(text6)){
             if(!isValidEmail(text6)){
                 ((EditText) findViewById(R.id.edit_text6)).setError(INVALID_EMAIL);
                 return false;
+            }else {
+                isEmailOK = true;
             }
         }
 
@@ -144,6 +147,9 @@ public class DetailActivity extends BaseActivity  implements View.OnClickListene
         updates.put(getString(R.string.posts_title) + "/" + postKey, postMap);
         updates.put( getString(R.string.posts_details) + "/" + postKey, detailMap);
         updates.put(getString(R.string.posts_fixed), fixedMap);
+        if (isEmailOK){
+            updates.put(getString(R.string.posts_emails) + "/" + postKey, text6);
+        }
 
         getUserNode().updateChildren(updates);
         return true;
@@ -189,6 +195,7 @@ public class DetailActivity extends BaseActivity  implements View.OnClickListene
     private void deletePost() {
         getUserNode().child(getString(R.string.posts_title) + "/" + postKey).removeValue();
         getUserNode().child( getString(R.string.posts_details) + "/" + postKey).removeValue();
+        getUserNode().child( getString(R.string.posts_emails) + "/" + postKey).removeValue();
     }
 
     public final static boolean isValidEmail(CharSequence target) {
