@@ -6,6 +6,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+
+import static com.alboteanu.myapplicationdata.BaseActivity.getDatabase;
+
 /**
  * Created by albot on 20.09.2016.
  */
@@ -35,7 +40,7 @@ public class Utils {
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
         String key = context.getString(R.string.title_text);
-        String storedVal = sharedPrefs.getString(key, "");
+        String storedVal = sharedPrefs.getString(key, FirebaseAuth.getInstance().getCurrentUser().getEmail());
         return storedVal;
     }
 
@@ -47,4 +52,25 @@ public class Utils {
         return storedVal;
     }
 
+    
+
+    public static DatabaseReference getUserNode(){
+        return getDatabase().getReference().child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+    }
+
+    static String usernameFromEmail(String email) {
+        if (email.contains("@")) {
+            return email.split("@")[0];
+        } else {
+            return email;
+        }
+    }
+
+    public final static boolean isValidEmail(CharSequence target) {
+        if (target == null) {
+            return false;
+        } else {
+            return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+        }
+    }
 }

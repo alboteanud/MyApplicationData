@@ -9,13 +9,14 @@
 
     <EditTextPreference
         android:capitalize="words"
-        android:defaultValue="@string/app_name"
+        android:hint="@string/app_name"
         android:inputType="textCapWords"
         android:key="@string/title_text"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_title_display_name" />
+    <!--android:defaultValue="@string/app_name"-->
 
     <ListPreference
         android:defaultValue="0"

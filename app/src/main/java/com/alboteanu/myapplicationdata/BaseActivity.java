@@ -77,8 +77,6 @@ public class BaseActivity extends AppCompatActivity implements
 
 
 
-
-
     private static FirebaseDatabase mDatabase;
     public static FirebaseDatabase getDatabase() {
         if (mDatabase == null) {
@@ -150,7 +148,4 @@ public class BaseActivity extends AppCompatActivity implements
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
-    public DatabaseReference getUserNode(){
-        return getDatabase().getReference().child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-    }
 }

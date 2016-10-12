@@ -1,10 +1,8 @@
 package com.alboteanu.myapplicationdata;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,7 +24,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener {
@@ -39,10 +36,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
-        String title = Utils.getSavedTitle(this);
-        if(title.equals(""))
-            title = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        toolbar.setTitle(title);
+        toolbar.setTitle(Utils.getSavedTitle(this));
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -67,7 +61,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
         mRecycler.setLayoutManager(mManager);
         final boolean detailedList = Utils.getListStateView(this);
         // Set up FirebaseRecyclerAdapter with the Query
-        Query postsQuery = getUserNode().child(getString(R.string.posts_title));
+        Query postsQuery = Utils.getUserNode().child(getString(R.string.posts_title));
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Post, PostHolder>(Post.class, R.layout.post_item,
                 PostHolder.class, postsQuery) {
             @Override
@@ -128,7 +122,7 @@ public class MainActivity extends BaseActivity implements GoogleApiClient.OnConn
             startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             return true;
         }if (id == R.id.action_send_email_to_all) {
-            getUserNode().child(getString(R.string.posts_emails))
+            Utils.getUserNode().child(getString(R.string.posts_emails))
                     .addListenerForSingleValueEvent(new ValueEventListener() {
 
                                                         @Override
