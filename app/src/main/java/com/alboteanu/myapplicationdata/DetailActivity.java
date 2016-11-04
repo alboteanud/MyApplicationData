@@ -1,5 +1,6 @@
 package com.alboteanu.myapplicationdata;
 
+import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -8,15 +9,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.alboteanu.myapplicationdata.models.PostFixed;
 import com.alboteanu.myapplicationdata.models.Post;
 import com.alboteanu.myapplicationdata.models.PostDetails;
+import com.alboteanu.myapplicationdata.models.PostReturn;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,10 +35,13 @@ public class DetailActivity extends BaseActivity {
     private static final String REQUIRED = "Required";
     private static final String INVALID_EMAIL = "Invalid email";
     public static final String EXTRA_POST_KEY = "post_key";
-//    public static final String EXTRA_POST_TEXT2 = "post_text2";
-//    public static final String EXTRA_POST_TEXT4 = "post_text4";
+    public static final String EXTRA_POST_TEXT2 = "post_text2";
+    public static final String EXTRA_POST_TEXT4 = "post_text4";
     private String existingPostKey;
-    EditText editText1, editText2, editText3, editText4, editText5, editText6, editText7, editText8;
+    public EditText editText1, editText2, editText3, editText4, editText5, editText6, editText7, editText8;
+    TextView textView9, textView10;
+    CheckBox checkBox6Luni;
+    public long dataRevenirii;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,22 +52,6 @@ public class DetailActivity extends BaseActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initViews();
 
-        linkFixedFieldsToFirebase();
-        existingPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
-//        editText2.setText(getIntent().getStringExtra(EXTRA_POST_TEXT2));
-//        editText4.setText(getIntent().getStringExtra(EXTRA_POST_TEXT4));
-        if(existingPostKey != null){
-            linkVariableFieldsToFirebase();
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);            //hide keyboard
-        }
-        editText2.requestFocus();
-        (findViewById(R.id.save_button)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (tryToSubmitPost())
-                    finish();
-            }
-        });
     }
 
     private void initViews() {
@@ -68,7 +63,48 @@ public class DetailActivity extends BaseActivity {
         editText6 = ((EditText) findViewById(R.id.edit_text6));
         editText7 = ((EditText) findViewById(R.id.edit_text7));
         editText8 = ((EditText) findViewById(R.id.edit_text8));
+        textView9 = ((TextView) findViewById(R.id.text9));
+        textView10 = ((TextView) findViewById(R.id.text10));
+
+        linkFixedFieldsToFirebase();
+        existingPostKey = getIntent().getStringExtra(EXTRA_POST_KEY);
+        editText2.setText(getIntent().getStringExtra(EXTRA_POST_TEXT2));
+        editText4.setText(getIntent().getStringExtra(EXTRA_POST_TEXT4));
+        if (existingPostKey != null) {
+            linkVariableFieldsToFirebase();
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);            //hide keyboard
+        }
+        editText2.requestFocus();
+        (findViewById(R.id.save_button)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (tryToSubmitPost())
+                    finish();
+            }
+        });
+
+        checkBox6Luni = (CheckBox) findViewById(R.id.checkBox6Luni);
+        checkBox6Luni.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.MONTH, 6);
+                    Date data = calendar.getTime();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_format));
+                    String dateString = simpleDateFormat.format(data);
+                    textView10.setText(dateString);
+                    dataRevenirii = calendar.getTimeInMillis();
+                } else {
+                    textView10.setText("");
+                    dataRevenirii = 0;
+                }
+            }
+        });
+
+
     }
+
 
     private void linkFixedFieldsToFirebase() {
         Utils.getUserNode().child(getString(R.string.posts_fixed))
@@ -76,7 +112,7 @@ public class DetailActivity extends BaseActivity {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         PostFixed postFixed = dataSnapshot.getValue(PostFixed.class);
-                        if(postFixed != null){
+                        if (postFixed != null) {
                             editText1.setText(postFixed.text1);
                             editText3.setText(postFixed.text3);
                             editText5.setText(postFixed.text5);
@@ -94,24 +130,32 @@ public class DetailActivity extends BaseActivity {
     private void linkVariableFieldsToFirebase() {
         Utils.getUserNode().child(getString(R.string.posts_details)).child(existingPostKey)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
-           @Override
-           public void onDataChange(DataSnapshot dataSnapshot) {
-               PostDetails postDetails = dataSnapshot.getValue(PostDetails.class);
-               if(postDetails != null){
-                   editText2.setText(postDetails.text2);
-                   editText4.setText(postDetails.text4);
-                   editText6.setText(postDetails.text6);
-                   editText8.setText(postDetails.text8);
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        PostDetails postDetails = dataSnapshot.getValue(PostDetails.class);
+                        if (postDetails != null) {
+                            editText2.setText(postDetails.text2);
+                            editText4.setText(postDetails.text4);
+                            editText6.setText(postDetails.text6);
+                            editText8.setText(postDetails.text8);
+                            editText2.setSelection(editText2.getText().length());
+                            dataRevenirii = postDetails.date;
+                            if(dataRevenirii != 0){
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.setTimeInMillis(dataRevenirii);
+                                Date data = calendar.getTime();
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_format));
+                                String dateString = simpleDateFormat.format(data);
+                                textView10.setText(dateString);
+                            }
+                        }
+                    }
 
-                   editText2.setSelection(editText2.getText().length());
-               }
-           }
-
-           @Override
-           public void onCancelled(DatabaseError databaseError) {
-               Log.e(TAG, databaseError.getMessage());
-           }
-       });
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e(TAG, databaseError.getMessage());
+                    }
+                });
     }
 
     private boolean tryToSubmitPost() {
@@ -124,11 +168,11 @@ public class DetailActivity extends BaseActivity {
 
         Map<String, Object> updates = new HashMap<>();
         final String text6 = editText6.getText().toString();  // email field
-        if(!TextUtils.isEmpty(text6)){
-            if(!Utils.isValidEmail(text6)){
+        if (!TextUtils.isEmpty(text6)) {
+            if (!Utils.isValidEmail(text6)) {
                 ((EditText) findViewById(R.id.edit_text6)).setError(INVALID_EMAIL);
                 return false;
-            }else {
+            } else {
                 updates.put(getString(R.string.posts_emails) + "/" + existingPostKey, text6);
             }
         }
@@ -140,25 +184,36 @@ public class DetailActivity extends BaseActivity {
         final String text7 = editText7.getText().toString();   // Fixed Other
         final String text8 = editText8.getText().toString();    // other
 
-        if(existingPostKey == null)
+        if (existingPostKey == null)
             existingPostKey = Utils.getUserNode().child(getString(R.string.posts_title)).push().getKey();  //generate new key
 
-        Post post = new Post(text2, text4);
-        PostDetails postDetails = new PostDetails(text2, text4, text6, text8);
+        Post post = new Post(text2, text4, dataRevenirii);
+        PostDetails postDetails = new PostDetails(text2, text4, text6, text8, dataRevenirii);
         PostFixed postFixed = new PostFixed(text1, text3, text5, text7);
+
 
         Map<String, Object> postMap = post.toMap();
         Map<String, Object> detailMap = postDetails.toMap();
         Map<String, Object> fixedMap = postFixed.toMap();
 
         updates.put(getString(R.string.posts_title) + "/" + existingPostKey, postMap);
-        updates.put( getString(R.string.posts_details) + "/" + existingPostKey, detailMap);
+        updates.put(getString(R.string.posts_details) + "/" + existingPostKey, detailMap);
         updates.put(getString(R.string.posts_fixed), fixedMap);
+        if(!text4.isEmpty())
+            updates.put(getString(R.string.posts_phones) + "/" + existingPostKey, text4);
+        if(dataRevenirii != 0){
+            if (text4.isEmpty()) {
+                editText4.setError(REQUIRED);
+                return false;
+            }
+            PostFixed postReturn = new PostReturn(dataRevenirii, text4);  //data si tel
+            Map<String, Object> returnMap = postReturn.toMap();
+            updates.put(getString(R.string.post_return_date) + "/" + existingPostKey, returnMap);
+        }
 
         Utils.getUserNode().updateChildren(updates);
         return true;
     }
-
 
 
     @Override
@@ -170,7 +225,7 @@ public class DetailActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_details, menu);
-        if (existingPostKey == null){
+        if (existingPostKey == null) {
             menu.findItem(R.id.action_delete_post).setVisible(false);
         }
         return true;
@@ -189,8 +244,16 @@ public class DetailActivity extends BaseActivity {
 
     private void deletePost() {
         Utils.getUserNode().child(getString(R.string.posts_title) + "/" + existingPostKey).removeValue();
-        Utils.getUserNode().child( getString(R.string.posts_details) + "/" + existingPostKey).removeValue();
-        Utils.getUserNode().child( getString(R.string.posts_emails) + "/" + existingPostKey).removeValue();
+        Utils.getUserNode().child(getString(R.string.posts_details) + "/" + existingPostKey).removeValue();
+        Utils.getUserNode().child(getString(R.string.posts_emails) + "/" + existingPostKey).removeValue();
+        Utils.getUserNode().child(getString(R.string.posts_phones) + "/" + existingPostKey).removeValue();
     }
 
+    public void showDatePickerDialog(View v) {
+        DialogFragment dialogFragment = new DatePickerFragment();
+        dialogFragment.show(getFragmentManager(), "datePicker");
+    }
 }
+
+
+

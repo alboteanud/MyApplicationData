@@ -12,16 +12,19 @@ public class PostDetails {
     public String text4;
     public String text6;
     public String text8;
+    public long date;
+
 
     public PostDetails() {
         // Default constructor required for calls to DataSnapshot.getValue(Post.class)
     }
 
-    public PostDetails(String text2, String text4, String text6, String text8) {
+    public PostDetails(String text2, String text4, String text6, String text8, long date) {
         this.text2 = text2;
         this.text4 = text4;
         this.text6 = text6;
         this.text8 = text8;
+        this.date = date;
     }
 
     @Exclude
@@ -31,6 +34,7 @@ public class PostDetails {
         result.put("text4", text4);
         result.put("text6", text6);
         result.put("text8", text8);
+        result.put("date", date);
 
         return result;
     }

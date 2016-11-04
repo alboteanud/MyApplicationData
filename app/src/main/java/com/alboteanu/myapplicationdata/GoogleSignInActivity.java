@@ -38,6 +38,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import java.util.Map;
+
 /**
  * Demonstrate Firebase Authentication using a Google ID Token.
  */
@@ -99,6 +101,9 @@ public class GoogleSignInActivity extends BaseActivity implements
             } else {
                 // Google Sign In failed, update UI appropriately
                 updateUI(null);
+                Log.d(TAG, "Google Sign In failed");
+                Toast.makeText(GoogleSignInActivity.this, "Google Sign In failed",
+                        Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -188,11 +193,11 @@ public class GoogleSignInActivity extends BaseActivity implements
     }
 
     private void writeNewUser(String userId, String name, String email) {
-        User user = new User(name, email);
-        getDatabase().getReference().child(userId).child(getString(R.string.user_node)).setValue(user);
+        User user = new User(userId, name, email);
+        Map<String, Object> userMap = user.toMap();
+        Utils.getUserNode().child("-user").updateChildren(userMap);
+
     }
-
-
 
     @Override
     public void onStart() {

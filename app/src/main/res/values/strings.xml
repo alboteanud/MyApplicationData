@@ -12,7 +12,7 @@
 
     <string name="google_status_fmt">Google User: %s</string>
     <string name="firebase_status_fmt">User: %s</string>
-    <string name="user_node">a-user</string>
+    <string name="user_node">-user</string>
     <string name="sign_out">Sign Out</string>
     <string name="disconnect">Disconnect</string>
     <string name="hint_edit_text1">Name</string>
@@ -37,7 +37,7 @@
         <item>Light</item>
         <item>Dark</item>
     </string-array>
-    <string-array  name="pref_themes_list_values">
+    <string-array name="pref_themes_list_values">
         <item>0</item>
         <item>1</item>
     </string-array>
@@ -82,5 +82,13 @@
     <string name="simple_list_switch">simple_list</string>
     <string name="action_send_email_to_all">Send email to all</string>
     <string name="posts_emails">emails</string>
+    <string name="action_send_sms_to_all">Send sms to all</string>
+    <string name="posts_phones">phones</string>
+    <string name="pick_date">DATA</string>
+    <string name="date_format">dd MMM yyyy</string>
+    <string name="name">name</string>
+    <string name="return_date">date</string>
+    <string name="action_notifications">Notif</string>
+    <string name="post_return_date">post-return-date</string>
 
 </resources>

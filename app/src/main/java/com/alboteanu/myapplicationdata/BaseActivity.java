@@ -35,8 +35,6 @@ public class BaseActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        if(!(this instanceof GoogleSignInActivity))
-            Utils.setSavedTheme(this);
         super.onCreate(savedInstanceState);
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -74,8 +72,12 @@ public class BaseActivity extends AppCompatActivity implements
         hideProgressDialog();
     }
 
-
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!(this instanceof GoogleSignInActivity))
+            Utils.setSavedTheme(this);
+    }
 
     private static FirebaseDatabase mDatabase;
     public static FirebaseDatabase getDatabase() {

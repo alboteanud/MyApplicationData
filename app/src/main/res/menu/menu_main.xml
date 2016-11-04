@@ -3,28 +3,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.alboteanu.mylist.MainActivity">
 
+
     <item
-        android:title="@string/action_send_email_to_all"
+        android:id="@+id/action_send_sms_to_all"
+        android:orderInCategory="100"
+        android:text="@string/action_send_email_to_all"
+        android:title="@string/action_send_sms_to_all"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_send_email_to_all"
         android:orderInCategory="100"
         android:text="@string/action_send_email_to_all"
-        app:showAsAction="never"
-        />
+        android:title="@string/action_send_email_to_all"
+        app:showAsAction="never" />
 
- <item
-        android:title="@string/action_settings"
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:text="@string/action_settings"
-        app:showAsAction="never"
-        />
+        android:title="@string/action_settings"
+        app:showAsAction="never" />
 
     <item
-        android:title="@string/action_logout"
         android:id="@+id/action_logout"
         android:orderInCategory="100"
         android:text="@string/action_logout"
-        app:showAsAction="never"
+        android:title="@string/action_logout"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_notifications"
+        android:orderInCategory="100"
+        android:text="@string/action_notifications"
+        android:title="@string/action_notifications"
+        android:visible="false"
+        app:showAsAction="ifRoom"
         />
 
 </menu>
