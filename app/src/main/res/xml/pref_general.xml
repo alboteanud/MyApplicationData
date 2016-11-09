@@ -4,13 +4,25 @@
         android:capitalize="words"
         android:hint="@string/app_name"
         android:inputType="textCapWords"
-        android:key="@string/title_text"
+        android:key="@string/display_title_text_key"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_title_display_name" />
     <!--android:defaultValue="@string/app_name"-->
 
+<EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/my_custom_text"
+        android:inputType="textCapWords"
+        android:key="@string/custom_text_key"
+        android:maxLines="3"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/title_custom_text_settings" />
+    <!--android:defaultValue="@string/app_name"-->
+
+<!--
     <ListPreference
         android:defaultValue="0"
         android:entries="@array/pref_themes_list_titles"
@@ -19,16 +31,17 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"
         android:title="@string/pref_title_add_themes" />
+-->
 
 
     <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
          dismiss it. -->
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
 
-    <SwitchPreference
+<!--    <SwitchPreference
         android:defaultValue="true"
         android:key="@string/simple_list_switch"
         android:summary="@string/pref_description_social_recommendations"
-        android:title="@string/pref_title_social_recommendations" />
+        android:title="@string/pref_title_social_recommendations" />-->
 
 </PreferenceScreen>

@@ -6,31 +6,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alboteanu.myapplicationdata.R;
-import com.alboteanu.myapplicationdata.models.Post;
+import com.alboteanu.myapplicationdata.models.Contact;
 
 public class PostHolder extends RecyclerView.ViewHolder {
 
-    public TextView text1;
-    public TextView text2;
-    public ImageView starView;
+    public TextView name;
+    public TextView phone;
+    public ImageView ball;
 
     public PostHolder(View itemView) {
         super(itemView);
 
-        text1 = (TextView) itemView.findViewById(R.id.text2);
-        text2 = (TextView) itemView.findViewById(R.id.text4);
-        starView = (ImageView) itemView.findViewById(R.id.star);
+        name = (TextView) itemView.findViewById(R.id.name);
+        phone = (TextView) itemView.findViewById(R.id.phone);
+        ball = (ImageView) itemView.findViewById(R.id.star);
     }
 
-    public void bindToPost(Post post) {
-        text1.setText(post.text2);
-        text2.setText(post.text4);
+    public void bindToPost(Contact contact) {
+        name.setText(contact.name);
+        phone.setText(contact.phone);
 
-//     itemView.findViewById(R.id.text2).setVisibility(View.GONE);
     }
 
-    public void bindToPostSimple(Post post) {
-        text1.setText(post.text2);
-        itemView.findViewById(R.id.text4).setVisibility(View.GONE);
-    }
+
 }

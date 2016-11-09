@@ -1,14 +1,15 @@
 package com.alboteanu.myapplicationdata;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 
+import static android.R.attr.x;
 import static com.alboteanu.myapplicationdata.BaseActivity.getDatabase;
 
 /**
@@ -16,17 +17,6 @@ import static com.alboteanu.myapplicationdata.BaseActivity.getDatabase;
  */
 public class Utils {
 
-    public static void setSavedTheme(Context context){
-        //scimbare Themes
-        switch (getSavedTheme(context)) {
-            case 0:    //Theme Light
-                context.setTheme(R.style.AppTheme_NoActionBar);
-                break;
-            case 1:   //Theme Dark
-                context.setTheme(R.style.AppThemeDark_NoActionBar);
-                break;
-        }
-    }
 
     public static int getSavedTheme(Context context){
         SharedPreferences sharedPrefs = PreferenceManager
@@ -39,16 +29,16 @@ public class Utils {
  public static String getSavedTitle(Context context){
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
-        String key = context.getString(R.string.title_text);
+        String key = context.getString(R.string.display_title_text_key);
         String storedVal = sharedPrefs.getString(key, FirebaseAuth.getInstance().getCurrentUser().getEmail());
         return storedVal;
     }
 
- public static boolean getListStateView(Context context){
+    public static String getSavedTextMessage(Context context){
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
-        String key = context.getString(R.string.simple_list_switch);
-        Boolean storedVal = sharedPrefs.getBoolean(key, true);
+        String key = context.getString(R.string.custom_text_key);
+        String storedVal = sharedPrefs.getString(key, context.getString(R.string.my_custom_text));
         return storedVal;
     }
 
@@ -73,4 +63,19 @@ public class Utils {
             return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
         }
     }
+
+    public static void composeSMS(String[] phonesArray, Context context) {
+        StringBuilder stringBuilder = new StringBuilder("smsto: ");
+        for (int i = 0; i < phonesArray.length; i++) {
+            stringBuilder.append(phonesArray[i]);
+            stringBuilder.append(", ");
+        }
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse(stringBuilder.toString())); // only sms apps should handle this
+        intent.putExtra("sms_body", getSavedTextMessage(context));
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(intent);
+        }
+    }
+
 }

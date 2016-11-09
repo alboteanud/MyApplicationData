@@ -1,6 +1,8 @@
 package com.alboteanu.myapplicationdata;
 
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -20,7 +23,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class BaseActivity extends AppCompatActivity implements
@@ -70,13 +72,6 @@ public class BaseActivity extends AppCompatActivity implements
     public void onStop() {
         super.onStop();
         hideProgressDialog();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(!(this instanceof GoogleSignInActivity))
-            Utils.setSavedTheme(this);
     }
 
     private static FirebaseDatabase mDatabase;
@@ -136,7 +131,7 @@ public class BaseActivity extends AppCompatActivity implements
 
     public void sendUserToMainActivity() {
         /* Move user to LoginActivity, and remove the backstack */
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, ListActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
@@ -148,6 +143,43 @@ public class BaseActivity extends AppCompatActivity implements
         // be available.
         Log.d(TAG, "onConnectionFailed:" + connectionResult);
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
+    }
+
+    public void deleteContact(String contactKey) {
+        Utils.getUserNode().child(getString(R.string.contact_node) + "/" + contactKey).removeValue();
+        Utils.getUserNode().child(getString(R.string.detailed_contact_node) + "/" + contactKey).removeValue();
+        Utils.getUserNode().child(getString(R.string.posts_emails) + "/" + contactKey).removeValue();
+        Utils.getUserNode().child(getString(R.string.posts_phones) + "/" + contactKey).removeValue();
+        Utils.getUserNode().child(getString(R.string.return_date_node) + "/" + contactKey).removeValue();
+    }
+
+    public void createDeleteDialogAlert(final String contactKey) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.confirmation_dialog_delete))
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked OK button
+                        deleteContact(contactKey);
+                        Intent intent = new Intent(BaseActivity.this, ListActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+                dialog.dismiss();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
+    public void showDatePickerDialog() {
+        DialogFragment dialogFragment = new DatePickerFragment();
+        dialogFragment.show(getFragmentManager(), "datePicker");
     }
 
 }

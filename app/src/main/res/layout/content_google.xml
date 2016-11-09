@@ -21,8 +21,7 @@
             android:src="@drawable/heads"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            />
+            android:layout_weight="1" />
 
         <TextView
             android:id="@+id/title_text"
@@ -31,7 +30,7 @@
             android:layout_marginBottom="@dimen/title_bottom_margin"
             android:text="@string/google_title_text"
             android:theme="@style/ThemeOverlay.MyTitleText"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/status"
