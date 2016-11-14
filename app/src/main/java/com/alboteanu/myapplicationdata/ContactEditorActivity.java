@@ -125,7 +125,6 @@ public class ContactEditorActivity extends BaseActivity {
                             phoneF.setText(fixedFields.phone);
                             emailF.setText(fixedFields.email);
                             other1F.setText(fixedFields.other);
-                            Log.d("tag", "oth: " + fixedFields.other);
                             returnF.setText(fixedFields.date);
                         }
                     }
