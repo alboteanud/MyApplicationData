@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="fab_margin">16dp</dimen>
-    <dimen name="text_margin">8dp</dimen>
+    <dimen namef="fab_margin">16dp</dimen>
+    <dimen namef="text_margin">8dp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen namef="activity_horizontal_margin">16dp</dimen>
+    <dimen namef="activity_vertical_margin">16dp</dimen>
 
-    <dimen name="icon_top_margin">24dp</dimen>
-    <dimen name="icon_bottom_margin">24dp</dimen>
-    <dimen name="title_bottom_margin">16dp</dimen>
-    <dimen name="edit_text_margin">12dp</dimen>
+    <dimen namef="icon_top_margin">24dp</dimen>
+    <dimen namef="icon_bottom_margin">24dp</dimen>
+    <dimen namef="title_bottom_margin">16dp</dimen>
+    <dimen namef="edit_text_margin">12dp</dimen>
 </resources>

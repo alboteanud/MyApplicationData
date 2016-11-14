@@ -1,7 +1,6 @@
 package com.alboteanu.myapplicationdata;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,10 +10,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.alboteanu.myapplicationdata.models.Contact;
-import com.alboteanu.myapplicationdata.models.ReturnDate;
+import com.alboteanu.myapplicationdata.models.DateToReturn;
 import com.alboteanu.myapplicationdata.viewholder.PostHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -31,18 +29,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACTS_PHONES;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_EMAIL;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_NAME;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN_DATE;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN_DATES;
+
 public class ListActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "ListActivity";
     private FirebaseRecyclerAdapter<Contact, PostHolder> firebaseRecyclerAdapter;
     Toolbar toolbar;
     private Menu menu;
+    String[] allPhonesArray;
+    String[] allEmailsArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -65,18 +71,18 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
         mManager.setStackFromEnd(false);   //era true
         mRecycler.setLayoutManager(mManager);
         // Set up FirebaseRecyclerAdapter with the Query
-        Query postsQuery = Utils.getUserNode().child(getString(R.string.contact_node)).orderByChild(getString(R.string.name));
+        Query postsQuery = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT).orderByChild(FIREBASE_LOCATION_NAME);
 //        Log.d(TAG, "postsQuery.toString() " + postsQuery.toString());
+
+        final long CurrentTime = System.currentTimeMillis();
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Contact, PostHolder>(Contact.class, R.layout.contact,
                 PostHolder.class, postsQuery) {
             @Override
             protected void populateViewHolder(final PostHolder viewHolder, final Contact contact, final int position) {
                 final DatabaseReference postRef = getRef(position);
-                Log.d(TAG, "position = " + position);
-                // Set click listener for the whole contact view
-                final String postKey = postRef.getKey();
+                final String contactKey = postRef.getKey();
                 viewHolder.bindToPost(contact);
-                if (contact.date != 0 && (System.currentTimeMillis() > contact.date)) {
+                if (contact.date != 0 && (CurrentTime > contact.date)) {
                     viewHolder.ball.setVisibility(View.VISIBLE);
                     viewHolder.ball.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -90,7 +96,7 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(ListActivity.this, QuickContactActivity.class);
-                        intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_KEY, postKey);
+                        intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_KEY, contactKey);
                         intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_NAME, contact.name);
                         intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_PHONE, contact.phone);
                         startActivity(intent);
@@ -128,10 +134,12 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_list, menu);
         this.menu = menu;
-        expiredPhoneList = getKeysForExpiredDates();
-        Log.d("nr expirate", String.valueOf(expiredPhoneList.size()));
+        getExpired();
+        getAllPhones();
+        getAllEmails();
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -140,87 +148,83 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
             startActivity(new Intent(ListActivity.this, SettingsActivity.class));
             return true;
         } else if (id == R.id.action_send_email_to_all) {
-            Utils.getUserNode().child(getString(R.string.posts_emails))
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Map<String, String> map = (HashMap<String, String>) dataSnapshot.getValue();
-                            if (map == null) {
-                                Toast.makeText(ListActivity.this, "No emails registered", Toast.LENGTH_LONG).show();
-                                return;
-                            }
-                            Collection<String> values = map.values();
-                            String[] emails = values.toArray(new String[0]);
-                            composeEmail(emails, "subject");
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-
+            Utils.composeEmail(this, allEmailsArray, "subject");
             return true;
         } else if (id == R.id.action_send_sms_to_all) {
-            Utils.getUserNode().child(getString(R.string.posts_phones))
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Map<String, String> map = (HashMap<String, String>) dataSnapshot.getValue();
-                            if (map == null) {
-                                Toast.makeText(ListActivity.this, "No phone registered", Toast.LENGTH_LONG).show();
-                                return;
-                            }
-                            Collection<String> values = map.values();
-                            String[] phonesArray = values.toArray(new String[0]);
-                            Utils.composeSMS(phonesArray, getApplication());
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-
+            Utils.composeSMS(allPhonesArray, this);
             return true;
-        } else if (id == R.id.action_notifications) {
-            Utils.composeSMS(expiredPhoneList.toArray(new String[expiredPhoneList.size()]), this);
+        } else if (id == R.id.action_sms_to_expired) {
+            String[] expiredPhonesArray = phoneList.toArray(new String[phoneList.size()]);
+            Utils.composeSMS(expiredPhonesArray, this);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private void getAllPhones() {
+        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS_PHONES)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
 
-    public void composeEmail(String[] addresses, String subject) {
-        Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
-        intent.putExtra(Intent.EXTRA_EMAIL, addresses);
-//        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivity(intent);
-        }
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Map<String, String> map = (HashMap<String, String>) dataSnapshot.getValue();
+                        if (map == null)
+                            return;
+                        Collection<String> values = map.values();
+                        if(!values.isEmpty()){
+                            allPhonesArray = values.toArray(new String[0]);
+                            menu.findItem(R.id.action_send_sms_to_all).setVisible(true);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
     }
 
 
-    List<String> expiredPhoneList = new ArrayList<>();
-    public List<String> getKeysForExpiredDates() {
-        Utils.getUserNode().child(getString(R.string.return_date_node)).orderByChild("date").addChildEventListener(new ChildEventListener() {
+    private void getAllEmails() {
+        Utils.getUserNode().child(FIREBASE_LOCATION_EMAIL)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Map<String, String> map = (HashMap<String, String>) dataSnapshot.getValue();
+                        if (map == null)
+                            return;
+                        Collection<String> values = map.values();
+                        if(!values.isEmpty()){
+                            allEmailsArray = values.toArray(new String[0]);
+                            menu.findItem(R.id.action_send_email_to_all).setVisible(true);
+                        }
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+    }
+
+
+    List<String> phoneList = new ArrayList<>();
+    public void getExpired() {
+        final long currentTime = System.currentTimeMillis();
+        Utils.getUserNode().child(FIREBASE_LOCATION_RETURN_DATES).orderByChild(FIREBASE_LOCATION_RETURN_DATE).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                ReturnDate returnDate = dataSnapshot.getValue(ReturnDate.class);
-                if (returnDate != null) {
-                    Log.d("onChildAded", "date: " + returnDate.date);
-                    if(System.currentTimeMillis() > returnDate.date){
-                        expiredPhoneList.add(returnDate.phone);
+                DateToReturn dateToReturn = dataSnapshot.getValue(DateToReturn.class);
+                if (dateToReturn != null) {
+                    Log.d("tag", String.valueOf(dateToReturn.date));
+                    if(currentTime > dateToReturn.date){
+                        phoneList.add(dateToReturn.phone);
+                        menu.findItem(R.id.action_sms_to_expired).setTitle(String.valueOf(phoneList.size())).setVisible(true);
                     }
+
                 }
-                if(expiredPhoneList.size()!=0){
-                    menu.findItem(R.id.action_notifications).setTitle(String.valueOf(expiredPhoneList.size())).setVisible(true);
-                }else{
-                    menu.findItem(R.id.action_notifications).setTitle("0").setVisible(false);
-                }
+
             }
 
             @Override
@@ -244,11 +248,8 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
             }
         });
 
-        return expiredPhoneList;
+
 
     }
 
-
-    public void onBallClick(View view) {
-    }
 }

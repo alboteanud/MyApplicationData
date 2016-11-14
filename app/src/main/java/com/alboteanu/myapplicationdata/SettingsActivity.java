@@ -74,14 +74,6 @@ public class SettingsActivity extends BaseActivity {
                                 index >= 0
                                         ? listPreference.getEntries()[index]
                                         : null);
-                        if (listPreference.getKey().equals(preference.getContext().getString(R.string.themes_list))) {
-                            int newTheme = Integer.parseInt(stringValue);
-                            if (Utils.getSavedTheme(getActivity()) != newTheme) {
-                                getActivity().recreate();
-                                Log.d(TAG, "recreate()");
-                            }
-
-                        }
 
                     } else {
                         // For all other preferences, set the summary to the value's
@@ -91,7 +83,6 @@ public class SettingsActivity extends BaseActivity {
                     return true;
                 }
             };
-            bindPreferenceSummaryToValue(findPreference(getString(R.string.themes_list)));
         }
 
         private void bindPreferenceSummaryToValue(Preference preference) {

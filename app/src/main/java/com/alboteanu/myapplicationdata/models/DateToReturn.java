@@ -5,17 +5,18 @@ import com.google.firebase.database.Exclude;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by albot on 04.11.2016.
- */
-public class ReturnDate {
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_PHONE;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN_DATE;
+
+
+public class DateToReturn {
     public long date;
     public String phone;
 
-    public ReturnDate() {
+    public DateToReturn() {
     }
 
-    public ReturnDate(long date, String phone) {
+    public DateToReturn(long date, String phone) {
         this.date = date;
         this.phone = phone;
     }
@@ -23,8 +24,8 @@ public class ReturnDate {
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("date", date);
-        result.put("phone", phone);
+        result.put(FIREBASE_LOCATION_RETURN_DATE, date);
+        result.put(FIREBASE_LOCATION_PHONE, phone);
         return result;
     }
 }

@@ -6,27 +6,29 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 
+import com.alboteanu.myapplicationdata.models.FixedFields;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import static android.R.attr.x;
 import static com.alboteanu.myapplicationdata.BaseActivity.getDatabase;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT_FIXED;
+import static com.alboteanu.myapplicationdata.R.id.emailF;
+import static com.alboteanu.myapplicationdata.R.id.nameF;
+import static com.alboteanu.myapplicationdata.R.id.other1F;
+import static com.alboteanu.myapplicationdata.R.id.phoneF;
+import static com.alboteanu.myapplicationdata.R.id.returnF;
 
 /**
  * Created by albot on 20.09.2016.
  */
-public class Utils {
+class Utils {
 
 
-    public static int getSavedTheme(Context context){
-        SharedPreferences sharedPrefs = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        String key = context.getString(R.string.themes_list);
-        int storedVal = Integer.parseInt(sharedPrefs.getString(key, "0"));
-        return storedVal;
-    }
-
- public static String getSavedTitle(Context context){
+ static String getSavedTitle(Context context){
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
         String key = context.getString(R.string.display_title_text_key);
@@ -34,7 +36,7 @@ public class Utils {
         return storedVal;
     }
 
-    public static String getSavedTextMessage(Context context){
+    private static String getSavedTextMessage(Context context){
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
         String key = context.getString(R.string.custom_text_key);
@@ -42,9 +44,8 @@ public class Utils {
         return storedVal;
     }
 
-    
 
-    public static DatabaseReference getUserNode(){
+    static DatabaseReference getUserNode(){
         return getDatabase().getReference().child(FirebaseAuth.getInstance().getCurrentUser().getUid());
     }
 
@@ -56,7 +57,7 @@ public class Utils {
         }
     }
 
-    public final static boolean isValidEmail(CharSequence target) {
+    static boolean isValidEmail(CharSequence target) {
         if (target == null) {
             return false;
         } else {
@@ -64,10 +65,10 @@ public class Utils {
         }
     }
 
-    public static void composeSMS(String[] phonesArray, Context context) {
+    static void composeSMS(String[] phonesArray, Context context) {
         StringBuilder stringBuilder = new StringBuilder("smsto: ");
-        for (int i = 0; i < phonesArray.length; i++) {
-            stringBuilder.append(phonesArray[i]);
+        for (String aPhonesArray : phonesArray) {
+            stringBuilder.append(aPhonesArray);
             stringBuilder.append(", ");
         }
         Intent intent = new Intent(Intent.ACTION_SENDTO);
@@ -78,4 +79,13 @@ public class Utils {
         }
     }
 
+    static void composeEmail(ListActivity listActivity, String[] addresses, String subject) {
+        Intent intent = new Intent(Intent.ACTION_SENDTO);
+        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+        intent.putExtra(Intent.EXTRA_EMAIL, addresses);
+//        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+        if (intent.resolveActivity(listActivity.getPackageManager()) != null) {
+            listActivity.startActivity(intent);
+        }
+    }
 }

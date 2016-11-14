@@ -6,6 +6,10 @@ import com.google.firebase.database.IgnoreExtraProperties;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_NAME;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_PHONE;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN_DATE;
+
 @IgnoreExtraProperties
 public class Contact {
     public String name;
@@ -25,9 +29,11 @@ public class Contact {
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("name", name);
-        result.put("phone", phone);
-        result.put("date", date);
+        result.put(FIREBASE_LOCATION_NAME, name);
+        if(!phone.isEmpty())
+            result.put(FIREBASE_LOCATION_PHONE, phone);
+        if(date!=0)
+            result.put(FIREBASE_LOCATION_RETURN_DATE, date);
 
         return result;
     }

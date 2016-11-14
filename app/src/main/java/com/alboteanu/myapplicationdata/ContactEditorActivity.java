@@ -12,17 +12,27 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
+
 import com.alboteanu.myapplicationdata.models.Contact;
-import com.alboteanu.myapplicationdata.models.DetailedContact;
-import com.alboteanu.myapplicationdata.models.ReturnDate;
+import com.alboteanu.myapplicationdata.models.ContactDet;
+import com.alboteanu.myapplicationdata.models.DateToReturn;
+import com.alboteanu.myapplicationdata.models.FixedFields;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACTS_PHONES;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT_DETAILED;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT_FIXED;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_EMAIL;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN_DATES;
 
 
 public class ContactEditorActivity extends BaseActivity {
@@ -34,8 +44,9 @@ public class ContactEditorActivity extends BaseActivity {
     public static final String EXTRA_CONTACT_KEY = "key";
     public static final String EXTRA_CONTACT_NAME = "name";
     public static final String EXTRA_CONTACT_PHONE = "phone";
-    EditText[] editTexts = new EditText[12];
-    TextView dateTextView;
+    public static final String EXTRA_CONTACT_RETURN_DATE = "returnDate";
+    EditText name, nameF, phone, phoneF, email, emailF, other1, other1F, returnF;
+    TextView returnD;
 
 
     @Override
@@ -47,16 +58,46 @@ public class ContactEditorActivity extends BaseActivity {
         setSupportActionBar(toolbar);
         initViews();
         setListeners();
-        if (contactKey != null) {
-            linkVariableFieldsToFirebase();
+        if (contactKey == null) {
+            populateFIXED();
+        } else {
+            populateALL();
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);            //hide keyboard
         }
+        name.requestFocus();
+    }
+
+    private void populateALL() {
+        name.setText(getIntent().getStringExtra(EXTRA_CONTACT_NAME));
+        phone.setText(getIntent().getStringExtra(EXTRA_CONTACT_PHONE));
+        returnD.setText(getIntent().getStringExtra(EXTRA_CONTACT_RETURN_DATE));
+    }
+
+    private void populateFIXED() {
+        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT_FIXED)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        FixedFields fixedFields = dataSnapshot.getValue(FixedFields.class);
+                        if (fixedFields != null) {
+                            nameF.setText(fixedFields.namef);
+                            phoneF.setText(fixedFields.phonef);
+                            emailF.setText(fixedFields.emailf);
+                            other1F.setText(fixedFields.others1f);
+                            returnF.setText(fixedFields.returnf);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_contact_editor, menu);
-        if(contactKey==null){
+        if (contactKey == null) {
             menu.findItem(R.id.action_delete_contact).setVisible(false);
         }
         return super.onCreateOptionsMenu(menu);
@@ -68,8 +109,9 @@ public class ContactEditorActivity extends BaseActivity {
         if (id == R.id.action_delete_contact) {
             createDeleteDialogAlert(contactKey);
             return true;
-        } if (id == R.id.action_save) {
-            if(submitPost()) {
+        }
+        if (id == R.id.action_save) {
+            if (saveAndSend()) {
                 goToQuickContactActivity();
                 finish();
             }
@@ -78,20 +120,21 @@ public class ContactEditorActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-
     public void initViews() {
-        for(int i = 0; i < editTexts.length; i++){
-            int id = getResources().getIdentifier(String.valueOf("edit_text" + i),"id", this.getPackageName());
-            editTexts[i] = (EditText) findViewById(id);
-        }
-        editTexts[1].setText(getIntent().getStringExtra(EXTRA_CONTACT_NAME));
-        editTexts[3].setText(getIntent().getStringExtra(EXTRA_CONTACT_PHONE));
-        dateTextView = ((TextView) findViewById(R.id.dateTextView));
+        name = ((EditText) findViewById(R.id.name));
+        nameF = ((EditText) findViewById(R.id.nameF));
+        phone = ((EditText) findViewById(R.id.phone));
+        phoneF = ((EditText) findViewById(R.id.phoneF));
+        email = ((EditText) findViewById(R.id.email));
+        emailF = ((EditText) findViewById(R.id.emailF));
+        other1 = ((EditText) findViewById(R.id.other1));
+        other1F = ((EditText) findViewById(R.id.other1F));
+        returnF = ((EditText) findViewById(R.id.returnF));
+        returnD = ((TextView) findViewById(R.id.returnD));
         checkBox_6M = (CheckBox) findViewById(R.id.checkBox6Luni);
     }
 
-    private void setListeners(){
+    private void setListeners() {
         checkBox_6M.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -101,17 +144,17 @@ public class ContactEditorActivity extends BaseActivity {
                     Date data = calendar.getTime();
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_format));
                     String dateString = simpleDateFormat.format(data);
-                    dateTextView.setText(dateString);
+                    returnD.setText(dateString);
                     returnDate = calendar.getTimeInMillis();
                 } else {
-                    dateTextView.setText("");
-                    dateTextView.setHint(getString(R.string.pick_date_hint));
+                    returnD.setText("");
+                    returnD.setHint(getString(R.string.pick_date_hint));
                     returnDate = 0;
                 }
             }
         });
 
-        dateTextView.setOnClickListener(new View.OnClickListener() {
+        returnD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showDatePickerDialog();
@@ -119,102 +162,62 @@ public class ContactEditorActivity extends BaseActivity {
         });
     }
 
-    private boolean submitPost() {
-        final String nameF = editTexts[0].getText().toString();
-        final String name = editTexts[1].getText().toString();
-        final String phoneF = editTexts[2].getText().toString();
-        final String phone = editTexts[3].getText().toString();
-        final String emailF = editTexts[4].getText().toString();
-        final String email = editTexts[5].getText().toString();
-        final String otherF = editTexts[6].getText().toString();
-        final String other = editTexts[7].getText().toString();
-        final String dateF = editTexts[8].getText().toString();
-
-        if(name.isEmpty()){
-            editTexts[1].setError(REQUIRED);
-            return false;
-        }
-        if (contactKey == null)
-            contactKey = Utils.getUserNode().child(getString(R.string.contact_node)).push().getKey();  //generate new key
-        Map<String, Object> updates = new HashMap<>();
-
-        if(!email.isEmpty()){
-                   if (!Utils.isValidEmail(email)) {
-                       editTexts[5].setError(INVALID_EMAIL);
-                       return false;
-                   }else {
-                       updates.put(getString(R.string.posts_emails) + "/" + contactKey, email);
-                   }
-            }
-
-
-
-
-        Contact contact = new Contact(name, phone, returnDate);
-        DetailedContact detailedContact = new DetailedContact(name, phone, email, other, returnDate, nameF, phoneF, emailF, otherF, dateF);
-
-        Map<String, Object> contactMap = contact.toMap();
-        Map<String, Object> detailedContactMap = detailedContact.toMap();
-
-        updates.put(getString(R.string.contact_node) + "/" + contactKey, contactMap);
-        updates.put(getString(R.string.detailed_contact_node) + "/" + contactKey, detailedContactMap);
-        if(!phone.isEmpty())
-            updates.put(getString(R.string.posts_phones) + "/" + contactKey, phone);
-        if(returnDate != 0){
-            if (phone.isEmpty()) {
-                editTexts[3].setError(REQUIRED);
-                return false;
-            }
-            ReturnDate returnDate = new ReturnDate(this.returnDate, phone);  //data si tel
-            Map<String, Object> returnMap = returnDate.toMap();
-            updates.put(getString(R.string.return_date_node) + "/" + contactKey, returnMap);
-        }
-
-        Utils.getUserNode().updateChildren(updates);
-        return true;
-    }
-
-    
-
-    public void linkVariableFieldsToFirebase() {
-        Utils.getUserNode().child(getString(R.string.detailed_contact_node)).child(contactKey)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        DetailedContact detailedContact = dataSnapshot.getValue(DetailedContact.class);
-                        if (detailedContact != null) {
-                            editTexts[0].setText(detailedContact.nameF);
-                            editTexts[1].setText(detailedContact.name);
-                            editTexts[2].setText(detailedContact.phoneF);
-                            editTexts[3].setText(detailedContact.phone);
-                            editTexts[4].setText(detailedContact.emailF);
-                            editTexts[5].setText(detailedContact.email);
-                            editTexts[6].setText(detailedContact.others1F);
-                            editTexts[7].setText(detailedContact.others1);
-                            editTexts[1].setSelection(editTexts[1].length());
-                            editTexts[1].requestFocus();
-                            returnDate = detailedContact.date;
-                            if(returnDate != 0){
-                                Calendar calendar = Calendar.getInstance();
-                                calendar.setTimeInMillis(returnDate);
-                                Date data = calendar.getTime();
-                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_format));
-                                String dateString = simpleDateFormat.format(data);
-                                dateTextView.setText(dateString);
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
-    }
 
     private void goToQuickContactActivity() {
         Intent intent = new Intent(this, QuickContactActivity.class);
         intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_KEY, contactKey);
         startActivity(intent);
     }
+
+    private boolean saveAndSend() {
+        final String nameFS = nameF.getText().toString();
+        final String nameS = name.getText().toString();
+        final String phoneFS = phoneF.getText().toString();
+        final String phoneS = phone.getText().toString();
+        final String emailFS = emailF.getText().toString();
+        final String emailS = email.getText().toString();
+        final String other1FS = other1F.getText().toString();
+        final String other1S = other1.getText().toString();
+        final String returnFS = returnF.getText().toString();
+
+        if (nameS.isEmpty()) {
+            name.setError(REQUIRED);
+            return false;
+        }
+
+        if (phoneS.isEmpty()) {
+            phone.setError(REQUIRED);
+            return false;
+        }
+
+        if (!emailS.isEmpty() && !Utils.isValidEmail(emailS)) {
+                email.setError(INVALID_EMAIL);
+                return false;
+            }
+
+        if (contactKey == null)
+            contactKey = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT).push().getKey();  //generate new key
+
+        Map<String, Object> updates = new HashMap<>();
+
+        Contact contact = new Contact(nameS, phoneS, returnDate);
+        FixedFields fixedFields = new FixedFields(nameFS, phoneFS, emailFS, other1FS, returnFS);
+        ContactDet contactDet = new ContactDet(nameS, phoneS, emailS, other1S, returnDate, nameFS, phoneFS, emailFS, other1FS, returnFS);
+
+        Map<String, Object> contactMap = contact.toMap();
+        Map<String, Object> contactDetMap = contactDet.toMap();
+        Map<String, Object> fixedMap = fixedFields.toMap();
+        updates.put(FIREBASE_LOCATION_CONTACT + "/" + contactKey, contactMap);
+        updates.put(FIREBASE_LOCATION_CONTACT_FIXED + "/" + contactKey, fixedMap);
+        updates.put(FIREBASE_LOCATION_CONTACT_DETAILED + "/" + contactKey, contactDetMap);
+        updates.put(FIREBASE_LOCATION_CONTACTS_PHONES + "/" + contactKey, phoneS);
+        updates.put(FIREBASE_LOCATION_EMAIL + "/" + contactKey, emailS);
+        DateToReturn dateToReturn = new DateToReturn(this.returnDate, phoneS);  //data si tel
+        Map<String, Object> returnMap = dateToReturn.toMap();
+        updates.put(FIREBASE_LOCATION_RETURN_DATES + "/" + contactKey, returnMap);
+        Utils.getUserNode().updateChildren(updates);
+        return true;
+    }
+
 
 }

@@ -9,14 +9,16 @@
         android:orderInCategory="100"
         android:text="@string/action_send_email_to_all"
         android:title="@string/action_send_sms_to_all"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        android:visible="false"/>
 
     <item
         android:id="@+id/action_send_email_to_all"
         android:orderInCategory="100"
         android:text="@string/action_send_email_to_all"
         android:title="@string/action_send_email_to_all"
-        app:showAsAction="never" />
+        app:showAsAction="never"
+        android:visible="false"/>
 
     <item
         android:id="@+id/action_settings"
@@ -33,7 +35,7 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_notifications"
+        android:id="@+id/action_sms_to_expired"
         android:orderInCategory="100"
         android:text="@string/action_notifications"
         android:visible="false"

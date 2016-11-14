@@ -4,9 +4,7 @@ import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
@@ -24,6 +22,13 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT_DETAILED;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_EMAIL;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_PHONE;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN_DATE;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN_DATES;
 
 public class BaseActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener {
@@ -111,16 +116,6 @@ public class BaseActivity extends AppCompatActivity implements
 //        clearSharedPreferences();
     }
 
-    private void clearSharedPreferences(){
-//        ((ActivityManager) getSystemService(Context.ACTIVITY_SERVICE)).clearApplicationUserData();
-
-        SharedPreferences sharedPrefs = PreferenceManager
-                .getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor =sharedPrefs.edit();
-        editor.clear();
-        editor.commit();
-    }
-
     private void takeUserToGoogleSignInActivity() {
         Intent intent = new Intent(this, GoogleSignInActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -146,11 +141,11 @@ public class BaseActivity extends AppCompatActivity implements
     }
 
     public void deleteContact(String contactKey) {
-        Utils.getUserNode().child(getString(R.string.contact_node) + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(getString(R.string.detailed_contact_node) + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(getString(R.string.posts_emails) + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(getString(R.string.posts_phones) + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(getString(R.string.return_date_node) + "/" + contactKey).removeValue();
+        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT  + "/" + contactKey).removeValue();
+        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT_DETAILED + "/" + contactKey).removeValue();
+        Utils.getUserNode().child(FIREBASE_LOCATION_EMAIL + "/" + contactKey).removeValue();
+        Utils.getUserNode().child(FIREBASE_LOCATION_PHONE + "/" + contactKey).removeValue();
+        Utils.getUserNode().child(FIREBASE_LOCATION_RETURN_DATES + "/" + contactKey).removeValue();
     }
 
     public void createDeleteDialogAlert(final String contactKey) {
