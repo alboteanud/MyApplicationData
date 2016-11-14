@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,7 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.alboteanu.myapplicationdata.models.Contact;
-import com.alboteanu.myapplicationdata.models.ContactDet;
+import com.alboteanu.myapplicationdata.models.ContactDetailed;
 import com.alboteanu.myapplicationdata.models.DateToReturn;
 import com.alboteanu.myapplicationdata.models.FixedFields;
 import com.google.firebase.database.DataSnapshot;
@@ -42,49 +43,90 @@ public class ContactEditorActivity extends BaseActivity {
     private static final String REQUIRED = "Required";
     private static final String INVALID_EMAIL = "Invalid email";
     public static final String EXTRA_CONTACT_KEY = "key";
-    public static final String EXTRA_CONTACT_NAME = "name";
-    public static final String EXTRA_CONTACT_PHONE = "phone";
-    public static final String EXTRA_CONTACT_RETURN_DATE = "returnDate";
     EditText name, nameF, phone, phoneF, email, emailF, other1, other1F, returnF;
     TextView returnD;
+    ContactDetailed contactDetailed;
+    Contact contact;
 
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_edit);
-        contactKey = getIntent().getStringExtra(EXTRA_CONTACT_KEY);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         initViews();
         setListeners();
-        if (contactKey == null) {
-            populateFIXED();
-        } else {
-            populateALL();
+        contactKey = getIntent().getStringExtra(EXTRA_CONTACT_KEY);
+        if(getIntent().hasExtra(FIREBASE_LOCATION_CONTACT)) {
+            contact = (Contact) getIntent().getExtras().getSerializable(FIREBASE_LOCATION_CONTACT);
+            populateMobilesSimple();
+            updateFieldsFromFirebase();
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);            //hide keyboard
+
         }
+        else if(getIntent().hasExtra(FIREBASE_LOCATION_CONTACT_DETAILED)) {
+            contactDetailed = (ContactDetailed) getIntent().getExtras().getSerializable(FIREBASE_LOCATION_CONTACT_DETAILED);
+            populateMobiles();
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);            //hide keyboard
+        }                            // new Contact
+        populateFixed();
         name.requestFocus();
     }
 
-    private void populateALL() {
-        name.setText(getIntent().getStringExtra(EXTRA_CONTACT_NAME));
-        phone.setText(getIntent().getStringExtra(EXTRA_CONTACT_PHONE));
-        returnD.setText(getIntent().getStringExtra(EXTRA_CONTACT_RETURN_DATE));
+    public void updateFieldsFromFirebase() {
+        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT_DETAILED).child(contactKey)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        ContactDetailed receivedContactDetailed = dataSnapshot.getValue(ContactDetailed.class);
+                        if (receivedContactDetailed != null) {
+                            contactDetailed = receivedContactDetailed;
+                            populateMobiles();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
     }
 
-    private void populateFIXED() {
+    private void populateMobiles() {
+        name.setText(contactDetailed.name);
+        phone.setText(contactDetailed.phone);
+        email.setText(contactDetailed.email);
+        other1.setText(contactDetailed.others1);
+        returnDate = contactDetailed.date;
+        if(returnDate != 0){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(returnDate);
+            Date data = calendar.getTime();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_format));
+            String dateString = simpleDateFormat.format(data);
+            returnD.setText(dateString);
+        }
+    }
+
+    private void populateMobilesSimple() {
+        name.setText(contact.name);
+        phone.setText(contact.phone);
+        returnD.setText(String.valueOf(contact.date));
+    }
+
+    private void populateFixed() {
         Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT_FIXED)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         FixedFields fixedFields = dataSnapshot.getValue(FixedFields.class);
                         if (fixedFields != null) {
-                            nameF.setText(fixedFields.namef);
-                            phoneF.setText(fixedFields.phonef);
-                            emailF.setText(fixedFields.emailf);
-                            other1F.setText(fixedFields.others1f);
-                            returnF.setText(fixedFields.returnf);
+                            nameF.setText(fixedFields.name);
+                            phoneF.setText(fixedFields.phone);
+                            emailF.setText(fixedFields.email);
+                            other1F.setText(fixedFields.other);
+                            Log.d("tag", "oth: " + fixedFields.other);
+                            returnF.setText(fixedFields.date);
                         }
                     }
 
@@ -166,7 +208,12 @@ public class ContactEditorActivity extends BaseActivity {
     private void goToQuickContactActivity() {
         Intent intent = new Intent(this, QuickContactActivity.class);
         intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_KEY, contactKey);
-        startActivity(intent);
+        if (contactDetailed != null){
+            intent.putExtra(FIREBASE_LOCATION_CONTACT_DETAILED, contactDetailed);
+        } else {
+            intent.putExtra(FIREBASE_LOCATION_CONTACT, contact);
+        }
+        startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
     }
 
     private boolean saveAndSend() {
@@ -202,13 +249,13 @@ public class ContactEditorActivity extends BaseActivity {
 
         Contact contact = new Contact(nameS, phoneS, returnDate);
         FixedFields fixedFields = new FixedFields(nameFS, phoneFS, emailFS, other1FS, returnFS);
-        ContactDet contactDet = new ContactDet(nameS, phoneS, emailS, other1S, returnDate, nameFS, phoneFS, emailFS, other1FS, returnFS);
+        contactDetailed = new ContactDetailed(nameS, phoneS, emailS, other1S, returnDate);
 
         Map<String, Object> contactMap = contact.toMap();
-        Map<String, Object> contactDetMap = contactDet.toMap();
+        Map<String, Object> contactDetMap = contactDetailed.toMap();
         Map<String, Object> fixedMap = fixedFields.toMap();
         updates.put(FIREBASE_LOCATION_CONTACT + "/" + contactKey, contactMap);
-        updates.put(FIREBASE_LOCATION_CONTACT_FIXED + "/" + contactKey, fixedMap);
+        updates.put(FIREBASE_LOCATION_CONTACT_FIXED, fixedMap);
         updates.put(FIREBASE_LOCATION_CONTACT_DETAILED + "/" + contactKey, contactDetMap);
         updates.put(FIREBASE_LOCATION_CONTACTS_PHONES + "/" + contactKey, phoneS);
         updates.put(FIREBASE_LOCATION_EMAIL + "/" + contactKey, emailS);

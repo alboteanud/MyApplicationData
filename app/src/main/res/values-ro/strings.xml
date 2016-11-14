@@ -1,52 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string namef="app_name" translatable="true">Pacienti</string>
-    <string namef="desc_firebase_lockup" translatable="true">logo si nume</string>
-    <string namef="loading" translatable="true">se incarca…</string>
-    <string namef="title_activity_main" translatable="true">Acasa</string>
-    <string namef="action_logout" translatable="true">Deconectare</string>
-    <string namef="title_activity_detail" translatable="true">Detalii</string>
-    <string namef="google_title_text" translatable="true">GOOGLE</string>
-    <string namef="signed_out" translatable="true">Deconectat</string>
-    <string namef="pref_title_social_recommendations">Lista cu detalii</string>
-    <string namef="pref_description_social_recommendations"></string>
-    <string namef="sign_out">Deconectare</string>
-    <string namef="disconnect">Deconectare</string>
-    <string namef="pref_title_display_name">Numele din bara</string>
-    <string namef="google_status_fmt">Utilizatorul GOOGLE: %s</string>
-    <string namef="firebase_status_fmt">Utilizatorul: %s</string>
-    <string namef="pref_title_add_themes">Teme</string>
-    <string-array namef="pref_themes_list_titles">
+    <string name="app_name" translatable="true">Pacienti</string>
+    <string name="desc_firebase_lockup" translatable="true">logo si nume</string>
+    <string name="loading" translatable="true">se incarca…</string>
+    <string name="title_activity_main" translatable="true">Acasa</string>
+    <string name="action_logout" translatable="true">Deconectare</string>
+    <string name="title_activity_detail" translatable="true">Detalii</string>
+    <string name="google_title_text" translatable="true">GOOGLE</string>
+    <string name="signed_out" translatable="true">Deconectat</string>
+    <string name="pref_title_social_recommendations">Lista cu detalii</string>
+    <string name="sign_out">Deconectare</string>
+    <string name="disconnect">Deconectare</string>
+    <string name="pref_title_display_name">Numele din bara</string>
+    <string name="google_status_fmt">Utilizatorul GOOGLE: %s</string>
+    <string name="firebase_status_fmt">Utilizatorul: %s</string>
+    <string name="pref_title_add_themes">Teme</string>
+    <string-array name="pref_themes_list_titles">
         <item>Luminos</item>
         <item>Intunecat</item>
     </string-array>
-    <string-array namef="pref_themes_list_values">
+    <string-array name="pref_themes_list_values">
         <item>0</item>
         <item>1</item>
     </string-array>
-    <string namef="action_delete">Sterge</string>
-    <string namef="title_activity_settings">Setari</string>
-    <string namef="action_settings">Setari</string>
-    <string namef="action_send_email_to_all">Trimite email catre toti</string>
-    <string namef="action_send_sms_to_all">Trimite sms catre toti</string>
-    <string namef="pick_date_hint">alege data</string>
-    <string namef="date_format">dd MMM yyyy</string>
-    <string namef="action_notifications">Notificare</string>
-    <string namef="my_custom_text">Va invitam...</string>
-    <string namef="title_custom_text_settings">Text sms implicit</string>
-    <string namef="checkbox_text">peste 6 luni</string>
-    <string namef="text9_hint">REVENIRE</string>
-    <string namef="text5_hint">EMAIL</string>
-    <string namef="text3_hint">TELEFON</string>
-    <string namef="text1_hint">NUMELE</string>
-    <string namef="text7_hint">…</string>
-    <string namef="saved">SALVAT</string>
-    <string namef="back">INAPOI</string>
-    <string namef="confirmation_dialog_delete">Stergeti contactul?</string>
-    <string namef="confirmation_dialog_delete_message">Acest contact va fi sters.</string>
-    <string namef="ok">DA</string>
-    <string namef="cancel">NU</string>
-    <string namef="title_activity_edit_details">Edit contact</string>
-    <string namef="action_edit">Edit</string>
-    <string namef="action_save">Save</string>
+    <string name="action_delete">Sterge</string>
+    <string name="title_activity_settings">Setari</string>
+    <string name="action_settings">Setari</string>
+    <string name="action_send_email_to_all">Trimite email catre toti</string>
+    <string name="action_send_sms_to_all">Trimite sms catre toti</string>
+    <string name="pick_date_hint">alege data</string>
+    <string name="date_format">dd MMM yyyy</string>
+    <string name="action_notifications">Notificare</string>
+    <string name="my_custom_text">Va invitam...</string>
+    <string name="title_custom_text_settings">Text sms implicit</string>
+    <string name="checkbox_text">peste 6 luni</string>
+    <string name="text9_hint">REVENIRE</string>
+    <string name="text5_hint">EMAIL</string>
+    <string name="text3_hint">TELEFON</string>
+    <string name="text1_hint">NUMELE</string>
+    <string name="text7_hint">…</string>
+    <string name="saved">SALVAT</string>
+    <string name="back">INAPOI</string>
+    <string name="confirmation_dialog_delete">Stergeti contactul?</string>
+    <string name="confirmation_dialog_delete_message">Acest contact va fi sters.</string>
+    <string name="ok">DA</string>
+    <string name="cancel">NU</string>
+    <string name="title_activity_edit_details">Edit contact</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_save">Save</string>
 </resources>

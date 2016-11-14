@@ -97,8 +97,9 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
                     public void onClick(View v) {
                         Intent intent = new Intent(ListActivity.this, QuickContactActivity.class);
                         intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_KEY, contactKey);
-                        intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_NAME, contact.name);
-                        intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_PHONE, contact.phone);
+//                        intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_NAME, contact.name);
+//                        intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_PHONE, contact.phone);
+                        intent.putExtra(FIREBASE_LOCATION_CONTACT, contact);
                         startActivity(intent);
                     }
                 });
@@ -218,7 +219,7 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
                 DateToReturn dateToReturn = dataSnapshot.getValue(DateToReturn.class);
                 if (dateToReturn != null) {
                     Log.d("tag", String.valueOf(dateToReturn.date));
-                    if(currentTime > dateToReturn.date){
+                    if(dateToReturn.date != 0 && currentTime > dateToReturn.date){
                         phoneList.add(dateToReturn.phone);
                         menu.findItem(R.id.action_sms_to_expired).setTitle(String.valueOf(phoneList.size())).setVisible(true);
                     }

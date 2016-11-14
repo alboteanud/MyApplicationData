@@ -1,42 +1,42 @@
 <resources>
-    <string namef="app_name" translatable="true">My Customers</string>
-    <string namef="desc_firebase_lockup" translatable="true">logo and namef</string>
-    <string namef="loading" translatable="false">Loading…</string>
-    <string namef="title_activity_main" translatable="true">Main</string>
-    <string namef="action_logout" translatable="true">Logout</string>
-    <string namef="title_activity_detail" translatable="true">Details</string>
-    <string namef="google_title_text" translatable="true">GOOGLE</string>
-    <string namef="signed_out" translatable="true">Signed Out</string>
-    <string namef="sign_out">Sign Out</string>
-    <string namef="disconnect">Disconnect</string>
-    <string namef="pref_title_display_name">Display namef</string>
-    <string namef="google_status_fmt">Google User: %s</string>
-    <string namef="firebase_status_fmt">User: %s</string>
-    <string namef="action_delete">Delete</string>
-    <string namef="title_activity_settings">Settings</string>
-    <string namef="action_settings">Settings</string>
-    <string namef="action_send_email_to_all">Send email to all</string>
-    <string namef="action_send_sms_to_all">Send sms to all</string>
-    <string namef="pick_date_hint">date</string>
-    <string namef="date_format">dd MMM yyyy</string>
-    <string namef="action_notifications">Notif</string>
-    <string namef="my_custom_text">Hello..</string>
-    <string namef="title_custom_text_settings">Dear customer…</string>
-    <string namef="checkbox_text">In 6 months</string>
-    <string namef="text9_hint">RETURN</string>
-    <string namef="text5_hint">EMAIL</string>
-    <string namef="text3_hint">PHONE</string>
-    <string namef="text1_hint">NAME</string>
-    <string namef="text7_hint">…</string>
-    <string namef="saved">Saved</string>
-    <string namef="back">Back</string>
-    <string namef="display_title_text_key">DisplayName</string>
-    <string namef="custom_text_key">my_custom_text</string>
-    <string namef="confirmation_dialog_delete">Delete contact?</string>
-    <string namef="confirmation_dialog_delete_message">This contact will be deleted.</string>
-    <string namef="ok">OK</string>
-    <string namef="cancel">Cancel</string>
-    <string namef="title_activity_edit_details">Edit contact</string>
-    <string namef="action_edit">Edit</string>
-    <string namef="action_save">Save</string>
+    <string name="app_name" translatable="true">My Customers</string>
+    <string name="desc_firebase_lockup" translatable="true">logo and name</string>
+    <string name="loading" translatable="false">Loading…</string>
+    <string name="title_activity_main" translatable="true">Main</string>
+    <string name="action_logout" translatable="true">Logout</string>
+    <string name="title_activity_detail" translatable="true">Details</string>
+    <string name="google_title_text" translatable="true">GOOGLE</string>
+    <string name="signed_out" translatable="true">Signed Out</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="pref_title_display_name">Display name</string>
+    <string name="google_status_fmt">Google User: %s</string>
+    <string name="firebase_status_fmt">User: %s</string>
+    <string name="action_delete">Delete</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_send_email_to_all">Send email to all</string>
+    <string name="action_send_sms_to_all">Send sms to all</string>
+    <string name="pick_date_hint">date</string>
+    <string name="date_format">dd MMM yyyy</string>
+    <string name="action_notifications">Notif</string>
+    <string name="my_custom_text">Hello..</string>
+    <string name="title_custom_text_settings">Dear customer…</string>
+    <string name="checkbox_text">In 6 months</string>
+    <string name="text9_hint">RETURN</string>
+    <string name="text5_hint">EMAIL</string>
+    <string name="text3_hint">PHONE</string>
+    <string name="text1_hint">NAME</string>
+    <string name="text7_hint">…</string>
+    <string name="saved">Saved</string>
+    <string name="back">Back</string>
+    <string name="display_title_text_key">DisplayName</string>
+    <string name="custom_text_key">my_custom_text</string>
+    <string name="confirmation_dialog_delete">Delete contact?</string>
+    <string name="confirmation_dialog_delete_message">This contact will be deleted.</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="title_activity_edit_details">Edit contact</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_save">Save</string>
 </resources>

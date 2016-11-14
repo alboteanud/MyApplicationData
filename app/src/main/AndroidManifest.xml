@@ -9,29 +9,29 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:namef=".GoogleSignInActivity"
+            android:name=".GoogleSignInActivity"
             android:theme="@style/AppTheme">
             <intent-filter>
-                <action android:namef="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:namef="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:namef=".ListActivity"
+            android:name=".ListActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:namef=".QuickContactActivity"
+            android:name=".QuickContactActivity"
             android:label="@string/title_activity_detail"
             android:parentActivityName=".ListActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:namef=".ContactEditorActivity"
+            android:name=".ContactEditorActivity"
             android:label="@string/title_activity_edit_details"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:namef=".SettingsActivity"
+            android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
             android:parentActivityName=".ListActivity"
             android:theme="@style/AppTheme.NoActionBar"/>

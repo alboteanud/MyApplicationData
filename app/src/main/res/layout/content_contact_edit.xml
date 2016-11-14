@@ -35,7 +35,7 @@
 
 
             <EditText
-                android:id="@+id/namef"
+                android:id="@+id/name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
@@ -60,12 +60,12 @@
                 android:textColor="@color/colorMyGray" />
 
             <EditText
-                android:id="@+id/phonef"
+                android:id="@+id/phone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
                 android:ems="10"
-                android:inputType="phonef" />
+                android:inputType="phone" />
         </LinearLayout>
 
         <LinearLayout
@@ -123,21 +123,20 @@
 
             <EditText
                 android:id="@+id/returnF"
-                style="@android:style/TextAppearance.Medium"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/edit_text_margin"
                 android:layout_weight="2"
                 android:hint="@string/text9_hint"
+                android:inputType="textCapCharacters"
                 android:textColor="@color/colorMyGray" />
 
             <TextView
                 android:id="@+id/returnD"
-                style="@android:style/TextAppearance.Medium"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
-                android:hint="@string/pick_date_hint"
+                android:hint="--"
                 android:textAllCaps="true"/>
 
         </LinearLayout>

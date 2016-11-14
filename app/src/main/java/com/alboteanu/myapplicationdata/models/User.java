@@ -29,8 +29,8 @@ public class User {
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("userID", userID);
-        result.put("timestampJoined", ServerValue.TIMESTAMP);
+        result.put("id", userID);
+        result.put("joined", ServerValue.TIMESTAMP);
         result.put("email", email);
         result.put("username", username);
 

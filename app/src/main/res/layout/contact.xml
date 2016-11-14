@@ -12,26 +12,26 @@
         android:layout_margin="@dimen/text_margin">
 
         <TextView
-            android:id="@+id/namef"
+            android:id="@+id/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:ellipsize="marquee"
             android:maxLines="1"
-            android:text="namef"
+            android:text="name"
             android:textAppearance="?attr/textAppearanceListItem"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/phonef"
+            android:id="@+id/phone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/namef"
+            android:layout_below="@+id/name"
             android:ellipsize="marquee"
             android:maxLines="1"
-            android:text="phonef"
+            android:text="phone"
             android:textAppearance="?attr/textAppearanceListItemSmall" />
 
         <ImageView
