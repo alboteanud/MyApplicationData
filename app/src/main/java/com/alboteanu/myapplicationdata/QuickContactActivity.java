@@ -27,7 +27,6 @@ import static com.alboteanu.myapplicationdata.ContactEditorActivity.EXTRA_CONTAC
 public class QuickContactActivity extends BaseActivity {
     long returnDate;
     TextView name, nameF, phone, phoneF, email, emailF, other1, other1F, returnD, returnF;
-    CheckBox checkBox_6M;
     Contact contact;
     ContactDetailed contactDetailed;
     String contactKey;
@@ -63,9 +62,7 @@ public class QuickContactActivity extends BaseActivity {
         if(returnDate != 0){
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(returnDate);
-            Date data = calendar.getTime();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_format));
-            String dateString = simpleDateFormat.format(data);
+            String dateString = Utils.calendarToString(calendar);
             returnD.setText(dateString);
         }
     }
@@ -108,7 +105,6 @@ public class QuickContactActivity extends BaseActivity {
         other1F = ((TextView) findViewById(R.id.other1F));
         returnD = ((TextView) findViewById(R.id.returnD));
         returnF = ((TextView) findViewById(R.id.returnF));
-        checkBox_6M = (CheckBox) findViewById(R.id.checkBox6Luni);
     }
 
     @Override

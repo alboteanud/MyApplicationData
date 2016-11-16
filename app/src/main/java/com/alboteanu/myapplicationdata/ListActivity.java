@@ -2,6 +2,7 @@ package com.alboteanu.myapplicationdata;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +16,10 @@ import com.alboteanu.myapplicationdata.models.Contact;
 import com.alboteanu.myapplicationdata.models.DateToReturn;
 import com.alboteanu.myapplicationdata.viewholder.PostHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -116,13 +120,6 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mGoogleApiClient.connect();
-    }
-
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
         if (firebaseRecyclerAdapter != null) {
@@ -158,9 +155,25 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
             String[] expiredPhonesArray = phoneList.toArray(new String[phoneList.size()]);
             Utils.composeSMS(expiredPhonesArray, this);
             return true;
+        }if (id == R.id.action_logout) {
+            logOut();
+            goToSignInActivity();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void logOut() {
+        // Firebase sign out
+        mAuth.signOut();
+    }
+
+    private void goToSignInActivity() {
+        Intent intent = new Intent(this, EmailPasswordActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void getAllPhones() {

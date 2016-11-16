@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.alboteanu.myapplicationdata.models.User;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
@@ -22,6 +23,8 @@ import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Map;
 
 import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT;
 import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT_DETAILED;
@@ -36,7 +39,6 @@ public class BaseActivity extends AppCompatActivity implements
     private static final String TAG = "BaseActivity" ;
     @VisibleForTesting
     public ProgressDialog mProgressDialog;
-    public GoogleApiClient mGoogleApiClient;
     public FirebaseAuth mAuth;
     public FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -44,14 +46,8 @@ public class BaseActivity extends AppCompatActivity implements
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Configure Google Sign In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
+        mAuth = FirebaseAuth.getInstance();
+
 //        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
 
     }
@@ -88,48 +84,11 @@ public class BaseActivity extends AppCompatActivity implements
         return mDatabase;
     }
 
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_logout) {
-            logOut();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    private void logOut() {
-        // Firebase sign out
-        FirebaseAuth.getInstance().signOut();
-
-        // Google sign out
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(@NonNull Status status) {
-                            takeUserToGoogleSignInActivity();
-                    }
-                });
-//        clearSharedPreferences();
-    }
-
-    private void takeUserToGoogleSignInActivity() {
-        Intent intent = new Intent(this, GoogleSignInActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
-
-
     public void sendUserToMainActivity() {
         /* Move user to LoginActivity, and remove the backstack */
         Intent intent = new Intent(this, ListActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        finish();
     }
 
     @Override

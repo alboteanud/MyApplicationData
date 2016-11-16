@@ -22,12 +22,14 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static android.R.attr.data;
 import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT;
 import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACTS_PHONES;
 import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT_DETAILED;
@@ -40,8 +42,6 @@ public class ContactEditorActivity extends BaseActivity {
     public String contactKey;
     long returnDate;
     CheckBox checkBox_6M;
-    private static final String REQUIRED = "Required";
-    private static final String INVALID_EMAIL = "Invalid email";
     public static final String EXTRA_CONTACT_KEY = "key";
     EditText name, nameF, phone, phoneF, email, emailF, other1, other1F, returnF;
     TextView returnD;
@@ -101,10 +101,7 @@ public class ContactEditorActivity extends BaseActivity {
         if(returnDate != 0){
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(returnDate);
-            Date data = calendar.getTime();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_format));
-            String dateString = simpleDateFormat.format(data);
-            returnD.setText(dateString);
+            returnD.setText(Utils.calendarToString(calendar));
         }
     }
 
@@ -182,14 +179,11 @@ public class ContactEditorActivity extends BaseActivity {
                 if (b) {
                     Calendar calendar = Calendar.getInstance();
                     calendar.add(Calendar.MONTH, 6);
-                    Date data = calendar.getTime();
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_format));
-                    String dateString = simpleDateFormat.format(data);
-                    returnD.setText(dateString);
+                    returnD.setText(Utils.calendarToString(calendar));
                     returnDate = calendar.getTimeInMillis();
                 } else {
                     returnD.setText("");
-                    returnD.setHint(getString(R.string.pick_date_hint));
+                    returnD.setHint("--");
                     returnDate = 0;
                 }
             }
@@ -227,17 +221,17 @@ public class ContactEditorActivity extends BaseActivity {
         final String returnFS = returnF.getText().toString();
 
         if (nameS.isEmpty()) {
-            name.setError(REQUIRED);
+            name.setError(getString(R.string.required));
             return false;
         }
 
         if (phoneS.isEmpty()) {
-            phone.setError(REQUIRED);
+            phone.setError(getString(R.string.required));
             return false;
         }
 
         if (!emailS.isEmpty() && !Utils.isValidEmail(emailS)) {
-                email.setError(INVALID_EMAIL);
+                email.setError(getString(R.string.invalid_email));
                 return false;
             }
 

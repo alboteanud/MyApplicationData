@@ -48,4 +48,5 @@
     <string name="title_activity_edit_details">Edit contact</string>
     <string name="action_edit">Edit</string>
     <string name="action_save">Save</string>
+    <string name="invalid_email">Invalid email</string>
 </resources>

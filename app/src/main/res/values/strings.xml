@@ -39,4 +39,14 @@
     <string name="title_activity_edit_details">Edit contact</string>
     <string name="action_edit">Edit</string>
     <string name="action_save">Save</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="sign_in">SIGN IN</string>
+    <string name="create_account">CREATE ACCOUNT</string>
+    <string name="emailpassword_title_text">Email and Password</string>
+    <string name="auth_failed">Authentication failed</string>
+    <string name="emailpassword_status_fmt">Email User: %s</string>
+    <string name="label_emailpassword">Email/Password Authentication</string>
+    <string name="required">Required.</string>
+    <string name="invalid_email">Invalid email</string>
 </resources>

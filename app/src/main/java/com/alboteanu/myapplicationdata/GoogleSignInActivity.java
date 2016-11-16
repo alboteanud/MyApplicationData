@@ -24,10 +24,11 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alboteanu.myapplicationdata.models.User;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -38,14 +39,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-import java.util.Map;
-
-/**
- * Demonstrate Firebase Authentication using a Google ID Token.
- */
 public class GoogleSignInActivity extends BaseActivity implements
         View.OnClickListener {
 
+    private GoogleApiClient mGoogleApiClient;
     private static final String TAG = "GoogleSignInActivity";
     private static final int RC_SIGN_IN = 9001;
 
@@ -55,7 +52,6 @@ public class GoogleSignInActivity extends BaseActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -63,6 +59,7 @@ public class GoogleSignInActivity extends BaseActivity implements
                 if (user != null) {
                     // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    sendUserToMainActivity();
                 } else {
                     // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
@@ -71,6 +68,16 @@ public class GoogleSignInActivity extends BaseActivity implements
                 return;
             }
         };
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
         initializeScreen();
     }
 
@@ -132,12 +139,10 @@ public class GoogleSignInActivity extends BaseActivity implements
     }
 
     private void onAuthSuccess(FirebaseUser user) {
-        String username = Utils.usernameFromEmail(user.getEmail());
-
         // Write new user
-        writeNewUser(user.getUid(), username, user.getEmail());
-        sendUserToMainActivity();
-        finish();
+        Utils.writeNewUser(user.getEmail());
+//        sendUserToMainActivity();
+//        finish();
     }
 
     // [START signin]
@@ -163,8 +168,6 @@ public class GoogleSignInActivity extends BaseActivity implements
     private void updateUI(FirebaseUser user) {
         hideProgressDialog();
         if (user != null) {
-            sendUserToMainActivity();
-
             mStatusTextView.setText(getString(R.string.google_status_fmt, user.getEmail()));
             mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
 
@@ -192,13 +195,6 @@ public class GoogleSignInActivity extends BaseActivity implements
         }
     }
 
-    private void writeNewUser(String userId, String name, String email) {
-        User user = new User(userId, name, email);
-        Map<String, Object> userMap = user.toMap();
-        Utils.getUserNode().child("-user").updateChildren(userMap);
-
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -211,6 +207,20 @@ public class GoogleSignInActivity extends BaseActivity implements
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+    }
+
+    private void logOut() {
+        // Firebase sign out
+        mAuth.signOut();
+
+        // Google sign out
+        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override
+                    public void onResult(@NonNull Status status) {
+
+                    }
+                });
     }
 
 }

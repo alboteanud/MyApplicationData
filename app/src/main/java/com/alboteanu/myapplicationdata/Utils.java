@@ -7,12 +7,20 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 
 import com.alboteanu.myapplicationdata.models.FixedFields;
+import com.alboteanu.myapplicationdata.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
+
+import static android.R.attr.data;
 import static android.R.attr.x;
 import static com.alboteanu.myapplicationdata.BaseActivity.getDatabase;
 import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT_FIXED;
@@ -87,5 +95,21 @@ class Utils {
         if (intent.resolveActivity(listActivity.getPackageManager()) != null) {
             listActivity.startActivity(intent);
         }
+    }
+
+    public static String calendarToString(Calendar calendar) {
+        Date date = calendar.getTime();
+        String dateString = DateFormat.getDateInstance().format(date);
+        return dateString;
+    }
+//    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_format));
+
+    static void writeNewUser(String email) {
+        //        String username = Utils.usernameFromEmail(user.getEmail());
+        Calendar calendar = Calendar.getInstance();  //now
+        User user = new User(email, calendarToString(calendar));
+        Map<String, Object> userMap = user.toMap();
+        Utils.getUserNode().child("-user").updateChildren(userMap);
+
     }
 }
