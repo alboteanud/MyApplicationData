@@ -16,16 +16,11 @@
 
 package com.alboteanu.myapplicationdata;
 
-import android.content.ActivityNotFoundException;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -38,8 +33,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.ArrayList;
-import java.util.List;
+import static android.R.attr.defaultValue;
 
 public class EmailPasswordActivity extends BaseActivity implements
         View.OnClickListener {
@@ -52,7 +46,7 @@ public class EmailPasswordActivity extends BaseActivity implements
 
     // [START declare_auth_listener]
     private FirebaseAuth.AuthStateListener mAuthListener;
-    // [END declare_auth_listener]
+    SharedPreferences sharedPref;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,8 +60,17 @@ public class EmailPasswordActivity extends BaseActivity implements
 
         // Buttons
         findViewById(R.id.email_sign_in_button).setOnClickListener(this);
-        findViewById(R.id.create_account).setOnClickListener(this);
+        findViewById(R.id.create_account_button).setOnClickListener(this);
+        findViewById(R.id.create_account_text).setOnClickListener(this);
         findViewById(R.id.forgot_password).setOnClickListener(this);
+        findViewById(R.id.have_account_text).setOnClickListener(this);
+
+        sharedPref = getPreferences(Context.MODE_PRIVATE);
+        String savedEmail = sharedPref.getString(getString(R.string.saved_email), "");
+        if(!savedEmail.equals("")){
+            mEmailField.setText(savedEmail);
+            mPasswordField.requestFocus();
+        }
 
         // [START auth_state_listener]
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -80,26 +83,19 @@ public class EmailPasswordActivity extends BaseActivity implements
                     sendUserToMainActivity();
                     finish();
                 } else {
-                    // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
-                // [START_EXCLUDE]
                 updateUI(user);
-                // [END_EXCLUDE]
             }
         };
-        // [END auth_state_listener]
     }
 
-    // [START on_start_add_listener]
     @Override
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
     }
-    // [END on_start_add_listener]
 
-    // [START on_stop_remove_listener]
     @Override
     public void onStop() {
         super.onStop();
@@ -107,13 +103,8 @@ public class EmailPasswordActivity extends BaseActivity implements
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-    // [END on_stop_remove_listener]
 
     private void createAccount(String email, String password) {
-        Log.d(TAG, "createAccount:" + email);
-        if (!isValidForm()) {
-            return;
-        }
 
         showProgressDialog();
 
@@ -139,12 +130,11 @@ public class EmailPasswordActivity extends BaseActivity implements
                         // [END_EXCLUDE]
                     }
                 });
-        // [END create_user_with_email]
     }
 
     private void signIn(String email, String password) {
         Log.d(TAG, "signIn:" + email);
-        if (!isValidForm()) {
+        if (!validateForm()) {
             return;
         }
 
@@ -177,63 +167,106 @@ public class EmailPasswordActivity extends BaseActivity implements
         updateUI(null);
     }
 
-    private boolean isValidForm() {
-        String email = mEmailField.getText().toString();
-        if (TextUtils.isEmpty(email)) {
-            mEmailField.setError(getString(R.string.required));
-            return false;
-        } else if (!Utils.isValidEmail(email)) {
-            mEmailField.setError(getString(R.string.invalid_email));
-            return false;
-        } else {
-            mEmailField.setError(null);
-        }
-
-        String password = mPasswordField.getText().toString();
-        if (TextUtils.isEmpty(password)) {
-            mPasswordField.setError(getString(R.string.required));
-            return false;
-        } else {
-            mPasswordField.setError(null);
-        }
+    private boolean validateForm() {
+      if(!validateEmail() || !validatePassword())
+          return false;
 
         return true;
     }
 
+    private boolean validateEmail() {
+        String email = mEmailField.getText().toString();
+        if (TextUtils.isEmpty(email)) {
+            mEmailField.setError(getString(R.string.required));
+            return false;
+        } else if ( !Utils.isValidEmail(email) ){
+            mEmailField.setError(getString(R.string.invalid_email));
+            return false;
+        } else {
+            mEmailField.setError(null);
+            return true;
+        }
+    }
+
+ private boolean validatePassword() {
+     String password = mPasswordField.getText().toString();
+     if (TextUtils.isEmpty(password)) {
+         mPasswordField.setError(getString(R.string.required));
+         return false;
+     } else {
+         mPasswordField.setError(null);
+         return true;
+     }
+    }
+
+
+
     private void updateUI(FirebaseUser user) {
         hideProgressDialog();
-        if (user != null) {
-//            mStatusTextView.setText(getString(R.string.emailpassword_status_fmt, user.getEmail()));
-
-//            findViewById(R.id.email_password_buttons).setVisibility(View.GONE);
-//            findViewById(R.id.email_password_fields).setVisibility(View.GONE);
-        } else {
-//            mStatusTextView.setText(R.string.log_in_text);
+        if (user == null) {
+            //            mStatusTextView.setText(R.string.log_in_text);
 
 //            findViewById(R.id.email_password_buttons).setVisibility(View.VISIBLE);
 //            findViewById(R.id.email_password_fields).setVisibility(View.VISIBLE);
+
+        } else {
+            //            mStatusTextView.setText(getString(R.string.emailpassword_status_fmt, user.getEmail()));
+
+//            findViewById(R.id.email_password_buttons).setVisibility(View.GONE);
+//            findViewById(R.id.email_password_fields).setVisibility(View.GONE);
+
+            findViewById(R.id.create_account_button).setVisibility(View.INVISIBLE);
+            findViewById(R.id.create_account_text).setVisibility(View.VISIBLE);
         }
     }
 
 
     @Override
     public void onClick(View v) {
+        String email = mEmailField.getText().toString();
+        String password = mPasswordField.getText().toString();
         switch (v.getId()) {
-            case R.id.create_account:
-                createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
+            case R.id.create_account_text:
+                updateUI(null);
+                findViewById(R.id.create_account_button).setVisibility(View.VISIBLE);
+                findViewById(R.id.have_account_text).setVisibility(View.VISIBLE);
+                findViewById(R.id.email_sign_in_button).setVisibility(View.GONE);
+                findViewById(R.id.create_account_text).setVisibility(View.GONE);
+                break;
+            case R.id.create_account_button:
+                if (validateForm()) {
+                    saveEmail(email);
+                    createAccount(email, password);
+                }
                 break;
             case R.id.email_sign_in_button:
-                signIn(mEmailField.getText().toString(), mPasswordField.getText().toString());
+                if (validateForm()) {
+                    saveEmail(email);
+                    signIn(email, password);
+                }
                 break;
             case R.id.forgot_password:
-                resetPassword();
-                Snackbar.make(v, getString(R.string.need_email), Snackbar.LENGTH_LONG).show();
+                if(validateEmail()){
+                    mAuth.sendPasswordResetEmail(email);
+                    Snackbar.make(v, getString(R.string.need_email), Snackbar.LENGTH_LONG).show();
+                }else{
+
+                }
+                break;
+            case R.id.have_account_text:
+                updateUI(null);
+                findViewById(R.id.create_account_button).setVisibility(View.GONE);
+                findViewById(R.id.have_account_text).setVisibility(View.GONE);
+                findViewById(R.id.email_sign_in_button).setVisibility(View.VISIBLE);
+                findViewById(R.id.create_account_text).setVisibility(View.VISIBLE);
                 break;
         }
     }
 
-    // TODO
-    private void resetPassword() {
+    private void saveEmail(String emailToSave){
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(getString(R.string.saved_email), emailToSave);
+        editor.apply();
     }
 
 

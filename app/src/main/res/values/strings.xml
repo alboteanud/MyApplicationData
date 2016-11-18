@@ -55,4 +55,6 @@
     <string name="need_email">An email was sent to you</string>
     <string name="go_to_email">GO TO INBOX</string>
     <string name="ChoseEmailClient">ChoseEmailClient</string>
+    <string name="have_account">I already have an account</string>
+    <string name="saved_email">saved_email_key</string>
 </resources>

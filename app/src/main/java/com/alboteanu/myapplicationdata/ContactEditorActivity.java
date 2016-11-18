@@ -149,7 +149,7 @@ public class ContactEditorActivity extends BaseDetailsActivity implements View.O
     private boolean saveAndSend() {
         final String nameS = nameText.getText().toString();
         final String phoneS = phoneText.getText().toString();
-        final String emailS = emailText.getText().toString();
+        final String email = emailText.getText().toString();
         final String other1S = otherText.getText().toString();
 
         if (nameS.isEmpty()) {
@@ -162,7 +162,7 @@ public class ContactEditorActivity extends BaseDetailsActivity implements View.O
             return false;
         }
 
-        if (!emailS.isEmpty() && !Utils.isValidEmail(emailS)) {
+        if (!email.isEmpty() && !Utils.isValidEmail(email)) {
                 emailText.setError(getString(R.string.invalid_email));
                 return false;
             }
@@ -173,14 +173,14 @@ public class ContactEditorActivity extends BaseDetailsActivity implements View.O
         Map<String, Object> updates = new HashMap<>();
 
         ContactS contactS = new ContactS(nameS, phoneS, returnDate);
-        contact = new Contact(nameS, phoneS, emailS, other1S, returnDate);
+        contact = new Contact(nameS, phoneS, email, other1S, returnDate);
 
         Map<String, Object> contactMap = contactS.toMap();
         Map<String, Object> contactDetMap = contact.toMap();
         updates.put(FIREBASE_LOCATION_CONTACT_S + "/" + contactKey, contactMap);
         updates.put(FIREBASE_LOCATION_CONTACT + "/" + contactKey, contactDetMap);
         updates.put(FIREBASE_LOCATION_CONTACTS_PHONES + "/" + contactKey, phoneS);
-        updates.put(FIREBASE_LOCATION_EMAIL + "/" + contactKey, emailS);
+        updates.put(FIREBASE_LOCATION_EMAIL + "/" + contactKey, email);
         DateToReturn dateToReturn = new DateToReturn(this.returnDate, phoneS);  //data si tel
         Map<String, Object> returnMap = dateToReturn.toMap();
         updates.put(FIREBASE_LOCATION_RETURN_DATES + "/" + contactKey, returnMap);
