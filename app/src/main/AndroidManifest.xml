@@ -20,9 +20,7 @@
         </activity>
         <activity
             android:name=".GoogleSignInActivity"
-            android:theme="@style/AppTheme">
-
-        </activity>
+            android:theme="@style/AppTheme"/>
         <activity
             android:name=".ListActivity"
             android:label="@string/title_activity_main"
@@ -35,7 +33,8 @@
         <activity
             android:name=".ContactEditorActivity"
             android:label="@string/title_activity_edit_details"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"

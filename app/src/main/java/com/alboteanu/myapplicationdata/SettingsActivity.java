@@ -76,7 +76,7 @@ public class SettingsActivity extends BaseActivity {
                                         : null);
 
                     } else {
-                        // For all other preferences, set the summary to the value's
+                        // For all otherText preferences, set the summary to the value's
                         // simple string representation.
                         preference.setSummary(stringValue);
                     }

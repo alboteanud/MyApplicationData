@@ -174,7 +174,7 @@ public class GoogleSignInActivity extends BaseActivity implements
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
         } else {
-            mStatusTextView.setText(R.string.signed_out);
+            mStatusTextView.setText(R.string.log_in_text);
             mDetailTextView.setText(null);
 
             findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);

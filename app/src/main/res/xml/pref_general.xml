@@ -7,18 +7,16 @@
         android:key="@string/display_title_text_key"
         android:maxLines="1"
         android:selectAllOnFocus="true"
-        android:singleLine="true"
         android:title="@string/pref_title_display_name" />
     <!--android:defaultValue="@string/app_name"-->
 
 <EditTextPreference
         android:capitalize="words"
-        android:defaultValue="@string/my_custom_text"
-        android:inputType="textCapWords"
+        android:inputType="textMultiLine"
         android:key="@string/custom_text_key"
-        android:maxLines="3"
+        android:maxLines="6"
         android:selectAllOnFocus="true"
-        android:singleLine="true"
+        android:defaultValue="@string/messaage_text"
         android:title="@string/title_custom_text_settings" />
     <!--android:defaultValue="@string/app_name"-->
 

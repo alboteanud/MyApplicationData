@@ -7,7 +7,7 @@
     <string name="action_logout" translatable="true">Deconectare</string>
     <string name="title_activity_detail" translatable="true">Detalii</string>
     <string name="google_title_text" translatable="true">GOOGLE</string>
-    <string name="signed_out" translatable="true">Deconectat</string>
+    <string name="log_in_text" translatable="true">Deconectat</string>
     <string name="pref_title_social_recommendations">Lista cu detalii</string>
     <string name="sign_out">Deconectare</string>
     <string name="disconnect">Deconectare</string>
@@ -31,7 +31,7 @@
     <string name="pick_date_hint">alege data</string>
     <string name="date_format">dd MMM yyyy</string>
     <string name="action_notifications">Notificare</string>
-    <string name="my_custom_text">Va invitam...</string>
+    <string name="messaage_text">Va invitam...</string>
     <string name="title_custom_text_settings">Text sms implicit</string>
     <string name="checkbox_text">peste 6 luni</string>
     <string name="text9_hint">REVENIRE</string>
@@ -42,11 +42,14 @@
     <string name="saved">SALVAT</string>
     <string name="back">INAPOI</string>
     <string name="confirmation_dialog_delete">Stergeti contactul?</string>
-    <string name="confirmation_dialog_delete_message">Acest contact va fi sters.</string>
+    <string name="confirmation_dialog_delete_message">Acest contactS va fi sters.</string>
     <string name="ok">DA</string>
     <string name="cancel">NU</string>
-    <string name="title_activity_edit_details">Edit contact</string>
+    <string name="title_activity_edit_details">Edit contactS</string>
     <string name="action_edit">Edit</string>
     <string name="action_save">Save</string>
     <string name="invalid_email">Invalid email</string>
+    <string name="return_date_hint">Return date</string>
+    <string name="need_email">We sent you an email to reset your password</string>
+    <string name="go_to_email">Go to my email</string>
 </resources>

@@ -8,9 +8,7 @@ import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
@@ -36,7 +34,7 @@ public class DatePickerFragment extends DialogFragment
         calendar.set(Calendar.YEAR, year);
         String dateString = Utils.calendarToString(calendar);
         ((CheckBox) getActivity().findViewById(R.id.checkBox6Luni)).setChecked(false);  //implica stregere datei TextView10 - DATA
-        ((TextView)getActivity().findViewById(R.id.returnD)).setText(dateString);
+        ((TextView)getActivity().findViewById(R.id.return_date_textView)).setText(dateString);
         ((ContactEditorActivity)getActivity()).returnDate = calendar.getTimeInMillis();
     }
 }

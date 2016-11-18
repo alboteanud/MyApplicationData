@@ -18,7 +18,7 @@
             style="@style/ThemeOverlay.FirebaseIcon"
             android:id="@+id/google_icon"
             android:contentDescription="@string/desc_firebase_lockup"
-            android:src="@drawable/heads"
+            android:src="@drawable/logo_heads"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1" />
@@ -35,7 +35,7 @@
         <TextView
             android:id="@+id/status"
             style="@style/ThemeOverlay.MyTextDetail"
-            android:text="@string/signed_out" />
+            android:text="@string/log_in_text" />
 
         <TextView
             android:id="@+id/detail"

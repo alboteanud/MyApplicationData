@@ -5,7 +5,7 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:scrollbars="vertical"
-        tools:listitem="@layout/contact"
+        tools:listitem="@layout/contactS"
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"

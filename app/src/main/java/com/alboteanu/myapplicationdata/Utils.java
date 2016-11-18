@@ -6,29 +6,16 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 
-import com.alboteanu.myapplicationdata.models.FixedFields;
 import com.alboteanu.myapplicationdata.models.User;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
-import static android.R.attr.data;
-import static android.R.attr.x;
 import static com.alboteanu.myapplicationdata.BaseActivity.getDatabase;
-import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT_FIXED;
-import static com.alboteanu.myapplicationdata.R.id.emailF;
-import static com.alboteanu.myapplicationdata.R.id.nameF;
-import static com.alboteanu.myapplicationdata.R.id.other1F;
-import static com.alboteanu.myapplicationdata.R.id.phoneF;
-import static com.alboteanu.myapplicationdata.R.id.returnF;
 
 /**
  * Created by albot on 20.09.2016.
@@ -48,7 +35,7 @@ class Utils {
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
         String key = context.getString(R.string.custom_text_key);
-        String storedVal = sharedPrefs.getString(key, context.getString(R.string.my_custom_text));
+        String storedVal = sharedPrefs.getString(key, context.getString(R.string.messaage_text));
         return storedVal;
     }
 
@@ -89,7 +76,7 @@ class Utils {
 
     static void composeEmail(ListActivity listActivity, String[] addresses, String subject) {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+        intent.setData(Uri.parse("mailto:")); // only emailText apps should handle this
         intent.putExtra(Intent.EXTRA_EMAIL, addresses);
 //        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
         if (intent.resolveActivity(listActivity.getPackageManager()) != null) {

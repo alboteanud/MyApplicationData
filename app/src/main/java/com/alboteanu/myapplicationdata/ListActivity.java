@@ -2,7 +2,6 @@ package com.alboteanu.myapplicationdata;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,14 +11,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.alboteanu.myapplicationdata.models.Contact;
+import com.alboteanu.myapplicationdata.models.ContactS;
 import com.alboteanu.myapplicationdata.models.DateToReturn;
 import com.alboteanu.myapplicationdata.viewholder.PostHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -33,7 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT;
+import static com.alboteanu.myapplicationdata.Constants.EXTRA_CONTACT_KEY;
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT_S;
 import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACTS_PHONES;
 import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_EMAIL;
 import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_NAME;
@@ -42,7 +39,7 @@ import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN
 
 public class ListActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener {
     private static final String TAG = "ListActivity";
-    private FirebaseRecyclerAdapter<Contact, PostHolder> firebaseRecyclerAdapter;
+    private FirebaseRecyclerAdapter<ContactS, PostHolder> firebaseRecyclerAdapter;
     Toolbar toolbar;
     private Menu menu;
     String[] allPhonesArray;
@@ -75,23 +72,23 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
         mManager.setStackFromEnd(false);   //era true
         mRecycler.setLayoutManager(mManager);
         // Set up FirebaseRecyclerAdapter with the Query
-        Query postsQuery = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT).orderByChild(FIREBASE_LOCATION_NAME);
+        Query postsQuery = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT_S).orderByChild(FIREBASE_LOCATION_NAME);
 //        Log.d(TAG, "postsQuery.toString() " + postsQuery.toString());
 
         final long CurrentTime = System.currentTimeMillis();
-        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Contact, PostHolder>(Contact.class, R.layout.contact,
+        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<ContactS, PostHolder>(ContactS.class, R.layout.contact,
                 PostHolder.class, postsQuery) {
             @Override
-            protected void populateViewHolder(final PostHolder viewHolder, final Contact contact, final int position) {
+            protected void populateViewHolder(final PostHolder viewHolder, final ContactS contactS, final int position) {
                 final DatabaseReference postRef = getRef(position);
                 final String contactKey = postRef.getKey();
-                viewHolder.bindToPost(contact);
-                if (contact.date != 0 && (CurrentTime > contact.date)) {
+                viewHolder.bindToPost(contactS);
+                if (contactS.date != 0 && (CurrentTime > contactS.date)) {
                     viewHolder.ball.setVisibility(View.VISIBLE);
                     viewHolder.ball.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            String[] phone = new  String[]{contact.phone};
+                            String[] phone = new  String[]{contactS.phone};
                             Utils.composeSMS(phone, getApplication());
                         }
                     });
@@ -100,10 +97,10 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(ListActivity.this, QuickContactActivity.class);
-                        intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_KEY, contactKey);
-//                        intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_NAME, contact.name);
-//                        intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_PHONE, contact.phone);
-                        intent.putExtra(FIREBASE_LOCATION_CONTACT, contact);
+                        intent.putExtra(EXTRA_CONTACT_KEY, contactKey);
+//                        intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_NAME, contactS.nameText);
+//                        intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_PHONE, contactS.phoneText);
+                        intent.putExtra(FIREBASE_LOCATION_CONTACT_S, contactS);
                         startActivity(intent);
                     }
                 });

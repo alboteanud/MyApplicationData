@@ -11,27 +11,26 @@ import android.support.annotation.VisibleForTesting;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.alboteanu.myapplicationdata.models.User;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.alboteanu.myapplicationdata.models.Contact;
+import com.alboteanu.myapplicationdata.models.ContactS;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.util.Map;
+import java.util.Calendar;
 
+import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT_S;
 import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT;
-import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT_DETAILED;
 import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_EMAIL;
 import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_PHONE;
-import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN_DATE;
 import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN_DATES;
+import static com.alboteanu.myapplicationdata.R.layout.contact;
 
 public class BaseActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener {
@@ -41,6 +40,8 @@ public class BaseActivity extends AppCompatActivity implements
     public ProgressDialog mProgressDialog;
     public FirebaseAuth mAuth;
     public FirebaseAuth.AuthStateListener mAuthListener;
+    public String contactKey;
+    Contact contact;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -99,41 +100,10 @@ public class BaseActivity extends AppCompatActivity implements
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
-    public void deleteContact(String contactKey) {
-        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT  + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT_DETAILED + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(FIREBASE_LOCATION_EMAIL + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(FIREBASE_LOCATION_PHONE + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(FIREBASE_LOCATION_RETURN_DATES + "/" + contactKey).removeValue();
-    }
-
-    public void createDeleteDialogAlert(final String contactKey) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getString(R.string.confirmation_dialog_delete))
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User clicked OK button
-                        deleteContact(contactKey);
-                        Intent intent = new Intent(BaseActivity.this, ListActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User cancelled the dialog
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
 
 
-    public void showDatePickerDialog() {
-        DialogFragment dialogFragment = new DatePickerFragment();
-        dialogFragment.show(getFragmentManager(), "datePicker");
-    }
+
+
+
 
 }

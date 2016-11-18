@@ -16,32 +16,37 @@
 
 package com.alboteanu.myapplicationdata;
 
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.alboteanu.myapplicationdata.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Calendar;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EmailPasswordActivity extends BaseActivity implements
         View.OnClickListener {
 
     private static final String TAG = "EmailPassword";
 
-    private TextView mStatusTextView;
-    private TextView mDetailTextView;
+//    private TextView mStatusTextView;
     private EditText mEmailField;
     private EditText mPasswordField;
 
@@ -55,15 +60,14 @@ public class EmailPasswordActivity extends BaseActivity implements
         setContentView(R.layout.activity_emailpassword);
 
         // Views
-        mStatusTextView = (TextView) findViewById(R.id.status);
-        mDetailTextView = (TextView) findViewById(R.id.detail);
+//        mStatusTextView = (TextView) findViewById(R.id.status);
         mEmailField = (EditText) findViewById(R.id.field_email);
         mPasswordField = (EditText) findViewById(R.id.field_password);
 
         // Buttons
         findViewById(R.id.email_sign_in_button).setOnClickListener(this);
-        findViewById(R.id.email_create_account_button).setOnClickListener(this);
-        findViewById(R.id.sign_out_button).setOnClickListener(this);
+        findViewById(R.id.create_account).setOnClickListener(this);
+        findViewById(R.id.forgot_password).setOnClickListener(this);
 
         // [START auth_state_listener]
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -107,7 +111,7 @@ public class EmailPasswordActivity extends BaseActivity implements
 
     private void createAccount(String email, String password) {
         Log.d(TAG, "createAccount:" + email);
-        if (!validateForm()) {
+        if (!isValidForm()) {
             return;
         }
 
@@ -140,7 +144,7 @@ public class EmailPasswordActivity extends BaseActivity implements
 
     private void signIn(String email, String password) {
         Log.d(TAG, "signIn:" + email);
-        if (!validateForm()) {
+        if (!isValidForm()) {
             return;
         }
 
@@ -161,11 +165,6 @@ public class EmailPasswordActivity extends BaseActivity implements
                             Toast.makeText(EmailPasswordActivity.this, R.string.auth_failed,
                                     Toast.LENGTH_SHORT).show();
                         }
-
-                        // [START_EXCLUDE]
-                        if (!task.isSuccessful()) {
-                            mStatusTextView.setText(R.string.auth_failed);
-                        }
                         hideProgressDialog();
                         // [END_EXCLUDE]
                     }
@@ -178,16 +177,14 @@ public class EmailPasswordActivity extends BaseActivity implements
         updateUI(null);
     }
 
-    private boolean validateForm() {
-        boolean valid = true;
+    private boolean isValidForm() {
         String email = mEmailField.getText().toString();
-
         if (TextUtils.isEmpty(email)) {
             mEmailField.setError(getString(R.string.required));
-            valid = false;
+            return false;
         } else if (!Utils.isValidEmail(email)) {
             mEmailField.setError(getString(R.string.invalid_email));
-            valid = false;
+            return false;
         } else {
             mEmailField.setError(null);
         }
@@ -195,43 +192,49 @@ public class EmailPasswordActivity extends BaseActivity implements
         String password = mPasswordField.getText().toString();
         if (TextUtils.isEmpty(password)) {
             mPasswordField.setError(getString(R.string.required));
-            valid = false;
+            return false;
         } else {
             mPasswordField.setError(null);
         }
 
-        return valid;
+        return true;
     }
 
     private void updateUI(FirebaseUser user) {
         hideProgressDialog();
         if (user != null) {
-            mStatusTextView.setText(getString(R.string.emailpassword_status_fmt, user.getEmail()));
-            mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
+//            mStatusTextView.setText(getString(R.string.emailpassword_status_fmt, user.getEmail()));
 
-            findViewById(R.id.email_password_buttons).setVisibility(View.GONE);
-            findViewById(R.id.email_password_fields).setVisibility(View.GONE);
-            findViewById(R.id.sign_out_button).setVisibility(View.VISIBLE);
+//            findViewById(R.id.email_password_buttons).setVisibility(View.GONE);
+//            findViewById(R.id.email_password_fields).setVisibility(View.GONE);
         } else {
-            mStatusTextView.setText(R.string.signed_out);
-            mDetailTextView.setText(null);
+//            mStatusTextView.setText(R.string.log_in_text);
 
-            findViewById(R.id.email_password_buttons).setVisibility(View.VISIBLE);
-            findViewById(R.id.email_password_fields).setVisibility(View.VISIBLE);
-            findViewById(R.id.sign_out_button).setVisibility(View.GONE);
+//            findViewById(R.id.email_password_buttons).setVisibility(View.VISIBLE);
+//            findViewById(R.id.email_password_fields).setVisibility(View.VISIBLE);
         }
     }
+
 
     @Override
     public void onClick(View v) {
-        int i = v.getId();
-        if (i == R.id.email_create_account_button) {
-            createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
-        } else if (i == R.id.email_sign_in_button) {
-            signIn(mEmailField.getText().toString(), mPasswordField.getText().toString());
-        } else if (i == R.id.sign_out_button) {
-            signOut();
+        switch (v.getId()) {
+            case R.id.create_account:
+                createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString());
+                break;
+            case R.id.email_sign_in_button:
+                signIn(mEmailField.getText().toString(), mPasswordField.getText().toString());
+                break;
+            case R.id.forgot_password:
+                resetPassword();
+                Snackbar.make(v, getString(R.string.need_email), Snackbar.LENGTH_LONG).show();
+                break;
         }
     }
+
+    // TODO
+    private void resetPassword() {
+    }
+
 
 }

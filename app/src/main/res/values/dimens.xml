@@ -10,4 +10,6 @@
     <dimen name="icon_bottom_margin">24dp</dimen>
     <dimen name="title_bottom_margin">16dp</dimen>
     <dimen name="edit_text_margin">12dp</dimen>
+    <dimen name="icons_column_width">48dp</dimen>
+
 </resources>
