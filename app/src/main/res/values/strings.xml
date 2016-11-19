@@ -21,11 +21,6 @@
     <string name="messaage_text">Hello..</string>
     <string name="title_custom_text_settings">Message text</string>
     <string name="checkbox_text">In 6 months</string>
-    <string name="text9_hint">RETURN</string>
-    <string name="text5_hint">EMAIL</string>
-    <string name="text3_hint">PHONE</string>
-    <string name="text1_hint">NAME</string>
-    <string name="text7_hint">…</string>
     <string name="saved">Saved</string>
     <string name="back">Back</string>
     <string name="display_title_text_key">DisplayName</string>
@@ -52,8 +47,7 @@
     <string name="email_hint">Email</string>
     <string name="note_hint">Note</string>
     <string name="return_date_hint">Return date</string>
-    <string name="need_email">An email was sent to you</string>
-    <string name="go_to_email">GO TO INBOX</string>
+    <string name="need_email">An email been sent to %s</string>
     <string name="ChoseEmailClient">ChoseEmailClient</string>
     <string name="have_account">I already have an account</string>
     <string name="saved_email">saved_email_key</string>

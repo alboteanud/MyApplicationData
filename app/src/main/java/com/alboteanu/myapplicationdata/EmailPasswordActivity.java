@@ -1,12 +1,12 @@
 /**
  * Copyright 2016 Google Inc. All Rights Reserved.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,7 +24,9 @@ import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -35,59 +37,54 @@ import com.google.firebase.auth.FirebaseUser;
 
 import static android.R.attr.defaultValue;
 
-public class EmailPasswordActivity extends BaseActivity implements
-        View.OnClickListener {
-
-    private static final String TAG = "EmailPassword";
-
-//    private TextView mStatusTextView;
-    private EditText mEmailField;
-    private EditText mPasswordField;
-
-    // [START declare_auth_listener]
-    private FirebaseAuth.AuthStateListener mAuthListener;
+public class EmailPasswordActivity extends BaseActivity implements View.OnClickListener {
+    EditText mEmailField, mPasswordField;
+    TextView create_account_text, forgot_pass_text, have_account_text;
+    Button sign_in_button, create_account_button;
+    FirebaseAuth.AuthStateListener mAuthListener;
     SharedPreferences sharedPref;
+    String savedEmail;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_emailpassword);
-
-        // Views
-//        mStatusTextView = (TextView) findViewById(R.id.status);
-        mEmailField = (EditText) findViewById(R.id.field_email);
-        mPasswordField = (EditText) findViewById(R.id.field_password);
-
-        // Buttons
-        findViewById(R.id.email_sign_in_button).setOnClickListener(this);
-        findViewById(R.id.create_account_button).setOnClickListener(this);
-        findViewById(R.id.create_account_text).setOnClickListener(this);
-        findViewById(R.id.forgot_password).setOnClickListener(this);
-        findViewById(R.id.have_account_text).setOnClickListener(this);
-
         sharedPref = getPreferences(Context.MODE_PRIVATE);
-        String savedEmail = sharedPref.getString(getString(R.string.saved_email), "");
-        if(!savedEmail.equals("")){
-            mEmailField.setText(savedEmail);
-            mPasswordField.requestFocus();
-        }
-
-        // [START auth_state_listener]
+        savedEmail = sharedPref.getString(getString(R.string.saved_email), null);
+        initViewsAndSetListeners();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    // User is signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
                     sendUserToMainActivity();
                     finish();
                 } else {
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
+//                  signed_out
                 }
-                updateUI(user);
+                // updateUI
             }
         };
+    }
+
+    private void initViewsAndSetListeners(){
+        mEmailField = (EditText) findViewById(R.id.field_email);
+        mPasswordField = (EditText) findViewById(R.id.field_password);
+        sign_in_button = (Button) findViewById(R.id.email_sign_in_button);
+        create_account_button = (Button) findViewById(R.id.create_account_button);
+        create_account_text = (TextView) findViewById(R.id.create_account_text);
+        forgot_pass_text = (TextView) findViewById(R.id.forgot_password);
+        have_account_text = (TextView) findViewById(R.id.have_account_text);
+
+        mEmailField.setText(savedEmail);
+        if (savedEmail!=null)
+            mPasswordField.requestFocus();
+
+        forgot_pass_text.setOnClickListener(this);
+        have_account_text.setOnClickListener(this);
+        sign_in_button.setOnClickListener(this);
+        create_account_button.setOnClickListener(this);
+        create_account_text.setOnClickListener(this);
     }
 
     @Override
@@ -105,73 +102,41 @@ public class EmailPasswordActivity extends BaseActivity implements
     }
 
     private void createAccount(String email, String password) {
-
         showProgressDialog();
-
-        // [START create_user_with_email]
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
-
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
-                        if(task.isSuccessful()) {
+                        if (task.isSuccessful()) {
                             Utils.writeNewUser(task.getResult().getUser().getEmail());
-                        }else {
-                            Toast.makeText(EmailPasswordActivity.this, R.string.auth_failed,
-                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            String message = task.getException().getMessage();
+                            Toast.makeText(EmailPasswordActivity.this, message,
+                                    Toast.LENGTH_LONG).show();
                         }
-
-                        // [START_EXCLUDE]
                         hideProgressDialog();
-                        // [END_EXCLUDE]
                     }
+
+
                 });
     }
 
     private void signIn(String email, String password) {
-        Log.d(TAG, "signIn:" + email);
-        if (!validateForm()) {
+        if (!validateEmail() || !validatePassword())
             return;
-        }
-
         showProgressDialog();
-
-        // [START sign_in_with_email]
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
-
-                        // If sign in fails, display a message to the user. If sign in succeeds
-                        // the auth state listener will be notified and logic to handle the
-                        // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
-                            Log.w(TAG, "signInWithEmail:failed", task.getException());
-                            Toast.makeText(EmailPasswordActivity.this, R.string.auth_failed,
-                                    Toast.LENGTH_SHORT).show();
+                            String message = task.getException().getMessage();
+                            Toast.makeText(EmailPasswordActivity.this, message,
+                                    Toast.LENGTH_LONG).show();
                         }
                         hideProgressDialog();
-                        // [END_EXCLUDE]
                     }
                 });
-        // [END sign_in_with_email]
-    }
-
-    private void signOut() {
-        mAuth.signOut();
-        updateUI(null);
-    }
-
-    private boolean validateForm() {
-      if(!validateEmail() || !validatePassword())
-          return false;
-
-        return true;
     }
 
     private boolean validateEmail() {
@@ -179,47 +144,23 @@ public class EmailPasswordActivity extends BaseActivity implements
         if (TextUtils.isEmpty(email)) {
             mEmailField.setError(getString(R.string.required));
             return false;
-        } else if ( !Utils.isValidEmail(email) ){
+        } else if (!Utils.isValidEmail(email)) {
             mEmailField.setError(getString(R.string.invalid_email));
             return false;
-        } else {
+        } else
             mEmailField.setError(null);
-            return true;
-        }
+        return true;
     }
 
- private boolean validatePassword() {
-     String password = mPasswordField.getText().toString();
-     if (TextUtils.isEmpty(password)) {
-         mPasswordField.setError(getString(R.string.required));
-         return false;
-     } else {
-         mPasswordField.setError(null);
-         return true;
-     }
+    private boolean validatePassword() {
+        String password = mPasswordField.getText().toString();
+        if (TextUtils.isEmpty(password)) {
+            mPasswordField.setError(getString(R.string.required));
+            return false;
+        } else
+            mPasswordField.setError(null);
+        return true;
     }
-
-
-
-    private void updateUI(FirebaseUser user) {
-        hideProgressDialog();
-        if (user == null) {
-            //            mStatusTextView.setText(R.string.log_in_text);
-
-//            findViewById(R.id.email_password_buttons).setVisibility(View.VISIBLE);
-//            findViewById(R.id.email_password_fields).setVisibility(View.VISIBLE);
-
-        } else {
-            //            mStatusTextView.setText(getString(R.string.emailpassword_status_fmt, user.getEmail()));
-
-//            findViewById(R.id.email_password_buttons).setVisibility(View.GONE);
-//            findViewById(R.id.email_password_fields).setVisibility(View.GONE);
-
-            findViewById(R.id.create_account_button).setVisibility(View.INVISIBLE);
-            findViewById(R.id.create_account_text).setVisibility(View.VISIBLE);
-        }
-    }
-
 
     @Override
     public void onClick(View v) {
@@ -227,47 +168,51 @@ public class EmailPasswordActivity extends BaseActivity implements
         String password = mPasswordField.getText().toString();
         switch (v.getId()) {
             case R.id.create_account_text:
-                updateUI(null);
-                findViewById(R.id.create_account_button).setVisibility(View.VISIBLE);
-                findViewById(R.id.have_account_text).setVisibility(View.VISIBLE);
-                findViewById(R.id.email_sign_in_button).setVisibility(View.GONE);
-                findViewById(R.id.create_account_text).setVisibility(View.GONE);
+                prepareUItoCreateAccount();
                 break;
             case R.id.create_account_button:
-                if (validateForm()) {
-                    saveEmail(email);
+                if (validateEmail() && validatePassword()) {
+                    if(email != savedEmail)
+                        saveEmail(email);
                     createAccount(email, password);
                 }
                 break;
             case R.id.email_sign_in_button:
-                if (validateForm()) {
-                    saveEmail(email);
+                if (validateEmail() && validatePassword()) {
+                    if(email != savedEmail)
+                        saveEmail(email);
                     signIn(email, password);
                 }
                 break;
             case R.id.forgot_password:
-                if(validateEmail()){
+                if (validateEmail()) {
                     mAuth.sendPasswordResetEmail(email);
-                    Snackbar.make(v, getString(R.string.need_email), Snackbar.LENGTH_LONG).show();
-                }else{
-
+                    Snackbar.make(v, getString(R.string.need_email, email), Snackbar.LENGTH_LONG).show();
                 }
                 break;
             case R.id.have_account_text:
-                updateUI(null);
-                findViewById(R.id.create_account_button).setVisibility(View.GONE);
-                findViewById(R.id.have_account_text).setVisibility(View.GONE);
-                findViewById(R.id.email_sign_in_button).setVisibility(View.VISIBLE);
-                findViewById(R.id.create_account_text).setVisibility(View.VISIBLE);
+                prepareUItoSignIn();
                 break;
         }
     }
 
-    private void saveEmail(String emailToSave){
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString(getString(R.string.saved_email), emailToSave);
-        editor.apply();
+    private void prepareUItoSignIn() {
+        create_account_button.setVisibility(View.GONE);
+        have_account_text.setVisibility(View.GONE);
+        sign_in_button.setVisibility(View.VISIBLE);
+        create_account_text.setVisibility(View.VISIBLE);
     }
 
+    private void prepareUItoCreateAccount() {
+        create_account_button.setVisibility(View.VISIBLE);
+        have_account_text.setVisibility(View.VISIBLE);
+        sign_in_button.setVisibility(View.GONE);
+        create_account_text.setVisibility(View.GONE);
+    }
 
+    private void saveEmail(String emailToSave) {
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.saved_email), emailToSave);
+            editor.apply();
+    }
 }

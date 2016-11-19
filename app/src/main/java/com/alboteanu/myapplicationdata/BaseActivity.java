@@ -40,17 +40,11 @@ public class BaseActivity extends AppCompatActivity implements
     public ProgressDialog mProgressDialog;
     public FirebaseAuth mAuth;
     public FirebaseAuth.AuthStateListener mAuthListener;
-    public String contactKey;
-    Contact contact;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Configure Google Sign In
         mAuth = FirebaseAuth.getInstance();
-
-//        PreferenceManager.setDefaultValues(this, R.xml.pref_general, false);
-
     }
 
     public void showProgressDialog() {

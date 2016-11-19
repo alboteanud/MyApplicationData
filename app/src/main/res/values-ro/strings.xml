@@ -34,23 +34,17 @@
     <string name="messaage_text">Va invitam...</string>
     <string name="title_custom_text_settings">Text sms implicit</string>
     <string name="checkbox_text">peste 6 luni</string>
-    <string name="text9_hint">REVENIRE</string>
-    <string name="text5_hint">EMAIL</string>
-    <string name="text3_hint">TELEFON</string>
-    <string name="text1_hint">NUMELE</string>
-    <string name="text7_hint">…</string>
     <string name="saved">SALVAT</string>
     <string name="back">INAPOI</string>
     <string name="confirmation_dialog_delete">Stergeti contactul?</string>
-    <string name="confirmation_dialog_delete_message">Acest contactS va fi sters.</string>
+    <string name="confirmation_dialog_delete_message">Acest contact va fi sters.</string>
     <string name="ok">DA</string>
     <string name="cancel">NU</string>
-    <string name="title_activity_edit_details">Edit contactS</string>
+    <string name="title_activity_edit_details">Edit contact</string>
     <string name="action_edit">Edit</string>
     <string name="action_save">Save</string>
     <string name="invalid_email">Invalid email</string>
     <string name="return_date_hint">Return date</string>
-    <string name="need_email">We sent you an email to reset your password</string>
-    <string name="go_to_email">Go to my email</string>
-    <string name="have_account">I already have an account</string>
+    <string name="need_email">Ti-am trimis un email la %s</string>
+    <string name="have_account">Am deja cont</string>
 </resources>
