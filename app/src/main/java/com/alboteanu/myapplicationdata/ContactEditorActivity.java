@@ -12,8 +12,8 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.alboteanu.myapplicationdata.models.ContactS;
-import com.alboteanu.myapplicationdata.models.Contact;
+import com.alboteanu.myapplicationdata.models.ContactShort;
+import com.alboteanu.myapplicationdata.models.ContactLong;
 import com.alboteanu.myapplicationdata.models.DateToReturn;
 
 import java.util.Calendar;
@@ -29,11 +29,10 @@ import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN
 
 
 public class ContactEditorActivity extends BaseDetailsActivity implements View.OnClickListener{
-    long returnDate;
     CheckBox checkBox_6M;
     EditText nameText, phoneText, emailText, otherText;
     TextView returnText;
-    ContactS contactS;
+    ContactShort contactShort;
 
 
     @Override
@@ -44,9 +43,9 @@ public class ContactEditorActivity extends BaseDetailsActivity implements View.O
         setSupportActionBar(toolbar);
         initViews();
         setListeners();
-        if(contactKey == null){  //            creating new contact
+        if(contactKey == null){  //            creating new contactLong
 
-        } else if (contact == null  ) {  // probably no internet. Short populating
+        } else if (contactLong == null  ) {  // probably no internet. Short populating
             getContactFromFirebaseAndUpdateUI();
         }
         updateUI();
@@ -54,25 +53,25 @@ public class ContactEditorActivity extends BaseDetailsActivity implements View.O
 
 
     public void updateUI(){
-        if(contact != null) {
-            nameText.setText(contact.name);
-            phoneText.setText(contact.phone);
-            emailText.setText(contact.email);
-            otherText.setText(contact.other);
-            returnDate = contact.date;
-            if(returnDate != 0) {
+        if(contactLong != null) {
+            nameText.setText(contactLong.name);
+            phoneText.setText(contactLong.phone);
+            emailText.setText(contactLong.email);
+            otherText.setText(contactLong.other);
+            date = contactLong.date;
+            if(date != 0) {
                 Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(returnDate);
+                calendar.setTimeInMillis(date);
                 returnText.setText(Utils.calendarToString(calendar));
             }
         }else if(getIntent().hasExtra(FIREBASE_LOCATION_CONTACT_S)) {
-            ContactS contactS = (ContactS) getIntent().getExtras().getSerializable(FIREBASE_LOCATION_CONTACT_S);
-            nameText.setText(contactS.name);
-            phoneText.setText(contactS.phone);
-            returnDate = contactS.date;
-            if(returnDate != 0) {
+            ContactShort contactShort = (ContactShort) getIntent().getExtras().getSerializable(FIREBASE_LOCATION_CONTACT_S);
+            nameText.setText(contactShort.name);
+            phoneText.setText(contactShort.phone);
+            date = contactShort.date;
+            if(date != 0) {
                 Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(returnDate);
+                calendar.setTimeInMillis(date);
                 String dateString = Utils.calendarToString(calendar);
                 returnText.setText(dateString);
             }
@@ -124,11 +123,11 @@ public class ContactEditorActivity extends BaseDetailsActivity implements View.O
                     Calendar calendar = Calendar.getInstance();
                     calendar.add(Calendar.MONTH, 6);
                     returnText.setText(Utils.calendarToString(calendar));
-                    returnDate = calendar.getTimeInMillis();
+                    date = calendar.getTimeInMillis();
                 } else {
                     returnText.setText("");
                     returnText.setHint("--");
-                    returnDate = 0;
+                    date = 0;
                 }
             }
         });
@@ -138,10 +137,10 @@ public class ContactEditorActivity extends BaseDetailsActivity implements View.O
     private void goToQuickContactActivity() {
         Intent intent = new Intent(this, QuickContactActivity.class);
         intent.putExtra(EXTRA_CONTACT_KEY, contactKey);
-        if (contact != null){
-            intent.putExtra(FIREBASE_LOCATION_CONTACT, contact);
+        if (contactLong != null){
+            intent.putExtra(FIREBASE_LOCATION_CONTACT, contactLong);
         } else {
-            intent.putExtra(FIREBASE_LOCATION_CONTACT_S, contactS);
+            intent.putExtra(FIREBASE_LOCATION_CONTACT_S, contactShort);
         }
         startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
     }
@@ -157,11 +156,6 @@ public class ContactEditorActivity extends BaseDetailsActivity implements View.O
             return false;
         }
 
-        if (phoneS.isEmpty()) {
-            phoneText.setError(getString(R.string.required));
-            return false;
-        }
-
         if (!email.isEmpty() && !Utils.isValidEmail(email)) {
                 emailText.setError(getString(R.string.invalid_email));
                 return false;
@@ -172,16 +166,16 @@ public class ContactEditorActivity extends BaseDetailsActivity implements View.O
 
         Map<String, Object> updates = new HashMap<>();
 
-        ContactS contactS = new ContactS(nameS, phoneS, returnDate);
-        contact = new Contact(nameS, phoneS, email, other1S, returnDate);
+        ContactShort contactShort = new ContactShort(nameS, phoneS, date);
+        contactLong = new ContactLong(nameS, phoneS, email, other1S, date);
 
-        Map<String, Object> contactMap = contactS.toMap();
-        Map<String, Object> contactDetMap = contact.toMap();
+        Map<String, Object> contactMap = contactShort.toMap();
+        Map<String, Object> contactDetMap = contactLong.toMap();
         updates.put(FIREBASE_LOCATION_CONTACT_S + "/" + contactKey, contactMap);
         updates.put(FIREBASE_LOCATION_CONTACT + "/" + contactKey, contactDetMap);
         updates.put(FIREBASE_LOCATION_CONTACTS_PHONES + "/" + contactKey, phoneS);
         updates.put(FIREBASE_LOCATION_EMAIL + "/" + contactKey, email);
-        DateToReturn dateToReturn = new DateToReturn(this.returnDate, phoneS);  //data si tel
+        DateToReturn dateToReturn = new DateToReturn(this.date, phoneS);  //data si tel
         Map<String, Object> returnMap = dateToReturn.toMap();
         updates.put(FIREBASE_LOCATION_RETURN_DATES + "/" + contactKey, returnMap);
         Utils.getUserNode().updateChildren(updates);
@@ -192,7 +186,7 @@ public class ContactEditorActivity extends BaseDetailsActivity implements View.O
     @Override
     public void onClick(View view) {
         switch (view.getId()){
-            case R.id.ic_action_return:
+            case R.id.ic_action_date_return:
                 showDatePickerDialog();
                 break;
             case R.id.return_date_textView:

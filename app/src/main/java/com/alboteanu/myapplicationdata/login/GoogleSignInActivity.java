@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.alboteanu.myapplicationdata;
+package com.alboteanu.myapplicationdata.login;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,10 +25,14 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alboteanu.myapplicationdata.BaseActivity;
+import com.alboteanu.myapplicationdata.MainActivity;
+import com.alboteanu.myapplicationdata.R;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -40,18 +45,21 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 public class GoogleSignInActivity extends BaseActivity implements
-        View.OnClickListener {
+        View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleApiClient mGoogleApiClient;
     private static final String TAG = "GoogleSignInActivity";
     private static final int RC_SIGN_IN = 9001;
-
+    public FirebaseAuth mAuth;
     private TextView mStatusTextView;
     private TextView mDetailTextView;
+    public ProgressDialog mProgressDialog;
+    FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -140,7 +148,7 @@ public class GoogleSignInActivity extends BaseActivity implements
 
     private void onAuthSuccess(FirebaseUser user) {
         // Write new user
-        Utils.writeNewUser(user.getEmail());
+        com.alboteanu.myapplicationdata.Utils.writeNewUser(user.getEmail());
 //        sendUserToMainActivity();
 //        finish();
     }
@@ -223,4 +231,32 @@ public class GoogleSignInActivity extends BaseActivity implements
                 });
     }
 
+    public void showProgressDialog() {
+        if (mProgressDialog == null) {
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setMessage(getString(R.string.loading));
+            mProgressDialog.setIndeterminate(true);
+        }
+
+        mProgressDialog.show();
+    }
+
+    public void hideProgressDialog() {
+        if (mProgressDialog != null && mProgressDialog.isShowing()) {
+            mProgressDialog.dismiss();
+        }
+    }
+
+
+    public void sendUserToMainActivity() {
+        /* Move user to LoginActivity, and remove the backstack */
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
 }

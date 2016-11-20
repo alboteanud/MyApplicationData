@@ -11,11 +11,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.alboteanu.myapplicationdata.models.ContactS;
+import com.alboteanu.myapplicationdata.login.LogInActivity;
+import com.alboteanu.myapplicationdata.models.ContactShort;
 import com.alboteanu.myapplicationdata.models.DateToReturn;
 import com.alboteanu.myapplicationdata.viewholder.PostHolder;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,9 +39,9 @@ import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_NAME;
 import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN_DATE;
 import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN_DATES;
 
-public class ListActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener {
-    private static final String TAG = "ListActivity";
-    private FirebaseRecyclerAdapter<ContactS, PostHolder> firebaseRecyclerAdapter;
+public class MainActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener {
+    private static final String TAG = "MainActivity";
+    private FirebaseRecyclerAdapter<ContactShort, PostHolder> firebaseRecyclerAdapter;
     Toolbar toolbar;
     private Menu menu;
     String[] allPhonesArray;
@@ -56,7 +58,7 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(ListActivity.this, ContactEditorActivity.class));
+                startActivity(new Intent(MainActivity.this, ContactEditorActivity.class));
             }
         });
 
@@ -76,19 +78,19 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
 //        Log.d(TAG, "postsQuery.toString() " + postsQuery.toString());
 
         final long CurrentTime = System.currentTimeMillis();
-        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<ContactS, PostHolder>(ContactS.class, R.layout.contact,
+        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<ContactShort, PostHolder>(ContactShort.class, R.layout.contact,
                 PostHolder.class, postsQuery) {
             @Override
-            protected void populateViewHolder(final PostHolder viewHolder, final ContactS contactS, final int position) {
+            protected void populateViewHolder(final PostHolder viewHolder, final ContactShort contactShort, final int position) {
                 final DatabaseReference postRef = getRef(position);
                 final String contactKey = postRef.getKey();
-                viewHolder.bindToPost(contactS);
-                if (contactS.date != 0 && (CurrentTime > contactS.date)) {
+                viewHolder.bindToPost(contactShort);
+                if (contactShort.date != 0 && (CurrentTime > contactShort.date)) {
                     viewHolder.ball.setVisibility(View.VISIBLE);
                     viewHolder.ball.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            String[] phone = new  String[]{contactS.phone};
+                            String[] phone = new  String[]{contactShort.phone};
                             Utils.composeSMS(phone, getApplication());
                         }
                     });
@@ -96,11 +98,11 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(ListActivity.this, QuickContactActivity.class);
+                        Intent intent = new Intent(MainActivity.this, QuickContactActivity.class);
                         intent.putExtra(EXTRA_CONTACT_KEY, contactKey);
-//                        intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_NAME, contactS.nameText);
-//                        intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_PHONE, contactS.phoneText);
-                        intent.putExtra(FIREBASE_LOCATION_CONTACT_S, contactS);
+//                        intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_NAME, contactShort.nameText);
+//                        intent.putExtra(ContactEditorActivity.EXTRA_CONTACT_PHONE, contactShort.phoneText);
+                        intent.putExtra(FIREBASE_LOCATION_CONTACT_S, contactShort);
                         startActivity(intent);
                     }
                 });
@@ -114,6 +116,7 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
         super.onResume();
         toolbar.setTitle(Utils.getSavedTitle(this));
         populateRecyclerView();
+        Log.d("MainActivity resumed", "savedEmail  " + getSavedEmail());
     }
 
     @Override
@@ -140,7 +143,7 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            startActivity(new Intent(ListActivity.this, SettingsActivity.class));
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             return true;
         } else if (id == R.id.action_send_email_to_all) {
             Utils.composeEmail(this, allEmailsArray, "subject");
@@ -153,7 +156,7 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
             Utils.composeSMS(expiredPhonesArray, this);
             return true;
         }if (id == R.id.action_logout) {
-            logOut();
+            FirebaseAuth.getInstance().signOut();
             goToSignInActivity();
             return true;
         }
@@ -161,13 +164,9 @@ public class ListActivity extends BaseActivity implements GoogleApiClient.OnConn
         return super.onOptionsItemSelected(item);
     }
 
-    private void logOut() {
-        // Firebase sign out
-        mAuth.signOut();
-    }
 
     private void goToSignInActivity() {
-        Intent intent = new Intent(this, EmailPasswordActivity.class);
+        Intent intent = new Intent(this, LogInActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();

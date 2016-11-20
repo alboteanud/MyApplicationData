@@ -25,7 +25,7 @@
     <string name="back">Back</string>
     <string name="display_title_text_key">DisplayName</string>
     <string name="custom_text_key">my_custom_text</string>
-    <string name="confirmation_dialog_delete">Delete contact?</string>
+    <string name="confirmation_dialog_delete">Delete contactLong?</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="title_activity_edit_details">Edit</string>
@@ -50,5 +50,8 @@
     <string name="need_email">An email been sent to %s</string>
     <string name="ChoseEmailClient">ChoseEmailClient</string>
     <string name="have_account">I already have an account</string>
-    <string name="saved_email">saved_email_key</string>
+    <string name="next_button_text">next</string>
+    <string name="account_email">Account email</string>
+    <string name="account_password">Account password</string>
+    <string name="preference_file_key">com.alboteanu.myappicationdata.PREFERENCE_FILE_KEY</string>
 </resources>

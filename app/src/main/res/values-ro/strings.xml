@@ -37,14 +37,17 @@
     <string name="saved">SALVAT</string>
     <string name="back">INAPOI</string>
     <string name="confirmation_dialog_delete">Stergeti contactul?</string>
-    <string name="confirmation_dialog_delete_message">Acest contact va fi sters.</string>
+    <string name="confirmation_dialog_delete_message">Acest contactLong va fi sters.</string>
     <string name="ok">DA</string>
     <string name="cancel">NU</string>
-    <string name="title_activity_edit_details">Edit contact</string>
+    <string name="title_activity_edit_details">Edit contactLong</string>
     <string name="action_edit">Edit</string>
     <string name="action_save">Save</string>
     <string name="invalid_email">Invalid email</string>
     <string name="return_date_hint">Return date</string>
     <string name="need_email">Ti-am trimis un email la %s</string>
     <string name="have_account">Am deja cont</string>
+    <string name="next_button_text">next</string>
+    <string name="account_email">Account email</string>
+    <string name="account_password">Account password</string>
 </resources>

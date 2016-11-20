@@ -60,7 +60,7 @@
             android:layout_gravity="center_vertical"/>
 
         <ImageView
-            android:id="@+id/ic_action_return"
+            android:id="@+id/ic_action_date_return"
             android:onClick="onClick"
             android:src="@drawable/ic_action_return"
             android:layout_gravity="center"/>

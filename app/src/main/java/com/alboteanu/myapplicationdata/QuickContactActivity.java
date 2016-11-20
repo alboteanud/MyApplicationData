@@ -9,7 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.alboteanu.myapplicationdata.models.ContactS;
+import com.alboteanu.myapplicationdata.models.ContactShort;
+
 import java.util.Calendar;
 
 import static com.alboteanu.myapplicationdata.Constants.EXTRA_CONTACT_KEY;
@@ -25,32 +26,36 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        if (contact == null) {
+        if (contactLong == null) {
             getContactFromFirebaseAndUpdateUI();
+        }else if(getIntent().hasExtra(FIREBASE_LOCATION_CONTACT_S)) {
+            contactShort = (ContactShort) getIntent().getExtras().getSerializable(FIREBASE_LOCATION_CONTACT_S);
+            name = contactShort.name;
+            phone = contactShort.phone;
+            date = contactShort.date;
         }
         updateUI();
     }
 
     public void updateUI() {
-        if(contact != null){
-            ((TextView) findViewById(R.id.name)).setText(contact.name);
-            ((TextView) findViewById(R.id.phone)).setText(contact.phone);
-            ((TextView) findViewById(R.id.email)).setText(contact.email);
-            ((TextView) findViewById(R.id.other)).setText(contact.other);
-            if(contact.date != 0) {
+        if(contactLong != null){
+            ((TextView) findViewById(R.id.name)).setText(contactLong.name);
+            ((TextView) findViewById(R.id.phone)).setText(contactLong.phone);
+            ((TextView) findViewById(R.id.email)).setText(contactLong.email);
+            ((TextView) findViewById(R.id.other)).setText(contactLong.other);
+            if(contactLong.date != 0) {
                 Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(contact.date);
+                calendar.setTimeInMillis(contactLong.date);
                 String dateString = Utils.calendarToString(calendar);
                 ((TextView) findViewById(R.id.return_date_textView)).setText(dateString);
             }
         }   //short update
-        else if(getIntent().hasExtra(FIREBASE_LOCATION_CONTACT_S)){
-            ContactS contactS = (ContactS) getIntent().getExtras().getSerializable(FIREBASE_LOCATION_CONTACT_S);
-            ((TextView) findViewById(R.id.name)).setText(contactS.name);
-            ((TextView) findViewById(R.id.phone)).setText(contactS.phone);
-            if(contactS.date != 0) {
+        else if(contactShort != null){
+            ((TextView) findViewById(R.id.name)).setText(contactShort.name);
+            ((TextView) findViewById(R.id.phone)).setText(contactShort.phone);
+            if(contactShort.date != 0) {
                 Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(contactS.date);
+                calendar.setTimeInMillis(contactShort.date);
                 String dateString = Utils.calendarToString(calendar);
                 ((TextView) findViewById(R.id.return_date_textView)).setText(dateString);
             }
@@ -80,11 +85,11 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
     private void goToEditActivity() {
         Intent intent = new Intent(QuickContactActivity.this, ContactEditorActivity.class);
         intent.putExtra(EXTRA_CONTACT_KEY, contactKey);
-        if (contact != null){
-            intent.putExtra(FIREBASE_LOCATION_CONTACT, contact);
+        if (contactLong != null){
+            intent.putExtra(FIREBASE_LOCATION_CONTACT, contactLong);
         } else if(getIntent().hasExtra(FIREBASE_LOCATION_CONTACT_S)){
-            ContactS contactS = (ContactS) getIntent().getExtras().getSerializable(FIREBASE_LOCATION_CONTACT_S);
-            intent.putExtra(FIREBASE_LOCATION_CONTACT_S, contactS);
+            ContactShort contactShort = (ContactShort) getIntent().getExtras().getSerializable(FIREBASE_LOCATION_CONTACT_S);
+            intent.putExtra(FIREBASE_LOCATION_CONTACT_S, contactShort);
         }
         startActivity(intent);
     }
@@ -95,21 +100,24 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ic_action_phone:
-                if (contact != null){
-                    startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + contact.phone)));
+                if (contactLong != null){
+                    startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + contactLong.phone)));
                 } else if(getIntent().hasExtra(FIREBASE_LOCATION_CONTACT_S)) {
-                    ContactS contactS = (ContactS) getIntent().getExtras().getSerializable(FIREBASE_LOCATION_CONTACT_S);
-                    startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + contactS.phone)));
+                    ContactShort contactShort = (ContactShort) getIntent().getExtras().getSerializable(FIREBASE_LOCATION_CONTACT_S);
+                    startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + contactShort.phone)));
                 }
                 break;
             case R.id.ic_action_email:
-
+                if(contactLong != null && contactLong.email != null){
+                    String[] emails = new String[]{ contactLong.email};
+                    Utils.composeEmail(v.getContext(), emails, null);
+                }
                 break;
             case R.id.ic_action_note:
 
                 break;
-            case R.id.ic_action_return:
-
+            case R.id.ic_action_date_return:
+                goToEditActivity();
                 break;
         }
     }

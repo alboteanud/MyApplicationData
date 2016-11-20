@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".EmailPasswordActivity"
+            android:name=".login.LogInActivity"
             android:label="@string/label_emailpassword"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
@@ -19,27 +19,29 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GoogleSignInActivity"
-            android:theme="@style/AppTheme"/>
+            android:name=".login.GoogleSignInActivity"
+            android:theme="@style/AppTheme" />
         <activity
-            android:name=".ListActivity"
+            android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".QuickContactActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".ListActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ContactEditorActivity"
             android:label="@string/title_activity_edit_details"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
+            android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".ListActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".login.CreateEmailActivity" />
+        <activity android:name=".login.CreatePasswordActivity"></activity>
     </application>
 
 </manifest>

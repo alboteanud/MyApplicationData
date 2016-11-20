@@ -20,7 +20,7 @@ import static com.alboteanu.myapplicationdata.BaseActivity.getDatabase;
 /**
  * Created by albot on 20.09.2016.
  */
-class Utils {
+public class Utils {
 
 
  static String getSavedTitle(Context context){
@@ -52,7 +52,7 @@ class Utils {
         }
     }
 
-    static boolean isValidEmail(CharSequence target) {
+    public static boolean isValidEmail(CharSequence target) {
         if (target == null) {
             return false;
         } else {
@@ -74,13 +74,13 @@ class Utils {
         }
     }
 
-    static void composeEmail(ListActivity listActivity, String[] addresses, String subject) {
+    static void composeEmail(Context context, String[] addresses, String subject) {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:")); // only emailText apps should handle this
         intent.putExtra(Intent.EXTRA_EMAIL, addresses);
 //        intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-        if (intent.resolveActivity(listActivity.getPackageManager()) != null) {
-            listActivity.startActivity(intent);
+        if (intent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(intent);
         }
     }
 
@@ -91,10 +91,8 @@ class Utils {
     }
 //    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_format));
 
-    static void writeNewUser(String email) {
-        //        String username = Utils.usernameFromEmail(user.getEmail());
-        Calendar calendar = Calendar.getInstance();  //now
-        User user = new User(email, calendarToString(calendar));
+    public static void writeNewUser(String email) { //now
+        User user = new User(email, calendarToString(Calendar.getInstance()));
         Map<String, Object> userMap = user.toMap();
         Utils.getUserNode().child("-user").updateChildren(userMap);
 

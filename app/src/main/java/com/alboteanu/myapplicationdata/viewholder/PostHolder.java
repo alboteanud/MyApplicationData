@@ -6,7 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alboteanu.myapplicationdata.R;
-import com.alboteanu.myapplicationdata.models.ContactS;
+import com.alboteanu.myapplicationdata.models.ContactShort;
 
 public class PostHolder extends RecyclerView.ViewHolder {
 
@@ -22,9 +22,9 @@ public class PostHolder extends RecyclerView.ViewHolder {
         ball = (ImageView) itemView.findViewById(R.id.star);
     }
 
-    public void bindToPost(ContactS contactS) {
-        name.setText(contactS.name);
-        phone.setText(contactS.phone);
+    public void bindToPost(ContactShort contactShort) {
+        name.setText(contactShort.name);
+        phone.setText(contactShort.phone);
 
     }
 

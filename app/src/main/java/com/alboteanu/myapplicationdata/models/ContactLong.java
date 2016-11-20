@@ -15,7 +15,7 @@ import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN
 
 
 @IgnoreExtraProperties
-public class Contact implements Serializable {
+public class ContactLong implements Serializable {
     public String name;
     public String phone;
     public String email;
@@ -23,11 +23,11 @@ public class Contact implements Serializable {
     public long date;
 
 
-    public Contact() {
-        // Default constructor required for calls to DataSnapshot.getValue(ContactS.class)
+    public ContactLong() {
+        // Default constructor required for calls to DataSnapshot.getValue(ContactShort.class)
     }
 
-    public Contact(String name, String phone, String email, String other, long date) {
+    public ContactLong(String name, String phone, String email, String other, long date) {
         this.name = name;
         this.phone = phone;
         this.email = email;

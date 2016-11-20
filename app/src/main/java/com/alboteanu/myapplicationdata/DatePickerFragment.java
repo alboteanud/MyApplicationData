@@ -35,6 +35,6 @@ public class DatePickerFragment extends DialogFragment
         String dateString = Utils.calendarToString(calendar);
         ((CheckBox) getActivity().findViewById(R.id.checkBox6Luni)).setChecked(false);  //implica stregere datei TextView10 - DATA
         ((TextView)getActivity().findViewById(R.id.return_date_textView)).setText(dateString);
-        ((ContactEditorActivity)getActivity()).returnDate = calendar.getTimeInMillis();
+        ((ContactEditorActivity)getActivity()).date = calendar.getTimeInMillis();
     }
 }
