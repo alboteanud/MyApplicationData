@@ -154,7 +154,6 @@ public class GoogleSignInActivity extends BaseActivity implements
 //        finish();
     }
 
-    // [START signin]
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -191,7 +190,6 @@ public class GoogleSignInActivity extends BaseActivity implements
         }
     }
 
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -218,7 +216,6 @@ public class GoogleSignInActivity extends BaseActivity implements
         }
     }
 
-
     public void showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
@@ -234,7 +231,6 @@ public class GoogleSignInActivity extends BaseActivity implements
             mProgressDialog.dismiss();
         }
     }
-
 
     public void sendUserToMainActivity() {
         /* Move user to LoginActivity, and remove the backstack */

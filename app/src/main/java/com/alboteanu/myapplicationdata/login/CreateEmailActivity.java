@@ -45,6 +45,4 @@ class CreateEmailActivity extends BaseActivity {
         return true;
     }
 
-
-
 }

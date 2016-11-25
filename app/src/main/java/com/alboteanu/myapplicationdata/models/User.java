@@ -8,8 +8,7 @@ import java.util.Map;
 
 @IgnoreExtraProperties
 public class User {
-
-    public String timeJoined;
+    private String timeJoined;
     public String email;
 
     public User() {

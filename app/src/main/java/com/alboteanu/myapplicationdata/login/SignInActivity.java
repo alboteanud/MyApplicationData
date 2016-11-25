@@ -114,7 +114,6 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
         }
     }
 
-
     @Override
     public void onStart() {
         super.onStart();

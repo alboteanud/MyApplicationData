@@ -13,7 +13,6 @@ import com.alboteanu.myapplicationdata.models.Contact;
 import static com.alboteanu.myapplicationdata.R.drawable.shape_oval;
 
 public class ContactHolder extends RecyclerView.ViewHolder {
-
     public TextView name;
     public ImageView clepsidra;
     public TextView letterIcon;
@@ -29,6 +28,5 @@ public class ContactHolder extends RecyclerView.ViewHolder {
     public void bindContact(Contact contact) {
         name.setText(contact.name);
     }
-
 
 }
