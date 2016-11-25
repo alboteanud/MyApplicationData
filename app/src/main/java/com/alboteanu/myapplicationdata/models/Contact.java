@@ -7,31 +7,36 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_EMAIL;
-import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_NAME;
-import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_OTHER;
-import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_PHONE;
-import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN_DATE;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAIL;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAME;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_OTHER;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONE;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN_DATE;
 
 
 @IgnoreExtraProperties
-public class ContactLong implements Serializable {
+public class Contact implements Serializable {
     public String name;
     public String phone;
+    public long date;
     public String email;
     public String other;
-    public long date;
 
-
-    public ContactLong() {
-        // Default constructor required for calls to DataSnapshot.getValue(ContactShort.class)
+    public Contact() {
+        // Default constructor required for calls to DataSnapshot.getValue(Contact.class)
     }
 
-    public ContactLong(String name, String phone, String email, String other, long date) {
+    public Contact(String name, String phone, String email, String other, long date) {
         this.name = name;
         this.phone = phone;
+        this.date = date;
         this.email = email;
         this.other = other;
+    }
+
+    public Contact(String name, long date) {
+        this.name = name;
+//        this.phone = phone;
         this.date = date;
     }
 

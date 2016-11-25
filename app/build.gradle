@@ -5,7 +5,7 @@ android {
     buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "com.alboteanu.myapplicationdata"
-        minSdkVersion 19
+        minSdkVersion 22
         targetSdkVersion 25
         versionCode 5
         versionName "1.0"
@@ -23,7 +23,7 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     /* androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-                            androidTestCompile 'com.android.support.test:runner:0.5'*/
+                                androidTestCompile 'com.android.support.test:runner:0.5'*/
     compile 'com.google.android.gms:play-services-auth:9.6.1'
     compile 'com.google.android.gms:play-services-auth:9.6.1'
     compile 'com.android.support:appcompat-v7:25.0.0'

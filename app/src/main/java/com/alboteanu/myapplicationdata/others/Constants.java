@@ -1,11 +1,11 @@
-package com.alboteanu.myapplicationdata;
+package com.alboteanu.myapplicationdata.others;
 
 public final class Constants {
 
     public static final String FIREBASE_LOCATION_CONTACT_S = "contacts-short";
-    public static final String FIREBASE_LOCATION_CONTACT = "contacts-long";
-    public static final String FIREBASE_LOCATION_CONTACTS_PHONES = "all-phones";
-    public static final String FIREBASE_LOCATION_RETURN_DATES = "all-dates";
+    public static final String FIREBASE_LOCATION_CONTACTS = "contacts";
+//    public static final String FIREBASE_LOCATION_CONTACTS_PHONES = "all-phones";
+//    public static final String FIREBASE_LOCATION_RETURN_DATES = "all-dates";
 
     public static final String FIREBASE_LOCATION_NAME = "name";
     public static final String FIREBASE_LOCATION_PHONE = "phone";
@@ -14,6 +14,10 @@ public final class Constants {
     public static final String FIREBASE_LOCATION_OTHER = "other";
 
     public static final String EXTRA_CONTACT_KEY = "key";
+    public static final String EXTRA_CONTACT_NAME = "name";
+
+    public static final String KEY_PROVIDER = "PROVIDER";
+    public static final String KEY_ENCODED_EMAIL = "ENCODED_EMAIL";
 
 
 }

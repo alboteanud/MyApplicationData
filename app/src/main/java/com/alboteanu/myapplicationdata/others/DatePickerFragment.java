@@ -1,12 +1,16 @@
-package com.alboteanu.myapplicationdata;
+package com.alboteanu.myapplicationdata.others;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.TextView;
+
+import com.alboteanu.myapplicationdata.R;
+import com.alboteanu.myapplicationdata.screens.ContactEditorActivity;
 
 import java.util.Calendar;
 
@@ -35,6 +39,6 @@ public class DatePickerFragment extends DialogFragment
         String dateString = Utils.calendarToString(calendar);
         ((CheckBox) getActivity().findViewById(R.id.checkBox6Luni)).setChecked(false);  //implica stregere datei TextView10 - DATA
         ((TextView)getActivity().findViewById(R.id.return_date_textView)).setText(dateString);
-        ((ContactEditorActivity)getActivity()).date = calendar.getTimeInMillis();
+        ((ContactEditorActivity)getActivity()).newDate = calendar.getTimeInMillis();
     }
 }

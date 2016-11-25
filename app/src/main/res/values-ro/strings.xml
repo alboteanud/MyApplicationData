@@ -37,10 +37,10 @@
     <string name="saved">SALVAT</string>
     <string name="back">INAPOI</string>
     <string name="confirmation_dialog_delete">Stergeti contactul?</string>
-    <string name="confirmation_dialog_delete_message">Acest contactLong va fi sters.</string>
+    <string name="confirmation_dialog_delete_message">Acest contact va fi sters.</string>
     <string name="ok">DA</string>
     <string name="cancel">NU</string>
-    <string name="title_activity_edit_details">Edit contactLong</string>
+    <string name="title_activity_edit_details">Edit contact</string>
     <string name="action_edit">Edit</string>
     <string name="action_save">Save</string>
     <string name="invalid_email">Invalid email</string>
@@ -50,4 +50,9 @@
     <string name="next_button_text">next</string>
     <string name="account_email">Account email</string>
     <string name="account_password">Account password</string>
+    <string name="action_campaign">Promotional campaign</string>
+    <string name="text_button_send_smses">Send sms to all</string>
+    <string name="text_button_send_emails">Emails to all</string>
+    <string name="text_button_send_to_exprired">Send sms to expired</string>
+    <string name="text_button_send_email_to_exprired">Send emails to expired</string>
 </resources>

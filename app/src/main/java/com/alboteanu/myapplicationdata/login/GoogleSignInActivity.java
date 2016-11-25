@@ -26,7 +26,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alboteanu.myapplicationdata.BaseActivity;
-import com.alboteanu.myapplicationdata.MainActivity;
+import com.alboteanu.myapplicationdata.others.Utils;
+import com.alboteanu.myapplicationdata.screens.MainActivity;
 import com.alboteanu.myapplicationdata.R;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -96,7 +97,7 @@ public class GoogleSignInActivity extends BaseActivity implements
         mStatusTextView = (TextView) findViewById(R.id.status);
         mDetailTextView = (TextView) findViewById(R.id.detail);
 
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
+        findViewById(R.id.google_button).setOnClickListener(this);
 //        findViewById(R.id.sign_out_button).setOnClickListener(this);
 //        findViewById(R.id.disconnect_button).setOnClickListener(this);
     }
@@ -148,7 +149,7 @@ public class GoogleSignInActivity extends BaseActivity implements
 
     private void onAuthSuccess(FirebaseUser user) {
         // Write new user
-        com.alboteanu.myapplicationdata.Utils.writeNewUser(user.getEmail());
+        Utils.writeNewUser(user.getEmail());
 //        sendUserToMainActivity();
 //        finish();
     }
@@ -179,13 +180,13 @@ public class GoogleSignInActivity extends BaseActivity implements
             mStatusTextView.setText(getString(R.string.google_status_fmt, user.getEmail()));
             mDetailTextView.setText(getString(R.string.firebase_status_fmt, user.getUid()));
 
-            findViewById(R.id.sign_in_button).setVisibility(View.GONE);
+            findViewById(R.id.google_button).setVisibility(View.GONE);
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.VISIBLE);
         } else {
             mStatusTextView.setText(R.string.log_in_text);
             mDetailTextView.setText(null);
 
-            findViewById(R.id.sign_in_button).setVisibility(View.VISIBLE);
+            findViewById(R.id.google_button).setVisibility(View.VISIBLE);
             findViewById(R.id.sign_out_and_disconnect).setVisibility(View.GONE);
         }
     }
@@ -194,7 +195,7 @@ public class GoogleSignInActivity extends BaseActivity implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.sign_in_button:
+            case R.id.google_button:
                 signIn();
                 break;
             case R.id.disconnect_button:
@@ -217,19 +218,6 @@ public class GoogleSignInActivity extends BaseActivity implements
         }
     }
 
-    private void logOut() {
-        // Firebase sign out
-        mAuth.signOut();
-
-        // Google sign out
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override
-                    public void onResult(@NonNull Status status) {
-
-                    }
-                });
-    }
 
     public void showProgressDialog() {
         if (mProgressDialog == null) {

@@ -3,52 +3,47 @@ package com.alboteanu.myapplicationdata.login;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
 import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
-import com.alboteanu.myapplicationdata.Utils;
+import com.alboteanu.myapplicationdata.others.Utils;
 
-public class CreateEmailActivity extends BaseActivity {
-    String email;
-    EditText mEmailField;
+class CreateEmailActivity extends BaseActivity {
+    EditText emailField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account_email);
-        email = getIntent().getStringExtra("email");
-        mEmailField = (EditText) findViewById(R.id.field_email);
-        mEmailField.setText(email);
-        mEmailField.setSelection(email.length());
         findViewById(R.id.next_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(validateEmail()){
-                    email = mEmailField.getText().toString();
+                String email = emailField.getText().toString();
+                if(validateEmail(email)){
                     Intent intent = new Intent(CreateEmailActivity.this, CreatePasswordActivity.class);
                     intent.putExtra("email", email);
                     startActivity(intent);
                 }
             }
         });
+        emailField = (EditText) findViewById(R.id.field_email);
+        emailField.setText(getIntent().getStringExtra("email"));
+        emailField.setSelection(emailField.getText().length());
     }
 
-    private boolean validateEmail() {
-        email = mEmailField.getText().toString();
+    boolean validateEmail(String email) {
         if (TextUtils.isEmpty(email)) {
-            mEmailField.setError(getString(R.string.required));
+            emailField.setError(getString(R.string.required));
             return false;
-        } else if (!Utils.isValidEmail(email)) {
-            mEmailField.setError(getString(R.string.invalid_email));
+        } else if (!Utils.isValidEmail(emailField.getText().toString())) {
+            emailField.setError(getString(R.string.invalid_email));
             return false;
         } else
-            mEmailField.setError(null);
+            emailField.setError(null);
         return true;
     }
-
 
 
 

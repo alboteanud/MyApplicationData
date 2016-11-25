@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".login.LogInActivity"
+            android:name=".login.SignInActivity"
             android:label="@string/label_emailpassword"
             android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
@@ -22,26 +22,36 @@
             android:name=".login.GoogleSignInActivity"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".MainActivity"
+            android:name=".screens.MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".QuickContactActivity"
+            android:name=".screens.QuickContactActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".screens.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".ContactEditorActivity"
+            android:name=".screens.ContactEditorActivity"
             android:label="@string/title_activity_edit_details"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".screens.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".screens.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".login.CreateEmailActivity" />
-        <activity android:name=".login.CreatePasswordActivity"></activity>
+        <activity android:name=".login.CreatePasswordActivity" />
+        <activity android:name=".login.BaseLogInActivity" />
+        <activity
+            android:name=".CampaignActivity"
+            android:label="@string/title_activity_campaign"
+            android:parentActivityName=".screens.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.alboteanu.myapplicationdata.screens.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

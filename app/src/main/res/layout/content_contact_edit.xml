@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:isScrollContainer="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".ContactEditorActivity"
+    tools:context=".screens.ContactEditorActivity"
     tools:showIn="@layout/activity_contact_edit">
 
 
@@ -67,9 +67,9 @@
             android:inputType="text"
             android:layout_gravity="center_vertical"/>
 
-        <ImageView android:src="@drawable/ic_action_return"
+        <ImageView android:src="@drawable/ic_action_return_empty"
             android:layout_gravity="center"
-            android:onClick="onClick"/>
+            android:id="@+id/clepsidra_icon"/>
 
         <TextView
             android:id="@+id/return_date_textView"
@@ -78,8 +78,7 @@
             android:focusableInTouchMode="true"
             android:gravity="center_vertical"
             android:hint="@string/return_date_hint"
-            android:layout_gravity="center_vertical"
-            android:onClick="onClick"/>
+            android:layout_gravity="center_vertical"/>
 
         <Space android:layout_width="@dimen/icons_column_width"/>
 

@@ -3,23 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.alboteanu.mylist.MainActivity">
 
-
-    <item
-        android:id="@+id/action_send_sms_to_all"
-        android:orderInCategory="100"
-        android:text="@string/action_send_email_to_all"
-        android:title="@string/action_send_sms_to_all"
-        app:showAsAction="never"
-        android:visible="false"/>
-
-    <item
-        android:id="@+id/action_send_email_to_all"
-        android:orderInCategory="100"
-        android:text="@string/action_send_email_to_all"
-        android:title="@string/action_send_email_to_all"
-        app:showAsAction="never"
-        android:visible="false"/>
-
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
@@ -34,12 +17,13 @@
         android:title="@string/action_logout"
         app:showAsAction="never" />
 
+
     <item
-        android:id="@+id/action_sms_to_expired"
+        android:id="@+id/action_campaign"
         android:orderInCategory="100"
-        android:text="@string/action_notifications"
-        android:visible="false"
-        app:showAsAction="ifRoom"
-        />
+        android:text="@string/action_campaign"
+        android:title="@string/action_campaign"
+        app:showAsAction="never" />
+
 
 </menu>

@@ -1,4 +1,4 @@
-package com.alboteanu.myapplicationdata;
+package com.alboteanu.myapplicationdata.screens;
 
 import android.app.DialogFragment;
 import android.content.DialogInterface;
@@ -6,40 +6,32 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 
-import com.alboteanu.myapplicationdata.models.ContactLong;
+import com.alboteanu.myapplicationdata.R;
+import com.alboteanu.myapplicationdata.models.Contact;
+import com.alboteanu.myapplicationdata.BaseActivity;
+import com.alboteanu.myapplicationdata.others.DatePickerFragment;
+import com.alboteanu.myapplicationdata.others.Utils;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-import static com.alboteanu.myapplicationdata.Constants.EXTRA_CONTACT_KEY;
-import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT;
-import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_CONTACT_S;
-import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_EMAIL;
-import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_PHONE;
-import static com.alboteanu.myapplicationdata.Constants.FIREBASE_LOCATION_RETURN_DATES;
+import static com.alboteanu.myapplicationdata.R.layout.contact;
+import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACTS;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACT_S;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAIL;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONE;
 
-public class BaseDetailsActivity extends BaseActivity implements
-        GoogleApiClient.OnConnectionFailedListener {
-    String contactKey, name, phone;
-    long date;
-    ContactLong contactLong;
-    ContactShort contactShort;
+public class BaseDetailsActivity extends BaseActivity  {
+    public String contactKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         contactKey = getIntent().getStringExtra(EXTRA_CONTACT_KEY);
-        if(getIntent().hasExtra(FIREBASE_LOCATION_CONTACT)) {
-            contactLong = (ContactLong) getIntent().getExtras().getSerializable(FIREBASE_LOCATION_CONTACT);
-            updateLocalFields(contactLong);
-        }
-    }
+//        contact = (Contact) getIntent().getExtras().getSerializable(FIREBASE_LOCATION_CONTACTS);
 
-    private void updateLocalFields(ContactLong contactLong) {
-        name = contactLong.name;
-        phone = contactLong.phone;
-        date = contactLong.date;
     }
 
     public void sendUserToMainActivity() {
@@ -52,10 +44,9 @@ public class BaseDetailsActivity extends BaseActivity implements
 
     public void deleteContact(String contactKey) {
         Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT_S + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT + "/" + contactKey).removeValue();
+        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS + "/" + contactKey).removeValue();
         Utils.getUserNode().child(FIREBASE_LOCATION_EMAIL + "/" + contactKey).removeValue();
         Utils.getUserNode().child(FIREBASE_LOCATION_PHONE + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(FIREBASE_LOCATION_RETURN_DATES + "/" + contactKey).removeValue();
     }
 
     public void createDeleteDialogAlert(final String contactKey) {
@@ -81,22 +72,19 @@ public class BaseDetailsActivity extends BaseActivity implements
         dialog.show();
     }
 
-
     public void showDatePickerDialog() {
         DialogFragment dialogFragment = new DatePickerFragment();
         dialogFragment.show(getFragmentManager(), "datePicker");
     }
 
     public void getContactFromFirebaseAndUpdateUI() {
-        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT).child(contactKey)
+        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).child(contactKey)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        ContactLong receivedContactLong = dataSnapshot.getValue(ContactLong.class);
-                        if (receivedContactLong != null) {
-                            contactLong = receivedContactLong;
-                            updateUI();
-                        }
+                        Contact contact = dataSnapshot.getValue(Contact.class);
+                        updateUI(contact);
+
                     }
 
                     @Override
@@ -105,7 +93,7 @@ public class BaseDetailsActivity extends BaseActivity implements
                 });
     }
 
-    public void updateUI() {
+    public void updateUI(Contact contact) {
 
     }
 
