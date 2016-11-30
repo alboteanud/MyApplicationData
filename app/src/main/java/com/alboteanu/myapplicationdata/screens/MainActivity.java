@@ -23,10 +23,14 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
+import java.util.Calendar;
+
+import static com.alboteanu.myapplicationdata.R.layout.contact;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
-import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_NAME;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACT_S;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAME;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN_DATE;
+import static com.alboteanu.myapplicationdata.others.Utils.getUid;
 
 public class MainActivity extends BaseActivity {
     private FirebaseRecyclerAdapter<Contact, ContactHolder> firebaseRecyclerAdapter;
@@ -42,7 +46,7 @@ public class MainActivity extends BaseActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, ContactEditorActivity.class));
+                startActivity(new Intent(MainActivity.this, EditNewContactActivity.class));
             }
         });
 
@@ -55,30 +59,32 @@ public class MainActivity extends BaseActivity {
         mRecycler.setLayoutManager(mManager);
         Query postsQuery = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT_S).orderByChild(FIREBASE_LOCATION_NAME);
 
-        final long timeNow = System.currentTimeMillis();
-        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Contact, ContactHolder>(Contact.class, R.layout.contact,
+        final Calendar calendarNow = Calendar.getInstance();
+        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Contact, ContactHolder>(Contact.class, contact,
                 ContactHolder.class, postsQuery) {
             @Override
-            protected void populateViewHolder(final ContactHolder contactHolder, final Contact contactShort, final int position) {
-                final DatabaseReference postRef = getRef(position);
-                final String contactKey = postRef.getKey();
-                contactHolder.bindContact(contactShort);
-                if (contactShort.date != 0 && (timeNow > contactShort.date))
-                    contactHolder.clepsidra.setVisibility(View.VISIBLE);
-                int color = Utils.getColorFromString(contactShort.name);
+            protected void populateViewHolder(final ContactHolder contactHolder, final Contact contact, final int position) {
+                if (contact.retur.containsKey(getUid())) {
+                    Calendar calendarReturn = Calendar.getInstance();
+                    calendarReturn.setTimeInMillis(contact.retur.get(getUid()));
+                    if (calendarNow.after(calendarReturn))
+                        contactHolder.clepsidra.setVisibility(View.VISIBLE);
+                }
+                int color = Utils.getColorFromString(contact.name);
                 Drawable shape_oval = getDrawable(R.drawable.shape_oval);
                 shape_oval.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
                 contactHolder.letterIcon.setBackground(shape_oval);
-                contactHolder.letterIcon.setText(contactShort.name.substring(0, 1));
+                contactHolder.letterIcon.setText(contact.name.substring(0, 1));
                 contactHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        final DatabaseReference postRef = getRef(position);
                         Intent intent = new Intent(MainActivity.this, QuickContactActivity.class);
-                        intent.putExtra(EXTRA_CONTACT_KEY, contactKey);
-                        intent.putExtra(EXTRA_CONTACT_NAME, contactShort.name);
+                        intent.putExtra(EXTRA_CONTACT_KEY, postRef.getKey());
                         startActivity(intent);
                     }
                 });
+                contactHolder.bindContact(contact);
             }
         };
         mRecycler.setAdapter(firebaseRecyclerAdapter);
@@ -134,5 +140,8 @@ public class MainActivity extends BaseActivity {
         finish();
     }
 
+    private void setClepsidra(){
+
+    }
 
 }

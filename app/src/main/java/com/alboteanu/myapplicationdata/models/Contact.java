@@ -2,8 +2,6 @@ package com.alboteanu.myapplicationdata.models;
 
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
-
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,29 +13,26 @@ import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION
 
 
 @IgnoreExtraProperties
-public class Contact implements Serializable {
+public class Contact {
     public String name;
     public String phone;
-    public long date;
     public String email;
     public String other;
+    public Map<String, Long> retur = new HashMap<>();
 
     public Contact() {
         // Default constructor required for calls to DataSnapshot.getValue(Contact.class)
     }
 
-    public Contact(String name, String phone, String email, String other, long date) {
+    public Contact(String name, String phone, String email, String other) {
         this.name = name;
         this.phone = phone;
-        this.date = date;
         this.email = email;
         this.other = other;
     }
 
-    public Contact(String name, long date) {
+    public Contact(String name) {
         this.name = name;
-//        this.phone = phone;
-        this.date = date;
     }
 
     @Exclude
@@ -47,7 +42,7 @@ public class Contact implements Serializable {
         result.put(FIREBASE_LOCATION_PHONE, phone);
         result.put(FIREBASE_LOCATION_EMAIL, email);
         result.put(FIREBASE_LOCATION_OTHER, other);
-        result.put(FIREBASE_LOCATION_RETURN_DATE, date);
+        result.put(FIREBASE_LOCATION_RETURN_DATE, retur);
 
         return result;
     }

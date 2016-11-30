@@ -11,27 +11,23 @@ import com.alboteanu.myapplicationdata.models.Contact;
 import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.others.DatePickerFragment;
 import com.alboteanu.myapplicationdata.others.Utils;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-import static com.alboteanu.myapplicationdata.R.layout.contact;
-import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
+import java.util.Calendar;
+
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACTS;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACT_S;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAIL;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONE;
 
-public class BaseDetailsActivity extends BaseActivity  {
-    public String contactKey;
+public class BaseDetailsActivity extends BaseActivity implements DatePickerFragment.OnHeadlineSelectedListener {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        contactKey = getIntent().getStringExtra(EXTRA_CONTACT_KEY);
-//        contact = (Contact) getIntent().getExtras().getSerializable(FIREBASE_LOCATION_CONTACTS);
-
     }
 
     public void sendUserToMainActivity() {
@@ -77,7 +73,7 @@ public class BaseDetailsActivity extends BaseActivity  {
         dialogFragment.show(getFragmentManager(), "datePicker");
     }
 
-    public void getContactFromFirebaseAndUpdateUI() {
+    public void updateUIfromFirebase(String contactKey) {
         Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).child(contactKey)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -97,4 +93,8 @@ public class BaseDetailsActivity extends BaseActivity  {
 
     }
 
+    @Override
+    public void onDateSelected(Calendar calendar) {
+
+    }
 }

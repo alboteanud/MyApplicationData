@@ -40,22 +40,10 @@ import static com.alboteanu.myapplicationdata.R.id.email_sign_in_button;
 
 public class SignInActivity extends BaseActivity implements View.OnClickListener {
     EditText mEmailField, mPasswordField;
-    FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    sendUserToMainActivity();
-                }
-                // updateUI
-            }
-        };
-
         setContentView(R.layout.activity_emailpassword);
         mEmailField = (EditText) findViewById(R.id.field_email);
         mPasswordField = (EditText) findViewById(R.id.field_password);
@@ -117,14 +105,10 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
     @Override
     public void onStart() {
         super.onStart();
-        mAuth.addAuthStateListener(mAuthListener);
-    }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
+        // Check auth on Activity start
+        if (mAuth.getCurrentUser() != null) {
+            onAuthSuccess(mAuth.getCurrentUser());
         }
     }
 

@@ -15,6 +15,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -86,14 +87,18 @@ public class CampaignActivity extends BaseActivity
     }
 
     public void getExpired() {
-        final long currentTime = System.currentTimeMillis();
+        final Calendar currentTime = Calendar.getInstance();
         Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).orderByChild(FIREBASE_LOCATION_RETURN_DATE).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Contact dateToReturn = dataSnapshot.getValue(Contact.class);
-                if (dateToReturn.date != 0 && currentTime > dateToReturn.date ){
-                    phoneList.add(dateToReturn.phone);
+                Contact contact = dataSnapshot.getValue(Contact.class);
+                if(contact.retur.containsKey(FIREBASE_LOCATION_RETURN_DATE)) {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(contact.retur.get(FIREBASE_LOCATION_RETURN_DATE));
+                    if (currentTime.after(calendar)) {
+                        phoneList.add(contact.phone);
 //                    menu.findItem(R.id.action_sms_to_expired).setTitle(String.valueOf(phoneList.size())).setVisible(true);
+                    }
                 }
 
             }

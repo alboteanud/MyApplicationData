@@ -31,7 +31,12 @@
             android:parentActivityName=".screens.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".screens.ContactEditorActivity"
+            android:name=".screens.EditActivity"
+            android:label="@string/title_activity_edit_details"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".screens.EditNewContactActivity"
             android:label="@string/title_activity_edit_details"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
@@ -42,7 +47,6 @@
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".login.CreateEmailActivity" />
         <activity android:name=".login.CreatePasswordActivity" />
-        <activity android:name=".login.BaseLogInActivity" />
         <activity
             android:name=".CampaignActivity"
             android:label="@string/title_activity_campaign"

@@ -84,8 +84,11 @@ public class Utils {
     }
 
     public static String calendarToString(Calendar calendar) {
-        Date date = calendar.getTime();
-        String dateString = DateFormat.getDateInstance().format(date);
+        String dateString = null;
+        if(calendar != null) {
+            Date date = calendar.getTime();
+            dateString = DateFormat.getDateInstance().format(date);
+        }
         return dateString;
     }
 //    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_format));
@@ -132,5 +135,9 @@ public class Utils {
         Log.d("R G B", R +" " + G + " "  + B);
 
         return Color.rgb(R, G, B);
+    }
+
+    public static String getUid() {
+        return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 }

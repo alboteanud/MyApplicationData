@@ -10,7 +10,7 @@ import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.others.Utils;
 
-class CreateEmailActivity extends BaseActivity {
+public class CreateEmailActivity extends BaseActivity {
     EditText emailField;
 
     @Override

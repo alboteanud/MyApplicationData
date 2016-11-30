@@ -19,20 +19,21 @@ import com.alboteanu.myapplicationdata.models.Contact;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.alboteanu.myapplicationdata.R.layout.contact;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACT_S;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACTS;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAIL;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN_DATE;
+import static com.alboteanu.myapplicationdata.others.Utils.getUid;
 
 
-public class ContactEditorActivity extends BaseDetailsActivity
+public class EditActivity extends BaseDetailsActivity
         implements View.OnClickListener {
     CheckBox checkBox_6M;
     EditText nameText, phoneText, emailText, otherText;
-    public long newDate;
     private TextView returnText;
+    private String mContactKey;
+    private Calendar calendar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,32 +41,44 @@ public class ContactEditorActivity extends BaseDetailsActivity
         setContentView(R.layout.activity_contact_edit);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        initViews();
-        if(contactKey != null)
-            getContactFromFirebaseAndUpdateUI();
-    }
 
-    public void updateUI(Contact contact){
-        if(contact != null) {
-            nameText.setText(contact.name);
-            phoneText.setText(contact.phone);
-            emailText.setText(contact.email);
-            otherText.setText(contact.other);
-            if(contact.date != 0) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(contact.date);
-                returnText.setText(Utils.calendarToString(calendar));
-            }
+        // Get post key from intent
+        mContactKey = getIntent().getStringExtra(EXTRA_CONTACT_KEY);
+        if (mContactKey == null) {
+            throw new IllegalArgumentException("Must pass EXTRA_POST_KEY");
         }
-        nameText.requestFocus();
+
+        initViews();
+
+        updateUIfromFirebase(mContactKey);
     }
 
-     @Override
+
+    public void updateUI(Contact contact) {
+        nameText.setText(contact.name);
+        nameText.setSelection(contact.name.length());
+        nameText.requestFocus();
+        phoneText.setText(contact.phone);
+        emailText.setText(contact.email);
+        otherText.setText(contact.other);
+        if(contact.retur.containsKey(getUid())) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTimeInMillis(contact.retur.get(getUid()));
+            returnText.setText(Utils.calendarToString(cal));
+        }
+    }
+
+    @Override
+    public void onDateSelected(Calendar cal) {
+        super.onDateSelected(cal);
+        checkBox_6M.setChecked(false);
+        returnText.setText(Utils.calendarToString(cal));
+        calendar = cal;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_contact_editor, menu);
-        if (contactKey == null) {
-            menu.findItem(R.id.action_delete_contact).setVisible(false);
-        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -73,12 +86,14 @@ public class ContactEditorActivity extends BaseDetailsActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_delete_contact) {
-            createDeleteDialogAlert(contactKey);
+            createDeleteDialogAlert(mContactKey);
             return true;
         }
         if (id == R.id.action_save) {
             if (saveAndSend()) {
-                goToQuickContactActivity();
+                Intent intent = new Intent(this, QuickContactActivity.class);
+                intent.putExtra(EXTRA_CONTACT_KEY, mContactKey);
+                startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
                 finish();
             }
             return true;
@@ -99,23 +114,19 @@ public class ContactEditorActivity extends BaseDetailsActivity
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b) {
-                    Calendar calendar = Calendar.getInstance();
+                    calendar = Calendar.getInstance();
                     calendar.add(Calendar.MONTH, 6);
                     returnText.setText(Utils.calendarToString(calendar));
-                    newDate = calendar.getTimeInMillis();
                 } else {
                     returnText.setText(null);
-                    newDate = 0;
+                    calendar = null;
                 }
             }
         });
     }
 
-    private void goToQuickContactActivity() {
-        Intent intent = new Intent(this, QuickContactActivity.class);
-        intent.putExtra(EXTRA_CONTACT_KEY, contactKey);
-        startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
-    }
+
+
 
     private boolean saveAndSend() {
         final String name = nameText.getText().toString();
@@ -128,41 +139,38 @@ public class ContactEditorActivity extends BaseDetailsActivity
             return false;
         }
 
-        if(phone.isEmpty())
+        if (phone.isEmpty())
             phone = null;
 
         if (email.isEmpty())
             email = null;
-        else if ( !Utils.isValidEmail(email) ) {
+        else if (!Utils.isValidEmail(email)) {
             emailText.setError(getString(R.string.invalid_email));
             return false;
         }
 
-        if(other.isEmpty())
+        if (other.isEmpty())
             other = null;
 
-        if (contactKey == null)
-            contactKey = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT_S).push().getKey();  //generate new key
-
-        Map<String, Object> updates = new HashMap<>();
-
-        Contact contactShort = new Contact(name, newDate);
-        Contact contact = new Contact(name, phone, email, other, newDate);
-
+        Contact contactBase = new Contact(name, phone, email, other);
+        Contact contactShort = new Contact(name);
+        if(calendar != null){
+            contactBase.retur.put(getUid(), calendar.getTimeInMillis());
+            contactShort.retur.put(getUid(), calendar.getTimeInMillis());
+        }
         Map<String, Object> contactMap = contactShort.toMap();
-        Map<String, Object> contactDetMap = contact.toMap();
-        updates.put(FIREBASE_LOCATION_CONTACT_S + "/" + contactKey, contactMap);
-        updates.put(FIREBASE_LOCATION_CONTACTS + "/" + contactKey, contactDetMap);
-        updates.put(FIREBASE_LOCATION_EMAIL + "/" + contactKey, email);
-//        Contact dateToReturn = new Contact(this.name, phoneS, this.date);  //data si tel
-//        Map<String, Object> returnMap = contactShort.toMap();
+        Map<String, Object> contactDetMap = contactBase.toMap();
+        Map<String, Object> updates = new HashMap<>();
+        updates.put(FIREBASE_LOCATION_CONTACT_S + "/" + mContactKey, contactMap);
+        updates.put(FIREBASE_LOCATION_CONTACTS + "/" + mContactKey, contactDetMap);
+        updates.put(FIREBASE_LOCATION_EMAIL + "/" + mContactKey, email);
         Utils.getUserNode().updateChildren(updates);
         return true;
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.clepsidra_icon:
                 showDatePickerDialog();
                 break;

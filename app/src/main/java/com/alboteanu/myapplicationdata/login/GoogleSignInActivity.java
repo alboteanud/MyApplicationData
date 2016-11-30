@@ -147,12 +147,6 @@ public class GoogleSignInActivity extends BaseActivity implements
                 });
     }
 
-    private void onAuthSuccess(FirebaseUser user) {
-        // Write new user
-        Utils.writeNewUser(user.getEmail());
-//        sendUserToMainActivity();
-//        finish();
-    }
 
     private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);

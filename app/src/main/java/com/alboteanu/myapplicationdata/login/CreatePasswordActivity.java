@@ -54,7 +54,8 @@ public class CreatePasswordActivity extends BaseActivity {
                         hideProgressDialog();
                         if (task.isSuccessful()) {
                             Utils.writeNewUser( task.getResult().getUser().getEmail());
-                            signIn(email, password);
+//                            signIn(email, password);
+                            onAuthSuccess(task.getResult().getUser());
                         } else {
                             String message = task.getException().getMessage();
                             Toast.makeText(CreatePasswordActivity.this, message,

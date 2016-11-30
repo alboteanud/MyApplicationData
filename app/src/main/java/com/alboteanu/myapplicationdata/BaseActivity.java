@@ -10,12 +10,16 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.alboteanu.myapplicationdata.login.CreatePasswordActivity;
 import com.alboteanu.myapplicationdata.login.SignInActivity;
+import com.alboteanu.myapplicationdata.models.Contact;
+import com.alboteanu.myapplicationdata.others.Utils;
 import com.alboteanu.myapplicationdata.screens.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class BaseActivity extends AppCompatActivity {
@@ -74,23 +78,37 @@ public class BaseActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (!task.isSuccessful()) {
+                        hideProgressDialog();
+                        if(task.isSuccessful()){
+                            onAuthSuccess(task.getResult().getUser());
+                        }
+                        else {
                             String message = task.getException().getMessage();
                             Toast.makeText(BaseActivity.this, message,
                                     Toast.LENGTH_LONG).show();
-                        }else {
-                            sendUserToMainActivity();
                         }
-                        hideProgressDialog();
+
                     }
                 });
     }
 
-    public void sendUserToMainActivity() {
+    private void sendUserToMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
+
+    public void onAuthSuccess(FirebaseUser user) {
+//        String username = usernameFromEmail(user.getEmail());
+
+        // Write new user
+//        writeNewUser(user.getUid(), username, user.getEmail());
+
+        // Go to MainActivity
+        sendUserToMainActivity();
+    }
+
+
 
 }
