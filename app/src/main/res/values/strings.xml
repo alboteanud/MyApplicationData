@@ -60,5 +60,7 @@
     <string name="text_button_send_emails">Emails to all</string>
     <string name="text_button_send_to_exprired">Send sms to expired</string>
     <string name="text_button_send_email_to_exprired">Send emails to expired</string>
+    <string name="action_email">Email</string>
+    <string name="action_sms">Send Message</string>
 
 </resources>

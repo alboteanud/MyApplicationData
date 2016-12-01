@@ -7,13 +7,22 @@
     android:gravity="center_vertical"
     >
 
+
+        <CheckBox
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="16dp"
+            android:id="@+id/checkBoxSelectContact"
+            android:gravity="center"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/textViewLetter"
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:background="@drawable/shape_oval"
             android:gravity="center"
-            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
             android:text="I"
             android:textAppearance="?attr/textAppearanceListItem"
             android:textColor="#ffffff" />

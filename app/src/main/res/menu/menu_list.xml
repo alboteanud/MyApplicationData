@@ -19,11 +19,20 @@
 
 
     <item
-        android:id="@+id/action_campaign"
+        android:id="@+id/action_email"
         android:orderInCategory="100"
-        android:text="@string/action_campaign"
-        android:title="@string/action_campaign"
+        android:text="@string/action_email"
+        android:title="@string/action_email"
         app:showAsAction="never" />
+
+     <item
+        android:id="@+id/action_sms"
+        android:orderInCategory="100"
+        android:text="@string/action_sms"
+        android:title="@string/action_sms"
+        app:showAsAction="never" />
+
+
 
 
 </menu>

@@ -65,6 +65,7 @@ public class EditActivity extends BaseDetailsActivity
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(contact.retur.get(getUid()));
             returnText.setText(Utils.calendarToString(cal));
+            calendar = cal;
         }
     }
 

@@ -49,10 +49,6 @@
     <string name="have_account">Am deja cont</string>
     <string name="next_button_text">next</string>
     <string name="account_email">Account email</string>
-    <string name="account_password">Account password</string>
-    <string name="action_campaign">Promotional campaign</string>
-    <string name="text_button_send_smses">Send sms to all</string>
-    <string name="text_button_send_emails">Emails to all</string>
-    <string name="text_button_send_to_exprired">Send sms to expired</string>
-    <string name="text_button_send_email_to_exprired">Send emails to expired</string>
+    <string name="account_password">Parola contului</string>
+    <string name="action_sms">Mesaj</string>
 </resources>

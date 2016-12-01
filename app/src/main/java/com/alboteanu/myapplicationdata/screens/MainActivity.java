@@ -1,19 +1,18 @@
 package com.alboteanu.myapplicationdata.screens;
 
 import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.alboteanu.myapplicationdata.BaseActivity;
-import com.alboteanu.myapplicationdata.CampaignActivity;
 import com.alboteanu.myapplicationdata.others.ContactHolder;
 import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.others.Utils;
@@ -29,10 +28,9 @@ import static com.alboteanu.myapplicationdata.R.layout.contact;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACT_S;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAME;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN_DATE;
 import static com.alboteanu.myapplicationdata.others.Utils.getUid;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements View.OnClickListener {
     private FirebaseRecyclerAdapter<Contact, ContactHolder> firebaseRecyclerAdapter;
     Toolbar toolbar;
 
@@ -43,12 +41,7 @@ public class MainActivity extends BaseActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, EditNewContactActivity.class));
-            }
-        });
+        fab.setOnClickListener(this);
 
     }
 
@@ -60,21 +53,19 @@ public class MainActivity extends BaseActivity {
         Query postsQuery = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT_S).orderByChild(FIREBASE_LOCATION_NAME);
 
         final Calendar calendarNow = Calendar.getInstance();
+        final Calendar calendarReturn = Calendar.getInstance();
+
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Contact, ContactHolder>(Contact.class, contact,
                 ContactHolder.class, postsQuery) {
             @Override
             protected void populateViewHolder(final ContactHolder contactHolder, final Contact contact, final int position) {
+                Log.d("tag", " contact " + contact.name);
                 if (contact.retur.containsKey(getUid())) {
-                    Calendar calendarReturn = Calendar.getInstance();
                     calendarReturn.setTimeInMillis(contact.retur.get(getUid()));
                     if (calendarNow.after(calendarReturn))
                         contactHolder.clepsidra.setVisibility(View.VISIBLE);
                 }
-                int color = Utils.getColorFromString(contact.name);
-                Drawable shape_oval = getDrawable(R.drawable.shape_oval);
-                shape_oval.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
-                contactHolder.letterIcon.setBackground(shape_oval);
-                contactHolder.letterIcon.setText(contact.name.substring(0, 1));
+
                 contactHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -84,7 +75,15 @@ public class MainActivity extends BaseActivity {
                         startActivity(intent);
                     }
                 });
-                contactHolder.bindContact(contact);
+                contactHolder.letterIcon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        contactHolder.letterIcon.setVisibility(View.GONE);
+                        contactHolder.checkBox.setVisibility(View.VISIBLE);
+                        contactHolder.checkBox.setChecked(true);
+                    }
+                });
+                contactHolder.bindContact(contact, getDrawable(R.drawable.shape_oval));
             }
         };
         mRecycler.setAdapter(firebaseRecyclerAdapter);
@@ -125,8 +124,12 @@ public class MainActivity extends BaseActivity {
             mAuth.signOut();
             goToSignInActivity();
             return true;
-        } else if (id == R.id.action_campaign) {
-            startActivity(new Intent(this, CampaignActivity.class));
+        } else if (id == R.id.action_email) {
+
+            return true;
+        }
+            else if (id == R.id.action_sms) {
+
             return true;
         }
 
@@ -144,4 +147,17 @@ public class MainActivity extends BaseActivity {
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Toast.makeText(this, "onPause() a fost apelata", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+        if(id == R.id.fab){
+            startActivity(new Intent(MainActivity.this, EditNewContactActivity.class));
+        }
+    }
 }
