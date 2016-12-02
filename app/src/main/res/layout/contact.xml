@@ -9,8 +9,8 @@
 
 
         <CheckBox
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_marginEnd="16dp"
             android:id="@+id/checkBoxSelectContact"
             android:gravity="center"
@@ -18,8 +18,8 @@
 
         <TextView
             android:id="@+id/textViewLetter"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:background="@drawable/shape_oval"
             android:gravity="center"
             android:layout_marginEnd="16dp"

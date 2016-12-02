@@ -1,5 +1,6 @@
 package com.alboteanu.myapplicationdata.others;
 
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,6 +23,7 @@ import java.util.Random;
 import static com.alboteanu.myapplicationdata.BaseActivity.getDatabase;
 
 public class Utils {
+
 
  public static String getSavedTitle(Context context){
         SharedPreferences sharedPrefs = PreferenceManager

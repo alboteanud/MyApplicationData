@@ -33,6 +33,7 @@ import static com.alboteanu.myapplicationdata.others.Utils.getUid;
 public class MainActivity extends BaseActivity implements View.OnClickListener {
     private FirebaseRecyclerAdapter<Contact, ContactHolder> firebaseRecyclerAdapter;
     Toolbar toolbar;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +67,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         contactHolder.clepsidra.setVisibility(View.VISIBLE);
                 }
 
+                //TODO de unificat clickListenerurile
                 contactHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -81,6 +83,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                         contactHolder.letterIcon.setVisibility(View.GONE);
                         contactHolder.checkBox.setVisibility(View.VISIBLE);
                         contactHolder.checkBox.setChecked(true);
+                        menu.findItem(R.id.action_email).setVisible(true);
+                        menu.findItem(R.id.action_sms).setVisible(true);
                     }
                 });
                 contactHolder.bindContact(contact, getDrawable(R.drawable.shape_oval));
@@ -107,7 +111,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_list, menu);
-//        this.menu = menu;
+        this.menu = menu;
 //        getExpired();
 //        getAllPhones();
 //        getAllEmails();
@@ -124,12 +128,14 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             mAuth.signOut();
             goToSignInActivity();
             return true;
-        } else if (id == R.id.action_email) {
-
+        }        //TODO de populat lista cu emailuri
+        else if (id == R.id.action_email) {
+            Utils.composeEmail(this, new String[]{"alhkgjfh@fh.com", "gsdhgs@jdjd.com"}, "titlu");
             return true;
         }
+        //TODO de populat lista cu telefoane
             else if (id == R.id.action_sms) {
-
+            Utils.composeSMS( new String[]{ "945609830", "00450985"}, this);
             return true;
         }
 
@@ -150,7 +156,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     @Override
     protected void onPause() {
         super.onPause();
-        Toast.makeText(this, "onPause() a fost apelata", Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, "onPause() a fost apelata", Toast.LENGTH_LONG).show();
     }
 
     @Override
