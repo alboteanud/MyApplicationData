@@ -30,11 +30,14 @@ import java.util.Random;
 
 import static com.alboteanu.myapplicationdata.BaseActivity.getDatabase;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAIL;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN_DATE;
 
 public class Utils {
 
 
- public static String getSavedTitle(Context context){
+
+
+    public static String getSavedTitle(Context context){
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
         String key = context.getString(R.string.display_title_text_key);
@@ -152,7 +155,7 @@ public class Utils {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
-
+    private String[] allPhonesArray;
     private void getAllPhones() {
         Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS_PHONES)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -165,7 +168,7 @@ public class Utils {
                         Collection<String> values = map.values();
                         if(!values.isEmpty()){
                             allPhonesArray = values.toArray(new String[0]);
-                            menu.findItem(R.id.action_send_sms_to_all).setVisible(true);
+//                            menu.findItem(R.id.action_send_sms_to_all).setVisible(true);
                         }
                     }
 
@@ -176,7 +179,7 @@ public class Utils {
                 });
     }
 
-
+    String[] allEmailsArray;
     private void getAllEmails() {
         Utils.getUserNode().child(FIREBASE_LOCATION_EMAIL)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -189,7 +192,7 @@ public class Utils {
                         Collection<String> values = map.values();
                         if(!values.isEmpty()){
                             allEmailsArray = values.toArray(new String[0]);
-                            menu.findItem(R.id.action_send_email_to_all).setVisible(true);
+//                            menu.findItem(R.id.action_send_email_to_all).setVisible(true);
                         }
                     }
                     @Override
