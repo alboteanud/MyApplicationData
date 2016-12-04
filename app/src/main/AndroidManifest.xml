@@ -9,18 +9,20 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".login.SignInActivity"
+            android:name=".login.MainSignInActivity"
             android:label="@string/label_emailpassword"
-            android:windowSoftInputMode="stateAlwaysHidden">
+            android:windowSoftInputMode="stateAlwaysHidden"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".login.GoogleSignInActivity"
-            android:theme="@style/AppTheme" />
+        <activity android:name=".login.CreateEmailActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".login.CreatePasswordActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".screens.MainActivity"
             android:label="@string/title_activity_main"
@@ -45,17 +47,6 @@
             android:label="@string/title_activity_settings"
             android:parentActivityName=".screens.MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".login.CreateEmailActivity" />
-        <activity android:name=".login.CreatePasswordActivity" />
-        <activity
-            android:name=".CampaignActivity"
-            android:label="@string/title_activity_campaign"
-            android:parentActivityName=".screens.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.alboteanu.myapplicationdata.screens.MainActivity" />
-        </activity>
     </application>
 
 </manifest>

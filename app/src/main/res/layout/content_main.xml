@@ -10,7 +10,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".screens.MainActivity"
     tools:listitem="@layout/contact"
-    tools:showIn="@layout/activity_list" />
+    tools:showIn="@layout/activity_main" />
 
 
     <!--  android:paddingBottom="@dimen/activity_vertical_margin"

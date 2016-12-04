@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.alboteanu.myapplicationdata.R;
+import com.alboteanu.myapplicationdata.models.DateToReturn;
 import com.alboteanu.myapplicationdata.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -29,13 +30,12 @@ import java.util.Map;
 import java.util.Random;
 
 import static com.alboteanu.myapplicationdata.BaseActivity.getDatabase;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACTS_PHONES;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAIL;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN_DATE;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN_DATES;
 
 public class Utils {
-
-
-
 
     public static String getSavedTitle(Context context){
         SharedPreferences sharedPrefs = PreferenceManager
@@ -212,9 +212,9 @@ public class Utils {
                 DateToReturn dateToReturn = dataSnapshot.getValue(DateToReturn.class);
                 if (dateToReturn != null) {
                     Log.d("tag", String.valueOf(dateToReturn.date));
-                    if(dateToReturn.date != 0 && currentTime > dateToReturn.date){
+                    if (dateToReturn.date != 0 && currentTime > dateToReturn.date) {
                         phoneList.add(dateToReturn.phone);
-                        menu.findItem(R.id.action_sms_to_expired).setTitle(String.valueOf(phoneList.size())).setVisible(true);
+//                        menu.findItem(R.id.action_sms_to_expired).setTitle(String.valueOf(phoneList.size())).setVisible(true);
                     }
 
                 }
@@ -242,6 +242,6 @@ public class Utils {
             }
         });
 
-
+    }
 
     }

@@ -18,33 +18,25 @@ package com.alboteanu.myapplicationdata.login;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.others.Utils;
-import com.alboteanu.myapplicationdata.screens.MainActivity;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import static com.alboteanu.myapplicationdata.R.id.create_account_text;
 import static com.alboteanu.myapplicationdata.R.id.email_sign_in_button;
 
-public class SignInActivity extends BaseActivity implements View.OnClickListener {
+public class MainSignInActivity extends BaseActivity implements View.OnClickListener {
     EditText mEmailField, mPasswordField;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_emailpassword);
+        setContentView(R.layout.activity_main_sign_in);
         mEmailField = (EditText) findViewById(R.id.field_email);
         mPasswordField = (EditText) findViewById(R.id.field_password);
         mEmailField.setText(getSavedEmail());

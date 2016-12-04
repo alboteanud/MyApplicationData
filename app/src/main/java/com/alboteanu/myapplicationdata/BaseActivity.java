@@ -10,10 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-import com.alboteanu.myapplicationdata.login.CreatePasswordActivity;
-import com.alboteanu.myapplicationdata.login.SignInActivity;
-import com.alboteanu.myapplicationdata.models.Contact;
-import com.alboteanu.myapplicationdata.others.Utils;
 import com.alboteanu.myapplicationdata.screens.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
