@@ -19,22 +19,37 @@
 
 
     <item
+        android:id="@+id/action_select_all"
+        android:orderInCategory="100"
+        android:text="@string/action_select_all"
+        android:title="@string/action_select_all"
+        android:icon="@drawable/ic_action_email_white"
+        app:showAsAction="never" />
+
+     <item
+        android:id="@+id/action_select_none"
+        android:orderInCategory="100"
+        android:text="@string/action_select_none"
+         android:icon="@drawable/ic_action_sms"
+        android:title="@string/action_select_none"
+        app:showAsAction="never" />
+
+
+ <item
         android:id="@+id/action_email"
         android:orderInCategory="100"
         android:text="@string/action_email"
         android:title="@string/action_email"
         android:icon="@drawable/ic_action_email_white"
-        android:visible="false"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
      <item
         android:id="@+id/action_sms"
         android:orderInCategory="100"
         android:text="@string/action_sms"
          android:icon="@drawable/ic_action_sms"
-         android:visible="false"
         android:title="@string/action_sms"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="never" />
 
 
 

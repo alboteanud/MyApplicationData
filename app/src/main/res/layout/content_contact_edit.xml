@@ -4,88 +4,102 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:isScrollContainer="true"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".screens.EditActivity"
     tools:showIn="@layout/activity_contact_edit">
 
-
-
-    <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:alignmentMode="alignBounds"
-        android:columnCount="2"
         android:columnOrderPreserved="true"
-        android:useDefaultMargins="true"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin">
+        android:useDefaultMargins="true">
+
+        <TableRow>
+            <ImageView
+                android:layout_gravity="center"
+                android:src="@drawable/ic_action_person" />
 
 
-        <ImageView android:src="@drawable/ic_action_person"
-            android:layout_gravity="center"/>
+            <EditText
+                android:layout_weight="1"
+                android:id="@+id/nameEditText"
+                android:hint="@string/name_hint"
+                android:imeOptions="actionDone"
+                android:inputType="textCapWords" />
+        </TableRow>
 
+  <TableRow>
 
-        <EditText
-            android:id="@+id/name"
-            android:hint="@string/name_hint"
-            android:ems="10"
-            android:imeOptions="actionDone"
-            android:inputType="textCapWords"
-            android:layout_gravity="center_vertical"/>
-
-        <ImageView android:src="@drawable/ic_action_phone"
-            android:layout_gravity="center"/>
-
-        <EditText
-            android:id="@+id/phone"
-            android:ems="10"
-            android:hint="@string/phone_hint"
-            android:inputType="phone"
-            android:layout_gravity="center_vertical"/>
-
-        <ImageView android:src="@drawable/ic_action_email"
-            android:layout_gravity="center"/>
-
-
-        <EditText
-            android:id="@+id/email"
-            android:ems="10"
-            android:hint="@string/email_hint"
-            android:inputType="textEmailAddress"
-            android:layout_gravity="center_vertical"/>
-
-        <ImageView android:src="@drawable/ic_action_note"
-            android:layout_gravity="center"/>
-
-
-        <EditText
-            android:id="@+id/other"
-            android:ems="10"
-            android:hint="@string/note_hint"
-            android:inputType="text"
-            android:layout_gravity="center_vertical"/>
-
-        <ImageView android:src="@drawable/ic_action_return_empty"
+        <ImageView
             android:layout_gravity="center"
-            android:id="@+id/clepsidra_icon"/>
+            android:src="@drawable/ic_action_phone" />
 
-        <TextView
-            android:id="@+id/return_date_textView"
+        <EditText
+            android:id="@+id/phoneEditText"
+            android:hint="@string/phone_hint"
+            android:layout_weight="1"
+            android:inputType="phone" />
+  </TableRow>
+
+        <TableRow>
+        <ImageView
+            android:layout_gravity="center"
+            android:src="@drawable/ic_action_email" />
+
+        <EditText
+            android:id="@+id/emailEditText"
+            android:hint="@string/email_hint"
+            android:layout_weight="1"
+            android:inputType="textEmailAddress" />
+        </TableRow>
+
+        <TableRow>
+        <ImageView
+            android:layout_gravity="center"
+            android:src="@drawable/ic_action_note" />
+
+
+        <EditText
+            android:id="@+id/noteEditText"
+            android:hint="@string/note_hint"
+            android:layout_weight="1"
+            android:inputType="textMultiLine"
+            android:maxLines="6" />
+        </TableRow>
+
+    <TableRow>
+
+        <ImageView
+            android:id="@+id/icon_date"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_action_date" />
+
+        <EditText
+            android:id="@+id/dateEditText"
             style="@android:style/TextAppearance.Medium"
             android:clickable="true"
             android:focusableInTouchMode="true"
-            android:gravity="center_vertical"
             android:hint="@string/return_date_hint"
-            android:layout_gravity="center_vertical"/>
+            android:editable="false"
+            android:layout_weight="1"/>
 
-        <Space android:layout_width="@dimen/icons_column_width"/>
+        <Button
+            android:text="@string/button_6M"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button_6M" />
 
-        <CheckBox
-            android:id="@+id/checkBox6Luni"
-            android:text="@string/checkbox_text" />
+        <ImageView
+            android:id="@+id/button_clear_date"
+            android:clickable="true"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_action_clear_date" />
+    </TableRow>
 
-    </GridLayout>
+
+
+    </TableLayout>
 
 </ScrollView>

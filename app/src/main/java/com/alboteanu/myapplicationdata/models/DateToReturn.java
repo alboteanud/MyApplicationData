@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONE;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN_DATE;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN_RETUR;
 
 
 public class DateToReturn {
@@ -24,7 +24,7 @@ public class DateToReturn {
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put(FIREBASE_LOCATION_RETURN_DATE, date);
+        result.put(FIREBASE_LOCATION_RETURN_RETUR, date);
         result.put(FIREBASE_LOCATION_PHONE, phone);
         return result;
     }

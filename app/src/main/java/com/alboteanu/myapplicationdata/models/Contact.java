@@ -9,7 +9,7 @@ import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAME;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_OTHER;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONE;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN_DATE;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN_RETUR;
 
 
 @IgnoreExtraProperties
@@ -24,12 +24,12 @@ public class Contact {
         // Default constructor required for calls to DataSnapshot.getValue(Contact.class)
     }
 
-    public Contact(String name, String phone, String email, String other) {
+/*    public Contact(String name, String phone, String email, String other) {
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.other = other;
-    }
+    }*/
 
     public Contact(String name) {
         this.name = name;
@@ -42,7 +42,7 @@ public class Contact {
         result.put(FIREBASE_LOCATION_PHONE, phone);
         result.put(FIREBASE_LOCATION_EMAIL, email);
         result.put(FIREBASE_LOCATION_OTHER, other);
-        result.put(FIREBASE_LOCATION_RETURN_DATE, retur);
+        result.put(FIREBASE_LOCATION_RETURN_RETUR, retur);
 
         return result;
     }

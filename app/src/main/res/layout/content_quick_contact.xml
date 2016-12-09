@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:isScrollContainer="true"
+
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".screens.QuickContactActivity"
     tools:showIn="@layout/activity_quick_contact">
@@ -13,56 +15,79 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:alignmentMode="alignBounds"
-        android:columnCount="2"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
+        android:columnCount="3"
         android:useDefaultMargins="true">
 
-        <ImageView android:src="@drawable/ic_action_person"
-            android:layout_gravity="center"/>
+        <ImageView
+            android:layout_width="@dimen/icons_column_width"
+            android:src="@drawable/ic_action_person"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            />
 
         <TextView
-            android:id="@+id/name"
-            android:layout_gravity="center_vertical" />
+            android:id="@+id/nameText"
+            android:layout_gravity="center_vertical"
+            android:layout_columnSpan="2"/>
 
         <ImageView
             android:id="@+id/ic_action_phone"
             android:src="@drawable/ic_action_phone"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
+
 
         <TextView
-            android:id="@+id/phone"
-            android:layout_gravity="center_vertical"/>
+            android:id="@+id/phoneText"
+            android:layout_width="140dp"
+            android:layout_gravity="center_vertical" />
 
-        <ImageView android:id="@+id/ic_action_email"
+        <ImageView
+            android:id="@+id/ic_action_message"
+            android:src="@drawable/ic_action_message"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/ic_action_email"
             android:src="@drawable/ic_action_email"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
 
         <TextView
-            android:id="@+id/email"
-            android:layout_gravity="center_vertical"/>
+            android:id="@+id/emailText"
+            android:layout_gravity="center_vertical"
+            android:layout_columnSpan="2"
+           />
+
 
         <ImageView
             android:id="@+id/ic_action_note"
             android:src="@drawable/ic_action_note"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"/>
 
         <TextView
-            android:id="@+id/other"
-            android:layout_gravity="center_vertical"/>
+            android:id="@+id/noteText"
+            android:layout_gravity="center_vertical"
+            android:layout_columnSpan="2"/>
 
         <ImageView
             android:id="@+id/ic_action_date_return"
-            android:src="@drawable/ic_action_return_empty"
-            android:layout_gravity="center"/>
+            android:src="@drawable/ic_action_date"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+           />
 
         <TextView
-            android:id="@+id/return_date_textView"
-            android:layout_gravity="center_vertical"/>
-
-        <Space android:layout_width="@dimen/icons_column_width"/>
-
+            android:id="@+id/dateText"
+            android:layout_gravity="center_vertical"
+            android:layout_columnSpan="2" />
 
     </GridLayout>
 

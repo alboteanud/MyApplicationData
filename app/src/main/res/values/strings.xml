@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="true">My Customers</string>
+    <string name="app_name" translatable="true">My list</string>
     <string name="desc_firebase_lockup" translatable="true">logo and name</string>
     <string name="loading" translatable="false">Loading…</string>
     <string name="title_activity_main" translatable="true">Main</string>
@@ -61,6 +61,9 @@
     <string name="text_button_send_to_exprired">Send sms to expired</string>
     <string name="text_button_send_email_to_exprired">Send emails to expired</string>
     <string name="action_email">Email</string>
-    <string name="action_sms">Send Message</string>
+    <string name="action_sms">Message</string>
+    <string name="action_select_none">Select none</string>
+    <string name="action_select_all">Select all</string>
+    <string name="button_6M">+6M</string>
 
 </resources>

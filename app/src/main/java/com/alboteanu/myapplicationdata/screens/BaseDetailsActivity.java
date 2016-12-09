@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-
 import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.models.Contact;
 import com.alboteanu.myapplicationdata.BaseActivity;
@@ -14,15 +13,13 @@ import com.alboteanu.myapplicationdata.others.Utils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.Calendar;
-
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACTS;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACT_S;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAIL;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAMES_DATES;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONE;
 
-public class BaseDetailsActivity extends BaseActivity implements DatePickerFragment.OnHeadlineSelectedListener {
+public class BaseDetailsActivity extends BaseActivity {
 
 
     @Override
@@ -39,8 +36,8 @@ public class BaseDetailsActivity extends BaseActivity implements DatePickerFragm
 
 
     public void deleteContact(String contactKey) {
-        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACT_S + "/" + contactKey).removeValue();
         Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS + "/" + contactKey).removeValue();
+        Utils.getUserNode().child(FIREBASE_LOCATION_NAMES_DATES + "/" + contactKey).removeValue();
         Utils.getUserNode().child(FIREBASE_LOCATION_EMAIL + "/" + contactKey).removeValue();
         Utils.getUserNode().child(FIREBASE_LOCATION_PHONE + "/" + contactKey).removeValue();
     }
@@ -79,8 +76,8 @@ public class BaseDetailsActivity extends BaseActivity implements DatePickerFragm
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Contact contact = dataSnapshot.getValue(Contact.class);
-                        updateUI(contact);
-
+                        if(contact != null)
+                            updateUI(contact);
                     }
 
                     @Override
@@ -93,8 +90,6 @@ public class BaseDetailsActivity extends BaseActivity implements DatePickerFragm
 
     }
 
-    @Override
-    public void onDateSelected(Calendar calendar) {
 
-    }
+
 }

@@ -1,24 +1,15 @@
 package com.alboteanu.myapplicationdata.others;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.os.Bundle;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
-import android.widget.TextView;
-
-import com.alboteanu.myapplicationdata.R;
-import com.alboteanu.myapplicationdata.screens.BaseDetailsActivity;
-import com.alboteanu.myapplicationdata.screens.EditActivity;
-import com.alboteanu.myapplicationdata.screens.EditNewContactActivity;
-
 import java.util.Calendar;
 
 public class DatePickerFragment extends DialogFragment
         implements DatePickerDialog.OnDateSetListener {
+
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -43,19 +34,17 @@ public class DatePickerFragment extends DialogFragment
 //        ((CheckBox) getActivity().findViewById(R.id.checkBox6Luni)).setChecked(false);  //implica stregere datei TextView10 - DATA
 //        ((TextView)getActivity().findViewById(R.id.return_date_textView)).setText(dateString);
 //        ((BaseDetailsActivity)getActivity()).calendar = calendar;
+        OnHeadlineSelectedListener mCallback = (OnHeadlineSelectedListener) getActivity();
         mCallback.onDateSelected(calendar);
     }
 
-
-
-    OnHeadlineSelectedListener mCallback;
 
     // Container Activity must implement this interface
     public interface OnHeadlineSelectedListener {
         void onDateSelected(Calendar calendar);
     }
 
-    @Override
+/*    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
 
@@ -67,7 +56,7 @@ public class DatePickerFragment extends DialogFragment
             throw new ClassCastException(context.toString()
                     + " must implement OnHeadlineSelectedListener");
         }
-    }
+    }*/
 
 
 }

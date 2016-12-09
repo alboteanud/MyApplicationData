@@ -1,6 +1,5 @@
 package com.alboteanu.myapplicationdata.others;
 
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,9 +29,8 @@ import java.util.Map;
 import java.util.Random;
 
 import static com.alboteanu.myapplicationdata.BaseActivity.getDatabase;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACTS_PHONES;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAIL;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN_DATE;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN_RETUR;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN_DATES;
 
 public class Utils {
@@ -76,8 +74,10 @@ public class Utils {
     public static void composeSMS(String[] phonesArray, Context context) {
         StringBuilder stringBuilder = new StringBuilder("smsto: ");
         for (String aPhonesArray : phonesArray) {
-            stringBuilder.append(aPhonesArray);
-            stringBuilder.append(", ");
+            if(aPhonesArray !=null) {
+                stringBuilder.append(aPhonesArray);
+                stringBuilder.append(", ");
+            }
         }
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse(stringBuilder.toString())); // only sms apps should handle this
@@ -129,13 +129,11 @@ public class Utils {
         };
         for(int i = 0; i < sub_string.length; i++) {
             if(sub_string[i].length()==0)
-                sub_string[i] = " ";                                                                // we asign a value (a space)
-            Log.d("sub_string", i + " " + sub_string[i]);
+                sub_string[i] = " ";
             for (char c : sub_string[i].toCharArray()) {
                 int c_val = Character.getNumericValue(c) - Character.getNumericValue('a');          // for 'a' -> 0     for 'z' -> 25
                 if(c_val < 0)                                                                       //  spaces, numbers ...
-                    c_val= new Random().nextInt(25);                                                //add some salt - a random number
-                Log.d("value ", c + " -> " + c_val);
+                    c_val= new Random().nextInt(25);
                 RGB[i] = RGB[i] + c_val;
             }
         }
@@ -146,7 +144,6 @@ public class Utils {
         int R = 255 * RGB[0]/sub_string[0].length()/letters_number;
         int G = 255 * RGB[1]/sub_string[1].length()/letters_number;
         int B = 255 * RGB[2]/sub_string[2].length()/letters_number;
-        Log.d("R G B", R +" " + G + " "  + B);
 
         return Color.rgb(R, G, B);
     }
@@ -155,9 +152,9 @@ public class Utils {
         return FirebaseAuth.getInstance().getCurrentUser().getUid();
     }
 
-    private String[] allPhonesArray;
+/*    private String[] allPhonesArray;
     private void getAllPhones() {
-        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS_PHONES)
+        Utils.getUserNode().child(FIREBASE_LOCATION_PHONES)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
 
                     @Override
@@ -177,7 +174,7 @@ public class Utils {
 
                     }
                 });
-    }
+    }*/
 
     String[] allEmailsArray;
     private void getAllEmails() {
@@ -206,12 +203,11 @@ public class Utils {
     List<String> phoneList = new ArrayList<>();
     public void getExpired() {
         final long currentTime = System.currentTimeMillis();
-        Utils.getUserNode().child(FIREBASE_LOCATION_RETURN_DATES).orderByChild(FIREBASE_LOCATION_RETURN_DATE).addChildEventListener(new ChildEventListener() {
+        Utils.getUserNode().child(FIREBASE_LOCATION_RETURN_DATES).orderByChild(FIREBASE_LOCATION_RETURN_RETUR).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 DateToReturn dateToReturn = dataSnapshot.getValue(DateToReturn.class);
                 if (dateToReturn != null) {
-                    Log.d("tag", String.valueOf(dateToReturn.date));
                     if (dateToReturn.date != 0 && currentTime > dateToReturn.date) {
                         phoneList.add(dateToReturn.phone);
 //                        menu.findItem(R.id.action_sms_to_expired).setTitle(String.valueOf(phoneList.size())).setVisible(true);

@@ -35,6 +35,8 @@ dependencies {
     compile 'com.google.firebase:firebase-auth:9.6.1'
     compile 'com.firebaseui:firebase-ui-database:0.5.3'
     testCompile 'junit:junit:4.12'
+    compile 'com.android.support.constraint:constraint-layout:1.0.0-beta2'
+    compile 'com.google.android.gms:play-services-appindexing:9.6.1'
 }
 
 apply plugin: 'com.google.gms.google-services' //eu pt Firebase

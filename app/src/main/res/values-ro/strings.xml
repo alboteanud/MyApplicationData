@@ -51,4 +51,7 @@
     <string name="account_email">Account email</string>
     <string name="account_password">Parola contului</string>
     <string name="action_sms">Mesaj</string>
+    <string name="action_select_none">Select none</string>
+    <string name="action_select_all">Select all</string>
+    <string name="button_6M">in 6 months</string>
 </resources>
