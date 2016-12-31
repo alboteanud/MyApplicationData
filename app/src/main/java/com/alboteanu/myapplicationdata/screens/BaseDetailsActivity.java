@@ -4,6 +4,7 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.models.Contact;
@@ -25,13 +26,6 @@ public class BaseDetailsActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    public void sendUserToMainActivity() {
-        /* Move user to LoginActivity, and remove the backstack */
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
     }
 
 
@@ -56,7 +50,7 @@ public class BaseDetailsActivity extends BaseActivity {
                     }
                 });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+            public void onClick(@NonNull DialogInterface dialog, int id) {
                 // User cancelled the dialog
                 dialog.dismiss();
             }
@@ -70,13 +64,13 @@ public class BaseDetailsActivity extends BaseActivity {
         dialogFragment.show(getFragmentManager(), "datePicker");
     }
 
-    public void updateUIfromFirebase(String contactKey) {
+    public void updateUIfromFirebase(@NonNull String contactKey) {
         Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).child(contactKey)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Contact contact = dataSnapshot.getValue(Contact.class);
-                        if(contact != null)
+//                        if(contact != null)
                             updateUI(contact);
                     }
 

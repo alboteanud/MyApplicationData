@@ -3,8 +3,11 @@ package com.alboteanu.myapplicationdata.login;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
@@ -20,17 +23,32 @@ public class CreateEmailActivity extends BaseActivity {
         findViewById(R.id.next_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String email = emailField.getText().toString();
-                if(validateEmail(email)){
-                    Intent intent = new Intent(CreateEmailActivity.this, CreatePasswordActivity.class);
-                    intent.putExtra("email", email);
-                    startActivity(intent);
-                }
+                onNextPressed();
             }
         });
         emailField = (EditText) findViewById(R.id.field_email);
         emailField.setText(getIntent().getStringExtra("email"));
         emailField.setSelection(emailField.getText().length());
+        emailField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                    onNextPressed();
+                    handled = true;
+                }
+                return handled;
+            }
+        });
+    }
+
+    private void onNextPressed() {
+        final String email = emailField.getText().toString();
+        if(validateEmail(email)){
+            Intent intent = new Intent(CreateEmailActivity.this, CreatePasswordActivity.class);
+            intent.putExtra("email", email);
+            startActivity(intent);
+        }
     }
 
     boolean validateEmail(String email) {

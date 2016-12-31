@@ -1,45 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="16dp"
-    android:layout_marginBottom="16dp"
-    android:gravity="center_vertical">
+    android:background="?android:attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:id="@+id/contact_view"
+    android:paddingStart="?android:attr/listPreferredItemPaddingStart"
+    android:paddingEnd="?android:attr/listPreferredItemPaddingEnd"
+    android:layout_height="?attr/listPreferredItemHeight">
 
-        <CheckBox
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/checkBoxSelectContact"
-            android:gravity="center"
-            android:layout_marginEnd="16dp"/>
+    <CheckBox
+        android:id="@+id/checkBoxSelectContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"/>
 
-        <TextView
-            android:id="@+id/textViewLetter"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:background="@drawable/shape_oval"
-            android:gravity="center"
-            android:layout_marginEnd="16dp"
-            android:text="I"
-            android:textAppearance="?attr/textAppearanceListItem"
-            android:textColor="#ffffff" />
+    <TextView
+        android:id="@+id/textViewLetter"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/shape_oval"
+        android:gravity="center"
+        android:text="I"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:textColor="#ffffff" />
 
-        <TextView
-            android:id="@+id/contactNameText"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:text="name"
-            android:textAppearance="?attr/textAppearanceListItem" />
-    
-        <ImageView
-            android:id="@+id/icon_date"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="16dp"
-            android:background="?attr/selectableItemBackground"
-            android:src="@drawable/ic_action_date_empty"
-            android:visibility="invisible" />
+    <TextView
+        android:id="@+id/contactNameText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:maxLines="1"
+        android:text="name"
+        android:textAppearance="?attr/textAppearanceListItem" />
+
+    <ImageView
+        android:id="@+id/icon_bin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/bin_blue"
+        android:visibility="gone"
+        android:layout_marginEnd="8dp"
+        android:scaleType="fitStart"
+
+        />
+    <!--android:background="?android:attr/selectableItemBackground"-->
+
+
+
+    <ImageView
+        android:id="@+id/icon_sandglass"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@mipmap/sandglass_blue"
+        android:visibility="visible" />
 
 </LinearLayout>

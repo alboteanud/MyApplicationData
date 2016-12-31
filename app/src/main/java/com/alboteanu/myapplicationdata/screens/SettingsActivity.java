@@ -8,6 +8,7 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
@@ -30,7 +31,7 @@ public class SettingsActivity extends BaseActivity {
 
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             NavUtils.navigateUpFromSameTask(this);
@@ -52,7 +53,7 @@ public class SettingsActivity extends BaseActivity {
 
             sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
                 @Override
-                public boolean onPreferenceChange(Preference preference, Object value) {
+                public boolean onPreferenceChange(Preference preference, @NonNull Object value) {
                     String stringValue = value.toString();
                     if (preference instanceof ListPreference) {
                         // For list preferences, look up the correct display value in
@@ -76,7 +77,7 @@ public class SettingsActivity extends BaseActivity {
             };
         }
 
-        private void bindPreferenceSummaryToValue(Preference preference) {
+        private void bindPreferenceSummaryToValue(@NonNull Preference preference) {
             // Set the listener to watch for value changes.
             preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
 

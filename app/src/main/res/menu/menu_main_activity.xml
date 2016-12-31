@@ -10,48 +10,47 @@
         android:title="@string/action_settings"
         app:showAsAction="never" />
 
+
+    <item
+        android:id="@+id/action_select_all"
+        android:icon="@drawable/ic_action_email_white"
+        android:orderInCategory="100"
+        android:text="@string/action_select_all"
+        android:title="@string/action_select_all"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_select_none"
+        android:orderInCategory="100"
+        android:text="@string/action_select_none"
+        android:title="@string/action_select_none"
+        android:visible="false"
+        app:showAsAction="never" />
+
+
+    <item
+        android:id="@+id/action_email"
+        android:icon="@drawable/ic_action_email_white"
+        android:orderInCategory="100"
+        android:text="@string/action_email"
+        android:title="@string/action_email"
+        android:visible="false"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_sms"
+        android:icon="@mipmap/ic_action_message_white"
+        android:orderInCategory="100"
+        android:text="@string/action_sms"
+        android:title="@string/action_sms"
+        app:showAsAction="ifRoom" />
+
+
     <item
         android:id="@+id/action_logout"
         android:orderInCategory="100"
         android:text="@string/action_logout"
         android:title="@string/action_logout"
         app:showAsAction="never" />
-
-
-    <item
-        android:id="@+id/action_select_all"
-        android:orderInCategory="100"
-        android:text="@string/action_select_all"
-        android:title="@string/action_select_all"
-        android:icon="@drawable/ic_action_email_white"
-        app:showAsAction="never" />
-
-     <item
-        android:id="@+id/action_select_none"
-        android:orderInCategory="100"
-        android:text="@string/action_select_none"
-         android:icon="@drawable/ic_action_sms"
-        android:title="@string/action_select_none"
-        app:showAsAction="never" />
-
-
- <item
-        android:id="@+id/action_email"
-        android:orderInCategory="100"
-        android:text="@string/action_email"
-        android:title="@string/action_email"
-        android:icon="@drawable/ic_action_email_white"
-        app:showAsAction="never" />
-
-     <item
-        android:id="@+id/action_sms"
-        android:orderInCategory="100"
-        android:text="@string/action_sms"
-         android:icon="@drawable/ic_action_sms"
-        android:title="@string/action_sms"
-        app:showAsAction="never" />
-
-
-
 
 </menu>

@@ -2,7 +2,9 @@ package com.alboteanu.myapplicationdata.others;
 
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -11,29 +13,44 @@ import android.widget.TextView;
 import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.models.Contact;
 
+import java.util.Calendar;
+
 public class ContactHolder extends RecyclerView.ViewHolder {
-    private View itemView;
+    @NonNull
+    public final View contact_layout;
     private TextView name;
-    public ImageView clepsidra;
-    private TextView letterIcon;
+    @NonNull
+    public final ImageView sandglass;
+    @NonNull
+    public final ImageView bin;
+    @NonNull
+    private final TextView letterIcon;
     public CheckBox checkBox;
 
-    public ContactHolder(View itemView) {
-        super(itemView);
-        this.itemView = itemView;
-        letterIcon = (TextView) itemView.findViewById(R.id.textViewLetter);
-        name = (TextView) itemView.findViewById(R.id.contactNameText);
-        clepsidra = (ImageView) itemView.findViewById(R.id.icon_date);
-        checkBox = (CheckBox) itemView.findViewById(R.id.checkBoxSelectContact);
+
+    public ContactHolder(@NonNull View contact_layout) {
+        super(contact_layout);
+        this.contact_layout = contact_layout;
+        letterIcon = (TextView) contact_layout.findViewById(R.id.textViewLetter);
+        name = (TextView) contact_layout.findViewById(R.id.contactNameText);
+        sandglass = (ImageView) contact_layout.findViewById(R.id.icon_sandglass);
+        bin = (ImageView) contact_layout.findViewById(R.id.icon_bin);
+        checkBox = (CheckBox) contact_layout.findViewById(R.id.checkBoxSelectContact);
+
     }
 
-    public void bindContact(Contact contact, Drawable shape_oval, View.OnClickListener onClickListener) {
+    public void bindContact(@NonNull Contact contact, @NonNull Drawable shape_oval) {
         name.setText(contact.name);
-        shape_oval.setColorFilter(Utils.getColorFromString(contact.name), PorterDuff.Mode.SRC_ATOP);
+        final int color = Utils.getColorFromString(contact.name);
+        shape_oval.setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
         letterIcon.setBackground(shape_oval);
         letterIcon.setText(contact.name.substring(0, 1));
-        itemView.setOnClickListener(onClickListener);
-        checkBox.setOnClickListener(onClickListener);
+//        contact_layout.setTag(position);
+//        bin.setTag(position);
+//        checkBox.setTag(position);
+//        sandglass.setTag(position);
+
+
     }
 
 

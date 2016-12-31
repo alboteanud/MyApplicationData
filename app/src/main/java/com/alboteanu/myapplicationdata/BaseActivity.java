@@ -7,20 +7,29 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.alboteanu.myapplicationdata.models.Contact;
+import com.alboteanu.myapplicationdata.others.Utils;
 import com.alboteanu.myapplicationdata.screens.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACTS;
 
 public class BaseActivity extends AppCompatActivity {
-    public FirebaseAuth mAuth;
-    public ProgressDialog mProgressDialog;
+    public static final String ACTION_UPDATE_LOCAL_CONTACTS = "action_update_local";
+    protected FirebaseAuth mAuth;
+    private ProgressDialog mProgressDialog;
     private static FirebaseDatabase mDatabase;
 
     @Override
@@ -53,7 +62,7 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-    public void saveEmail(String email) {
+    public void saveEmail(@Nullable String email) {
         String savedEmail = getSavedEmail();
         if(email != null && !email.equals(savedEmail)){
             SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
@@ -63,12 +72,13 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
+    @Nullable
     public String getSavedEmail() {
         SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         return sharedPref.getString("email", null);
     }
 
-    public void signIn(String email, String password) {
+    public void signIn(@NonNull String email, @NonNull String password) {
         showProgressDialog();
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -76,33 +86,38 @@ public class BaseActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         hideProgressDialog();
                         if(task.isSuccessful()){
-                            onAuthSuccess(task.getResult().getUser());
+                            onAuthSuccess(task.getResult().getUser(), ACTION_UPDATE_LOCAL_CONTACTS);
                         }
                         else {
-                            String message = task.getException().getMessage();
-                            Toast.makeText(BaseActivity.this, message,
-                                    Toast.LENGTH_LONG).show();
+                            onAuthFail(task.getException().getMessage());
                         }
 
                     }
                 });
     }
 
-    private void sendUserToMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
+    public void onAuthFail(String message) {
+        Toast.makeText(BaseActivity.this, message,
+                Toast.LENGTH_SHORT).show();
+//        Snackbar.make(getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
     }
 
-    public void onAuthSuccess(FirebaseUser user) {
+
+
+
+
+    public void onAuthSuccess(FirebaseUser user, String actionUpdateLocalContacts) {
 //        String username = usernameFromEmail(user.getEmail());
 
         // Write new user
 //        writeNewUser(user.getUid(), username, user.getEmail());
 
         // Go to MainActivity
-        sendUserToMainActivity();
+        Intent intentToMainActivity = new Intent(this, MainActivity.class);
+        intentToMainActivity.setAction(actionUpdateLocalContacts);
+        intentToMainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intentToMainActivity);
+        finish();
     }
 
 

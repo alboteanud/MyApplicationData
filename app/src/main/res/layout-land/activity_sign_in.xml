@@ -1,0 +1,129 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ScrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".login.SignInActivity">
+
+    <LinearLayout
+        android:id="@+id/main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/grey_100"
+        android:isScrollContainer="true"
+        android:orientation="vertical">
+
+        <!--
+        <android.support.design.widget.AppBarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/AppTheme.AppBarOverlay">
+
+            </android.support.design.widget.AppBarLayout>
+
+            -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/logo_icon"
+                style="@style/ThemeOverlay.FirebaseIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/desc_firebase_lockup"
+                android:src="@mipmap/logo" />
+
+            <!--   <TextView
+                   android:id="@+id/title_text"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginBottom="@dimen/title_bottom_margin"
+                   android:text="@string/emailpassword_title_text"
+                   android:theme="@style/ThemeOverlay.MyTitleText" />-->
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/log_in_text"
+                        android:theme="@style/ThemeOverlay.MyTextDetail"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/grey_300"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+
+            <EditText
+                android:id="@+id/field_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_email"
+                android:imeOptions="actionNext"
+                android:inputType="textEmailAddress" />
+
+            <EditText
+                android:id="@+id/field_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_password"
+                android:imeOptions="actionGo"
+                android:inputType="textPassword" />
+
+            <TextView
+                android:id="@+id/forgot_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/forgot_password"
+                android:textColor="@color/colorAccent"
+                android:visibility="gone"
+                android:padding="4dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"/>
+
+
+            <Button
+                android:id="@+id/email_sign_in_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:minWidth="160dp"
+                android:layout_margin="4dp"
+                android:text="@string/log_in"
+                android:theme="@style/ThemeOverlay.MyDarkButton" />
+
+
+            <TextView
+                android:id="@+id/create_account_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:text="@string/create_account"
+                android:clickable="true"
+                android:padding="4dp"
+                android:textColor="@color/colorAccent" />
+
+
+
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</ScrollView>

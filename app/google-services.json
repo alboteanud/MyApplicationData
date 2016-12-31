@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "321083208041-sirgf9indoe9mllrs95hm9cv997siu5l.apps.googleusercontent.com",
+          "client_id": "321083208041-l8i9vp1j8av7re03rmaeciqb1ka3cjuk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.alboteanu.myapplicationdata",
-            "certificate_hash": "7205129B9D3381E4A96BDE26FE037EB9F8DEFE76"
+            "certificate_hash": "13290A45A113D3490483FF0D9672D72F1D375E48"
           }
         },
         {
@@ -44,6 +44,76 @@
               "client_type": 3
             }
           ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:321083208041:android:cf0497a481f93680",
+        "android_client_info": {
+          "package_name": "com.alboteanu.myapplicationclient"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "321083208041-jlc6f5at21oqes3ht3d1oqn9tcicg7fs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alboteanu.myapplicationclient",
+            "certificate_hash": "13290A45A113D3490483FF0D9672D72F1D375E48"
+          }
+        },
+        {
+          "client_id": "321083208041-7dkh0ms0q7qmgem9k50543qldpdc3e99.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDspEOx55sRdXEeT-swwmG6DfAp0w08gI8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:321083208041:android:75ac3ab779ffa9a7",
+        "android_client_info": {
+          "package_name": "com.alboteanu.patientsList"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "321083208041-7dkh0ms0q7qmgem9k50543qldpdc3e99.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDspEOx55sRdXEeT-swwmG6DfAp0w08gI8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

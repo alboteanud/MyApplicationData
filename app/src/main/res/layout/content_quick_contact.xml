@@ -3,92 +3,91 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".screens.QuickContactActivity"
     tools:showIn="@layout/activity_quick_contact">
 
-    <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:alignmentMode="alignBounds"
-        android:columnCount="3"
-        android:useDefaultMargins="true">
+        android:padding="?android:attr/listPreferredItemPaddingStart"
+        >
+
+        <TableRow android:gravity="center_vertical">
 
         <ImageView
             android:layout_width="@dimen/icons_column_width"
             android:src="@drawable/ic_action_person"
-            android:layout_gravity="center_vertical"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            />
+            android:padding="16dp"/>
 
         <TextView
-            android:id="@+id/nameText"
-            android:layout_gravity="center_vertical"
-            android:layout_columnSpan="2"/>
+            android:id="@+id/nameText"/>
+        </TableRow>
+
+        <TableRow android:gravity="center_vertical">
 
         <ImageView
             android:id="@+id/ic_action_phone"
             android:src="@drawable/ic_action_phone"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"/>
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="16dp"/>
 
 
         <TextView
             android:id="@+id/phoneText"
-            android:layout_width="140dp"
-            android:layout_gravity="center_vertical" />
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:autoLink="phone"/>
+
 
         <ImageView
             android:id="@+id/ic_action_message"
+            android:background="?android:attr/selectableItemBackground"
             android:src="@drawable/ic_action_message"
-            android:layout_gravity="center"
-            android:visibility="gone"/>
+            android:padding="16dp"
+            android:visibility="invisible"/>
+        </TableRow>
+
+        <TableRow android:gravity="center_vertical">
 
         <ImageView
             android:id="@+id/ic_action_email"
             android:src="@drawable/ic_action_email"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"/>
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="16dp"/>
 
         <TextView
             android:id="@+id/emailText"
-            android:layout_gravity="center_vertical"
-            android:layout_columnSpan="2"
-           />
+            android:autoLink="email"/>
+        </TableRow>
 
+        <TableRow android:gravity="center_vertical">
 
         <ImageView
             android:id="@+id/ic_action_note"
             android:src="@drawable/ic_action_note"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"/>
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="16dp"/>
 
         <TextView
-            android:id="@+id/noteText"
-            android:layout_gravity="center_vertical"
-            android:layout_columnSpan="2"/>
+            android:id="@+id/noteText"/>
+        </TableRow>
+
+        <TableRow android:gravity="center_vertical">
 
         <ImageView
-            android:id="@+id/ic_action_date_return"
-            android:src="@drawable/ic_action_date"
-            android:layout_gravity="center"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
+            android:id="@+id/ic_action_date"
+            android:src="@drawable/ic_action_sandglass"
+            android:padding="16dp"
+            android:background="?android:attr/selectableItemBackground"
            />
 
         <TextView
-            android:id="@+id/dateText"
-            android:layout_gravity="center_vertical"
-            android:layout_columnSpan="2" />
+            android:id="@+id/dateText"/>
+        </TableRow>
 
-    </GridLayout>
+    </TableLayout>
 
 </ScrollView>

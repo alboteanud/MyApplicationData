@@ -15,7 +15,7 @@
         android:id="@+id/action_edit"
         android:orderInCategory="100"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_action_pencil"
+        android:icon="@mipmap/ic_action_pencil"
         />
 
 
