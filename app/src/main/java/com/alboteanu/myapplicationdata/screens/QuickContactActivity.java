@@ -5,11 +5,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.others.Utils;
@@ -33,13 +33,9 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         // Get post key from intent
         mContactKey = getIntent().getStringExtra(EXTRA_CONTACT_KEY);
-        if (mContactKey == null) {
-            throw new IllegalArgumentException("Must pass EXTRA_CONTACT_KEY");
-        }
-
+        Log.d("tag", "QuickContactActivity  mContactKey " + mContactKey);
         updateUIfromFirebase(mContactKey);
         findViewById(R.id.ic_action_phone).setOnClickListener(this);
         findViewById(R.id.ic_action_message).setOnClickListener(this);
@@ -48,7 +44,9 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
         findViewById(R.id.ic_action_note).setOnClickListener(this);
     }
 
-    public void updateUI(@NonNull Contact contact) {
+    public void updateUI(Contact contact) {
+        super.updateUI(contact);
+        Log.d("tag", "updateUI() in QuickContactActivity");
         ((TextView) findViewById(R.id.nameText)).setText(contact.name);
         ((TextView) findViewById(R.id.phoneText)).setText(contact.phone);
         if(contact.phone != null)
@@ -103,7 +101,7 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
                 String email = ((TextView) findViewById(R.id.emailText)).getText().toString();
                 if (!email.isEmpty()) {
                     String[] emails = new String[]{email};
-                    Utils.composeEmail(v.getContext(), emails, null);
+                    Utils.composeEmail(v.getContext(), emails);
                 }
                 break;
             case R.id.ic_action_date:

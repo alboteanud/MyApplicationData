@@ -1,13 +1,10 @@
 package com.alboteanu.myapplicationdata.screens;
 
-import android.content.ClipData;
-import android.content.ClipDescription;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,13 +23,13 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 
 import com.alboteanu.myapplicationdata.BaseActivity;
-import com.alboteanu.myapplicationdata.others.ContactHolder;
 import com.alboteanu.myapplicationdata.R;
+import com.alboteanu.myapplicationdata.login.SignInActivity;
+import com.alboteanu.myapplicationdata.models.Contact;
+import com.alboteanu.myapplicationdata.viewholder.ContactHolder;
 import com.alboteanu.myapplicationdata.others.MyAnimationListener;
 import com.alboteanu.myapplicationdata.others.MyDragShadowBuilder;
 import com.alboteanu.myapplicationdata.others.Utils;
-import com.alboteanu.myapplicationdata.login.SignInActivity;
-import com.alboteanu.myapplicationdata.models.Contact;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -48,14 +45,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.ListIterator;
+import java.util.Objects;
 
-import static android.R.attr.action;
-import static android.R.attr.id;
-import static android.R.attr.key;
-import static android.R.attr.tag;
 import static com.alboteanu.myapplicationdata.R.layout.contact_view;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACTS;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAILS;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAME;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAMES_DATES;
@@ -63,19 +56,20 @@ import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN;
 
 public class MainActivity extends BaseActivity {
-    private FirebaseRecyclerAdapter<Contact, ContactHolder> firebaseRecyclerAdapter;
+    private static final String FLAG_SELECT_ALL = "select_all";
     Toolbar toolbar;
-    private Menu menu;
     @NonNull
     HashMap<String, String> phonesMap = new HashMap<>();
     @NonNull
     HashMap<String, String> emailsMap = new HashMap<>();
-    private GoogleApiClient client;
     @Nullable
     ArrayList<String> selectedCheckBoxes = new ArrayList<>();
-    private static final String FLAG_SELECT_ALL = "select_all";
     LinearLayoutManager mManager;
     RecyclerView mRecycler;
+    MenuItem menu_item_action_sms;
+    private FirebaseRecyclerAdapter<Contact, ContactHolder> firebaseRecyclerAdapter;
+    private Menu menu;
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,15 +104,13 @@ public class MainActivity extends BaseActivity {
         mRecycler.setLayoutManager(mManager);
     }
 
-
     private void rebuilStateOfMapsAndCheckboxes() {
+        assert selectedCheckBoxes != null;
         if (selectedCheckBoxes.contains(FLAG_SELECT_ALL)) {
             getAllPhones();
             getAllEmails();
         } else {
-            ListIterator<String> iterator = selectedCheckBoxes.listIterator();
-            while (iterator.hasNext()) {
-                String key = iterator.next();
+            for (String key : selectedCheckBoxes) {
                 putPhoneToMap(key);
                 putEmailToMap(key);
             }
@@ -141,31 +133,26 @@ public class MainActivity extends BaseActivity {
         Log.d("tag", "onSaveInstanceStates" );
     }
 
+
+
+    Parcelable recyclerViewState;
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        final Parcelable recyclerViewState = savedInstanceState.getParcelable("recyclerViewState");
-        // Resore state
-
-//        final int firstItemVisible = savedInstanceState.getInt("recyclerOffset");
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-//                mManager.scrollToPosition(firstItemVisible);
-                mManager.onRestoreInstanceState(recyclerViewState);
-            }
-        }, 300);
-
+        recyclerViewState = savedInstanceState.getParcelable("recyclerViewState");
         rebuilStateOfMapsAndCheckboxes();
-        Log.d("tag", "onRestoreInstanceStates");
+//        Log.d("tag", "onRestoreInstanceStates");
+    }
+
+    private void restoreLayoutManagerPosition() {
+        if (recyclerViewState != null) {
+            mManager.onRestoreInstanceState(recyclerViewState);
+            Log.d("tag", "layoutManagerRestored sucess");
+        }
     }
 
     private void populateRecyclerView() {
-//        Log.d("tag", " populateRecyclerView()");
-
-
-        Query postsQuery = Utils.getUserNode().child(FIREBASE_LOCATION_NAMES_DATES).orderByChild(FIREBASE_LOCATION_NAME);
-
+        final Query postsQuery = Utils.getUserNode().child(FIREBASE_LOCATION_NAMES_DATES).orderByChild(FIREBASE_LOCATION_NAME);
         firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Contact, ContactHolder>(Contact.class, contact_view,
                 ContactHolder.class, postsQuery) {
             @Override
@@ -180,29 +167,12 @@ public class MainActivity extends BaseActivity {
                     calendarReturn.setTimeInMillis(returnMills);
                     if (Calendar.getInstance().after(calendarReturn)) {
                         sunglassVisibility = View.VISIBLE;
-                        Log.d("tag", "position " + position + " retMills " + returnMills + "  VISIBLE");
+//                        Log.d("tag", "position " + position + " retMills " + returnMills + "  VISIBLE");
                     }
                     contactHolder.sandglass.setOnLongClickListener(new View.OnLongClickListener() {
                         @Override
                         public boolean onLongClick(@NonNull View view) {
-                            // Create a new ClipData.
-                            // This is done in two steps to provide clarity. The convenience method
-                            // ClipData.newPlainText() can create a plain text ClipData in one step.
-
-
-                            // Create a new ClipData.Item from the ImageView object's tag
-//                            final String tag = view.getTag().toString();
-//                            ClipData.Item item = new ClipData.Item(tag);
-                            // Create a new ClipData using the tag as a label, the plain text MIME type, and
-                            // the already-created item. This will create a new ClipDescription object within the
-                            // ClipData, and set its MIME type entry to "text/plain"
-//                            ClipData dragData = new ClipData(tag, new String[]{ClipDescription.MIMETYPE_TEXT_PLAIN}, item);
-//                          ClipData dragData = ClipData.newPlainText("", "");
-
-                            // Instantiates the com.alboteanu.myapplicationdata.others.sandGlassDragEventListener shadow builder.
                             View.DragShadowBuilder myShadow = new MyDragShadowBuilder(view);
-
-                            // Starts the com.alboteanu.myapplicationdata.others.sandGlassDragEventListener
                             view.setOnDragListener(new View.OnDragListener() {
 
                                 @Override
@@ -211,14 +181,9 @@ public class MainActivity extends BaseActivity {
 
                                         case DragEvent.ACTION_DRAG_STARTED:
                                             // Determines if this View can accept the dragged data
-//                                            if (dragEvent.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
                                                 ((ImageView) view).setColorFilter(Color.LTGRAY);
                                                 view.invalidate();
                                                 // returns true to indicate that the View can accept the dragged data.
-//                                                return true;
-
-                                            // Returns false. During the current drag and drop operation, this View will
-                                            // not receive events again until ACTION_DRAG_ENDED is sent.
                                             return true;
 
                                         case DragEvent.ACTION_DRAG_ENTERED:
@@ -242,9 +207,7 @@ public class MainActivity extends BaseActivity {
                                         case DragEvent.ACTION_DRAG_ENDED:
                                             Log.d("tag", " sandGlass  ACTION_DRAG_ENDED");
                                             if (dragEvent.getResult()) {      // Delete successful
-//                                                Animation animationFadeOut = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_out);
-//                                                animationFadeOut.setAnimationListener(new MyAnimationListener(view, View.INVISIBLE));
-//                                                view.startAnimation(animationFadeOut);
+
                                             } else
                                                 ((ImageView) view).clearColorFilter();
                                             view.invalidate();
@@ -265,16 +228,8 @@ public class MainActivity extends BaseActivity {
                                 public boolean onDrag(@NonNull View view, @NonNull DragEvent dragEvent) {
                                     switch (dragEvent.getAction()) {
                                         case DragEvent.ACTION_DRAG_STARTED:
-                                            // Determines if this View can accept the dragged data
-//                                            if (dragEvent.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
-//                                                ((ImageView) view).setColorFilter(Color.LTGRAY);
-//                                                view.invalidate();
                                                 // returns true to indicate that the View can accept the dragged data.
-                                                return true;
-
-                                            // Returns false. During the current drag and drop operation, this View will
-                                            // not receive events again until ACTION_DRAG_ENDED is sent.
-//                                            return false;
+                                            return true;
 
                                         case DragEvent.ACTION_DRAG_ENTERED:
                                             view.setBackgroundColor(Color.LTGRAY);
@@ -292,19 +247,15 @@ public class MainActivity extends BaseActivity {
                                             return true;
 
                                         case DragEvent.ACTION_DROP:
-//                                            ClipData.Item item = dragEvent.getClipData().getItemAt(0);
                                             view.setBackgroundColor(Color.TRANSPARENT);
 //                                            view.invalidate();
-                                            // Gets the text data from the item.
-//                                            CharSequence dragData = item.getText();
-//                                            final int position = Integer.valueOf(dragData.toString());
                                             clearReturnDate(position);
                                             return true;
 
 
                                         case DragEvent.ACTION_DRAG_ENDED:
                                             Animation animationFadeOut = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_out);
-                                            animationFadeOut.setAnimationListener(new MyAnimationListener(view, View.GONE));
+                                            animationFadeOut.setAnimationListener(new MyAnimationListener(view));
                                             view.startAnimation(animationFadeOut);
                                             ((ImageView) view).clearColorFilter();
                                             view.invalidate();
@@ -333,13 +284,15 @@ public class MainActivity extends BaseActivity {
                     });
                 }
                 contactHolder.sandglass.setVisibility(sunglassVisibility);
-                if (selectedCheckBoxes.contains(FLAG_SELECT_ALL)) {
+                if (selectedCheckBoxes != null && selectedCheckBoxes.contains(FLAG_SELECT_ALL)) {
                     if (!selectedCheckBoxes.contains(key))
                         contactHolder.checkBox.setChecked(true);
-                } else if (selectedCheckBoxes.contains(key))
-                    contactHolder.checkBox.setChecked(true);
-                else
-                    contactHolder.checkBox.setChecked(false);
+                } else if (selectedCheckBoxes != null) {
+                    if (selectedCheckBoxes.contains(key))
+                        contactHolder.checkBox.setChecked(true);
+                    else
+                        contactHolder.checkBox.setChecked(false);
+                }
 
 
                 View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -376,10 +329,19 @@ public class MainActivity extends BaseActivity {
                             case R.id.contact_view:
 //                                final int position2 = Integer.valueOf(view.getTag().toString());
                                 final String firebase_key2 = firebaseRecyclerAdapter.getRef(position).getKey();
-                                Intent intent = new Intent(MainActivity.this, QuickContactActivity.class);
-                                intent.putExtra(EXTRA_CONTACT_KEY, firebase_key2);
+                                Intent intent2 = new Intent(MainActivity.this, QuickContactActivity.class);
+                                intent2.putExtra(EXTRA_CONTACT_KEY, firebase_key2);
 //                                intent.putExtra(EXTRA_CONTACT_COLOR, color);
-                                startActivity(intent);
+                                startActivity(intent2);
+                                break;
+
+                            case R.id.icon_sandglass:
+//                                final int position2 = Integer.valueOf(view.getTag().toString());
+                                final String firebase_key3 = firebaseRecyclerAdapter.getRef(position).getKey();
+                                Intent intent3 = new Intent(MainActivity.this, QuickContactActivity.class);
+                                intent3.putExtra(EXTRA_CONTACT_KEY, firebase_key3);
+//                                intent.putExtra(EXTRA_CONTACT_COLOR, color);
+                                startActivity(intent3);
                                 break;
                         }
 
@@ -387,22 +349,35 @@ public class MainActivity extends BaseActivity {
                 };
 
                 contactHolder.itemView.setOnClickListener(onClickListener);
+                contactHolder.sandglass.setOnClickListener(onClickListener);
                 contactHolder.checkBox.setOnClickListener(onClickListener);
                 contactHolder.bindContact(contact_name_date, getDrawable(R.drawable.shape_oval));
 
             }
         };
+        postsQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                restoreLayoutManagerPosition();
+                postsQuery.removeEventListener(this);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         mRecycler.setAdapter(firebaseRecyclerAdapter);
     }
 
-
     @Override
     protected void onStart() {
-        Log.d("tag", "onStart");
+//        Log.d("tag", "onStart");
         super.onStart();// ATTENTION: This was auto-generated to implement the App Indexing API.
 // See https://g.co/AppIndexing/AndroidStudio for more information.
         client.connect();
         populateRecyclerView();
+//        restoreLayoutManagerPosition();
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -413,8 +388,8 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-//        toolbar.setTitle(Utils.getSavedTitle(this));
-        toolbar.setTitle(getString(R.string.app_name));
+        toolbar.setTitle(Utils.getSavedTitle(this));
+//        toolbar.setTitle(getString(R.string.app_name));
     }
 
     @Override
@@ -425,8 +400,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    MenuItem menu_item_action_sms;
-
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_activity, menu);
@@ -436,12 +409,10 @@ public class MainActivity extends BaseActivity {
         menu_item_action_sms = menu.findItem(R.id.action_sms);
         menu.findItem(R.id.action_email).setVisible(!emailsMap.isEmpty());
         menu_item_action_sms.setVisible(!phonesMap.isEmpty());
-        menu.findItem(R.id.action_select_none).setVisible(!selectedCheckBoxes.isEmpty());
+        menu.findItem(R.id.action_select_none).setVisible(!(selectedCheckBoxes != null && selectedCheckBoxes.isEmpty()));
         menu.findItem(R.id.action_select_all).setVisible(!selectedCheckBoxes.contains(FLAG_SELECT_ALL));
         return true;
     }
-
-
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -455,6 +426,7 @@ public class MainActivity extends BaseActivity {
                 goToSignInActivity();
                 break;
             case R.id.action_select_all:
+                assert selectedCheckBoxes != null;
                 selectedCheckBoxes.clear();
                 selectedCheckBoxes.add(FLAG_SELECT_ALL);
                 firebaseRecyclerAdapter.notifyDataSetChanged();
@@ -466,6 +438,7 @@ public class MainActivity extends BaseActivity {
                 menu.findItem(R.id.action_select_none).setVisible(true);
                 break;
             case R.id.action_select_none:
+
                 selectedCheckBoxes.clear();
                 phonesMap.clear();
                 emailsMap.clear();
@@ -478,7 +451,7 @@ public class MainActivity extends BaseActivity {
             case R.id.action_email:
                 String[] emails = emailsMap.values().toArray(new String[0]);
                 if (emails.length > 0)
-                    Utils.composeEmail(this, emails, "title");
+                    Utils.composeEmail(this, emails);
                 break;
             case R.id.action_sms:
                 String[] phoneList = phonesMap.values().toArray(new String[0]);
@@ -514,8 +487,8 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Log.d("tag", "onDataChange");
-                        String phone = (String) dataSnapshot.getValue();
+//                        Log.d("tag", " putPhoneToMap onDataChange");
+                        String phone = dataSnapshot.getValue(String.class);
                         if (phone != null)
                             phonesMap.put(dataSnapshot.getKey(), phone);
 
@@ -561,10 +534,11 @@ public class MainActivity extends BaseActivity {
                         phonesMap = (HashMap<String, String>) dataSnapshot.getValue();
 
                         //remouving the unselected phones
+                        assert selectedCheckBoxes != null;
                         ListIterator<String> iterator = selectedCheckBoxes.listIterator();
                         while (iterator.hasNext()) {
                             String key = iterator.next();
-                            if (key != FLAG_SELECT_ALL) {
+                            if (!Objects.equals(key, FLAG_SELECT_ALL)) {
                                 phonesMap.remove(key);
                             }
                         }
@@ -588,9 +562,7 @@ public class MainActivity extends BaseActivity {
                         emailsMap = (HashMap<String, String>) dataSnapshot.getValue();
 
                         //remouving the unselected
-                        ListIterator<String> iterator = selectedCheckBoxes.listIterator();
-                        while (iterator.hasNext()) {
-                            String key = iterator.next();
+                        for (String key : selectedCheckBoxes) {
                             if (key != FLAG_SELECT_ALL) {
                                 emailsMap.remove(key);
                             }

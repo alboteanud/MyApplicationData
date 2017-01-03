@@ -8,7 +8,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -64,7 +63,7 @@ public class EditActivity extends BaseDetailsActivity
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    public void updateUI(@NonNull Contact contact) {
+    public void updateUI(Contact contact) {
         nameText.setText(contact.name);
         nameText.setSelection(contact.name.length());
         phoneText.setText(contact.phone);
@@ -135,22 +134,22 @@ public class EditActivity extends BaseDetailsActivity
         checkBox.setOnClickListener(this);
         clearDateButton.setOnClickListener(this);
 
+
     }
 
     private boolean isSucessfulSave() {
+        Contact nameDateContact = new Contact();
         Contact contact = new Contact();
-        Contact nameDate = new Contact();
         if(nameText.getText().toString().isEmpty()) {
             nameText.setError(getString(R.string.required));
             return false;
         }else {
             String name = nameText.getText().toString();
             contact.name = name;
-            nameDate.name = name;
+            nameDateContact.name = name;
         }
         if(!phoneText.getText().toString().isEmpty()) {
-            String phone = phoneText.getText().toString();
-            contact.phone = phone;
+            contact.phone = phoneText.getText().toString();
         }
         if(!emailText.getText().toString().isEmpty()) {
             String email = emailText.getText().toString();
@@ -164,12 +163,13 @@ public class EditActivity extends BaseDetailsActivity
             contact.other = otherText.getText().toString();
         if(calendar != null){
             contact.retur.put(FIREBASE_LOCATION_RETURN, calendar.getTimeInMillis());
-            nameDate.retur.put(FIREBASE_LOCATION_RETURN, calendar.getTimeInMillis());
+            nameDateContact.retur.put(FIREBASE_LOCATION_RETURN, calendar.getTimeInMillis());
         }
 
         Map<String, Object> updates = new HashMap<>();
+//        Contact finalContact = new Contact(contact.name, contact.phone, contact.email, contact.other, contact.retur);
         Map<String, Object> contactMap = contact.toMap();
-        Map<String, Object> nameDateMap = nameDate.toMap();
+        Map<String, Object> nameDateMap = nameDateContact.toMap();
 
         if(mContactKey == null)
             mContactKey = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).push().getKey();  //generate new key

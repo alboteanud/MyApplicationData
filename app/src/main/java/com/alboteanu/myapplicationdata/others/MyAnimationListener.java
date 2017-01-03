@@ -1,24 +1,22 @@
 package com.alboteanu.myapplicationdata.others;
 
-import android.animation.Animator;
 import android.os.Handler;
 import android.view.View;
 import android.view.animation.Animation;
-import android.widget.ImageView;
 
 /**
  * Created by albot on 20.12.2016.
  */
 
 public class MyAnimationListener  implements Animation.AnimationListener {
-    private View view;
-    private Handler handler;
-    private int visibility;
+    private final View view;
+    private final Handler handler;
+    private final int visibility;
 
 
-    public MyAnimationListener(View v, int visibility) {
+    public MyAnimationListener(View v) {
         this.view = v;
-        this.visibility = visibility;
+        this.visibility = View.GONE;
         handler = new Handler();
     }
 

@@ -20,6 +20,7 @@
         <ImageView
             android:layout_width="@dimen/icons_column_width"
             android:src="@drawable/ic_action_person"
+            android:contentDescription="face"
             android:padding="16dp"/>
 
         <TextView

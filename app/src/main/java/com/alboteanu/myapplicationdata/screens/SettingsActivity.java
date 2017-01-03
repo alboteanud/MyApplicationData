@@ -17,7 +17,6 @@ import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
 
 public class SettingsActivity extends BaseActivity {
-    private static final String TAG ="SettingsActivity";
 
 
     @Override

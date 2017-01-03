@@ -148,7 +148,7 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
 
         // Check auth on Activity start
         if (mAuth.getCurrentUser() != null) {
-            onAuthSuccess(mAuth.getCurrentUser(), null);
+            onAuthSuccess(null);
         }
     }
 

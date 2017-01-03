@@ -6,19 +6,22 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
+
+import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.models.Contact;
-import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.others.DatePickerFragment;
 import com.alboteanu.myapplicationdata.others.Utils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import java.util.Calendar;
+
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACTS;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAIL;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAILS;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAMES_DATES;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONE;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONES;
 
 public class BaseDetailsActivity extends BaseActivity {
 
@@ -32,8 +35,8 @@ public class BaseDetailsActivity extends BaseActivity {
     public void deleteContact(String contactKey) {
         Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS + "/" + contactKey).removeValue();
         Utils.getUserNode().child(FIREBASE_LOCATION_NAMES_DATES + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(FIREBASE_LOCATION_EMAIL + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(FIREBASE_LOCATION_PHONE + "/" + contactKey).removeValue();
+        Utils.getUserNode().child(FIREBASE_LOCATION_EMAILS + "/" + contactKey).removeValue();
+        Utils.getUserNode().child(FIREBASE_LOCATION_PHONES + "/" + contactKey).removeValue();
     }
 
     public void createDeleteDialogAlert(final String contactKey) {
@@ -64,24 +67,30 @@ public class BaseDetailsActivity extends BaseActivity {
         dialogFragment.show(getFragmentManager(), "datePicker");
     }
 
-    public void updateUIfromFirebase(@NonNull String contactKey) {
-        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).child(contactKey)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Contact contact = dataSnapshot.getValue(Contact.class);
-//                        if(contact != null)
-                            updateUI(contact);
-                    }
+    public void updateUIfromFirebase(final String contactKey) {
+        final DatabaseReference ref = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).child(contactKey);
+        ref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Contact contact = dataSnapshot.getValue(Contact.class);
+                if(contact != null){
+                    updateUI(contact);
+                    ref.removeEventListener(this);
+                }
+                Log.d("tag", "onDataChange in BaseDetailsActivity   children " + dataSnapshot.getChildrenCount());
+            }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                });
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
-    public void updateUI(Contact contact) {
 
+    public void updateUI(Contact contact) {
+        Log.d("tag", "updateUI() in BaseDetailsActivity");
     }
 
 

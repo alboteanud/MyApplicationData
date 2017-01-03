@@ -34,15 +34,24 @@
             android:gravity="center"
             android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/title_text"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="@string/app_name"
+                android:theme="@style/ThemeOverlay.MyTitleText" />
+
             <ImageView
                 android:id="@+id/logo_icon"
                 style="@style/ThemeOverlay.FirebaseIcon"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:contentDescription="@string/desc_firebase_lockup"
                 android:src="@mipmap/logo" />
 
-            <!--   <TextView
+           <!--    <TextView
                    android:id="@+id/title_text"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
@@ -53,7 +62,8 @@
 
                     <TextView
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
                         android:text="@string/log_in_text"
                         android:theme="@style/ThemeOverlay.MyTextDetail"/>
 

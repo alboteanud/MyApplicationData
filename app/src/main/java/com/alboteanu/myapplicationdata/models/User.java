@@ -13,10 +13,6 @@ public class User {
     private String timeJoined;
     public String email;
 
-    public User() {
-        // Default constructor required for calls to DataSnapshot.getValue(User.class)
-    }
-
     public User(String email, String timeJoined) {
         this.timeJoined = timeJoined;
         this.email = email;

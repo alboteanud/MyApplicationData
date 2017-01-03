@@ -15,14 +15,6 @@ public class DateToReturn {
     public long date;
     public String phone;
 
-    public DateToReturn() {
-    }
-
-    public DateToReturn(long date, String phone) {
-        this.date = date;
-        this.phone = phone;
-    }
-
     @NonNull
     @Exclude
     public Map<String, Object> toMap() {

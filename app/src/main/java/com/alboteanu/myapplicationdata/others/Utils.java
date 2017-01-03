@@ -44,9 +44,7 @@ public class Utils {
         String defaultTitle = usernameFromEmail(userEmail);
 
 
-
-        String storedVal = sharedPrefs.getString(key, defaultTitle);
-        return storedVal;
+        return sharedPrefs.getString(key, defaultTitle);
     }
 
     @Nullable
@@ -54,8 +52,7 @@ public class Utils {
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
         String key = context.getString(R.string.custom_text_key);
-        String storedVal = sharedPrefs.getString(key, context.getString(R.string.messaage_text));
-        return storedVal;
+        return sharedPrefs.getString(key, context.getString(R.string.messaage_text));
     }
 
     public static DatabaseReference getUserNode() {
@@ -71,11 +68,7 @@ public class Utils {
     }
 
     public static boolean isValidEmail(@Nullable CharSequence target) {
-        if (target == null) {
-            return false;
-        } else {
-            return android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
-        }
+        return target != null && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
     }
 
     public static void composeSMS(@NonNull String[] phonesArray, @NonNull Context context) {
@@ -97,7 +90,7 @@ public class Utils {
         }
     }
 
-    public static void composeEmail(@NonNull Context context, String[] addresses, String subject) {
+    public static void composeEmail(@NonNull Context context, String[] addresses) {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:")); // only emailText apps should handle this
         intent.putExtra(Intent.EXTRA_EMAIL, addresses);
@@ -159,11 +152,7 @@ public class Utils {
         return Color.rgb(R, G, B);
     }
 
-    public static String getUid() {
-        return FirebaseAuth.getInstance().getCurrentUser().getUid();
-    }
-
-/*    private String[] allPhonesArray;
+    /*    private String[] allPhonesArray;
     private void getAllPhones() {
         Utils.getUserNode().child(FIREBASE_LOCATION_PHONES)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -214,6 +203,7 @@ public class Utils {
 
 
     @NonNull
+    final
     List<String> phoneList = new ArrayList<>();
 
     public void getExpired() {
