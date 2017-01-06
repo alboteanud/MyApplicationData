@@ -1,11 +1,13 @@
 package com.alboteanu.myapplicationdata.screens;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -422,10 +424,13 @@ public class MainActivity extends BaseActivity {
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 break;
             case R.id.action_logout:
+                clearSavedTitle();
                 mAuth.signOut();
                 goToSignInActivity();
                 break;
             case R.id.action_select_all:
+                if(firebaseRecyclerAdapter.getItemCount()==0)
+                    break;
                 assert selectedCheckBoxes != null;
                 selectedCheckBoxes.clear();
                 selectedCheckBoxes.add(FLAG_SELECT_ALL);
@@ -438,8 +443,9 @@ public class MainActivity extends BaseActivity {
                 menu.findItem(R.id.action_select_none).setVisible(true);
                 break;
             case R.id.action_select_none:
-
-                selectedCheckBoxes.clear();
+                if (selectedCheckBoxes != null) {
+                    selectedCheckBoxes.clear();
+                }
                 phonesMap.clear();
                 emailsMap.clear();
                 firebaseRecyclerAdapter.notifyDataSetChanged();
@@ -461,6 +467,15 @@ public class MainActivity extends BaseActivity {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void clearSavedTitle() {
+        SharedPreferences sharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(this);
+        String key = getString(R.string.display_title_text_key);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.remove(key);
+        editor.apply();
     }
 
     private void clearReturnDate(int position) {
@@ -535,14 +550,12 @@ public class MainActivity extends BaseActivity {
 
                         //remouving the unselected phones
                         assert selectedCheckBoxes != null;
-                        ListIterator<String> iterator = selectedCheckBoxes.listIterator();
-                        while (iterator.hasNext()) {
-                            String key = iterator.next();
+                        for (String key : selectedCheckBoxes) {
                             if (!Objects.equals(key, FLAG_SELECT_ALL)) {
                                 phonesMap.remove(key);
                             }
                         }
-                        if(menu!=null)
+                        if(menu!=null && phonesMap!=null)
                             menu_item_action_sms.setVisible(!phonesMap.isEmpty());
                     }
 
@@ -562,12 +575,13 @@ public class MainActivity extends BaseActivity {
                         emailsMap = (HashMap<String, String>) dataSnapshot.getValue();
 
                         //remouving the unselected
+                        assert selectedCheckBoxes != null;
                         for (String key : selectedCheckBoxes) {
-                            if (key != FLAG_SELECT_ALL) {
+                            if (!Objects.equals(key, FLAG_SELECT_ALL)) {
                                 emailsMap.remove(key);
                             }
                         }
-                        if(menu!=null)
+                        if(menu!=null && emailsMap!=null)
                             menu.findItem(R.id.action_email).setVisible(!emailsMap.isEmpty());
                     }
 

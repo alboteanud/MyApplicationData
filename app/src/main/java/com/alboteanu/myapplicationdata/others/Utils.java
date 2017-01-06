@@ -41,10 +41,8 @@ public class Utils {
                 .getDefaultSharedPreferences(context);
         String key = context.getString(R.string.display_title_text_key);
         String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        String defaultTitle = usernameFromEmail(userEmail);
 
-
-        return sharedPrefs.getString(key, defaultTitle);
+        return sharedPrefs.getString(key, usernameFromEmail(userEmail));
     }
 
     @Nullable
