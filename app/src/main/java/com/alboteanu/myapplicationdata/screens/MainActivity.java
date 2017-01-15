@@ -95,7 +95,6 @@ public class MainActivity extends BaseActivity {
         String action = getIntent().getAction();
         if (action != null && action.equals(ACTION_UPDATE_LOCAL_CONTACTS)) {
             updateLocalDataBase();
-
             Utils.saveDefaultTitle(this);
         }
 
@@ -131,12 +130,11 @@ public class MainActivity extends BaseActivity {
 //        outState.putInt("recyclerOffset", firstItem);
 
         super.onSaveInstanceState(outState);
-        Log.d("tag", "onSaveInstanceStates" );
+        Log.d("tag", "onSaveInstanceStates");
     }
 
-
-
     Parcelable recyclerViewState;
+
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -182,9 +180,9 @@ public class MainActivity extends BaseActivity {
 
                                         case DragEvent.ACTION_DRAG_STARTED:
                                             // Determines if this View can accept the dragged data
-                                                ((ImageView) view).setColorFilter(Color.LTGRAY);
-                                                view.invalidate();
-                                                // returns true to indicate that the View can accept the dragged data.
+                                            ((ImageView) view).setColorFilter(Color.LTGRAY);
+                                            view.invalidate();
+                                            // returns true to indicate that the View can accept the dragged data.
                                             return true;
 
                                         case DragEvent.ACTION_DRAG_ENTERED:
@@ -229,7 +227,7 @@ public class MainActivity extends BaseActivity {
                                 public boolean onDrag(@NonNull View view, @NonNull DragEvent dragEvent) {
                                     switch (dragEvent.getAction()) {
                                         case DragEvent.ACTION_DRAG_STARTED:
-                                                // returns true to indicate that the View can accept the dragged data.
+                                            // returns true to indicate that the View can accept the dragged data.
                                             return true;
 
                                         case DragEvent.ACTION_DRAG_ENTERED:
@@ -294,7 +292,6 @@ public class MainActivity extends BaseActivity {
                     else
                         contactHolder.checkBox.setChecked(false);
                 }
-
 
                 View.OnClickListener onClickListener = new View.OnClickListener() {
                     @Override
@@ -428,7 +425,7 @@ public class MainActivity extends BaseActivity {
                 goToSignInActivity();
                 break;
             case R.id.action_select_all:
-                if(firebaseRecyclerAdapter.getItemCount()==0)
+                if (firebaseRecyclerAdapter.getItemCount() == 0)
                     break;
                 assert selectedCheckBoxes != null;
                 selectedCheckBoxes.clear();
@@ -506,7 +503,7 @@ public class MainActivity extends BaseActivity {
                         if (phone != null)
                             phonesMap.put(dataSnapshot.getKey(), phone);
 
-                        if(menu!=null)
+                        if (menu != null)
                             menu_item_action_sms.setVisible(!phonesMap.isEmpty());
 
                     }
@@ -516,7 +513,6 @@ public class MainActivity extends BaseActivity {
 
                     }
                 });
-
     }
 
     private void putEmailToMap(@NonNull String key) {
@@ -554,7 +550,7 @@ public class MainActivity extends BaseActivity {
                                 phonesMap.remove(key);
                             }
                         }
-                        if(menu!=null && phonesMap!=null)
+                        if (menu != null && phonesMap != null)
                             menu_item_action_sms.setVisible(!phonesMap.isEmpty());
                     }
 
@@ -580,7 +576,7 @@ public class MainActivity extends BaseActivity {
                                 emailsMap.remove(key);
                             }
                         }
-                        if(menu!=null && emailsMap!=null)
+                        if (menu != null && emailsMap != null)
                             menu.findItem(R.id.action_email).setVisible(!emailsMap.isEmpty());
                     }
 
@@ -594,9 +590,9 @@ public class MainActivity extends BaseActivity {
     @NonNull
     public Action getIndexApiAction() {
         Thing object = new Thing.Builder()
-                .setName("Main Page") // TODO: Define a title for the content shown.
+                .setName(getString(R.string.app_name)) // TODO: Define a title for the content shown.
                 // TODO: Make sure this auto-generated URL is correct.
-                .setUrl(Uri.parse("http://[ENTER-YOUR-URL-HERE]"))
+                .setUrl(Uri.parse("https://play.google.com/store/apps/details?id=com.alboteanu.patientsList"))
                 .build();
         return new Action.Builder(Action.TYPE_VIEW)
                 .setObject(object)
