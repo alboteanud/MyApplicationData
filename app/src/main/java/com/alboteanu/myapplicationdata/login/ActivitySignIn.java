@@ -35,7 +35,7 @@ import com.alboteanu.myapplicationdata.others.Utils;
 import static com.alboteanu.myapplicationdata.R.id.create_account_text;
 import static com.alboteanu.myapplicationdata.R.id.email_sign_in_button;
 
-public class SignInActivity extends BaseActivity implements View.OnClickListener {
+public class ActivitySignIn extends BaseActivity implements View.OnClickListener {
     private static final String FORGOT_PASSWORD = "password";
     EditText mEmailField, mPasswordField;
     TextView forgotPassword;
@@ -43,6 +43,11 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Check auth on Activity start
+        if (mAuth.getCurrentUser() != null){
+            onAuthSuccess(null);
+            return;
+        }
         setContentView(R.layout.activity_sign_in);
         mEmailField = (EditText) findViewById(R.id.field_email);
         mPasswordField = (EditText) findViewById(R.id.field_password);
@@ -146,10 +151,6 @@ public class SignInActivity extends BaseActivity implements View.OnClickListener
     public void onStart() {
         super.onStart();
 
-        // Check auth on Activity start
-        if (mAuth.getCurrentUser() != null) {
-            onAuthSuccess(null);
-        }
     }
 
 

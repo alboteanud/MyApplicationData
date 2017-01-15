@@ -26,7 +26,7 @@ import android.widget.ImageView;
 
 import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
-import com.alboteanu.myapplicationdata.login.SignInActivity;
+import com.alboteanu.myapplicationdata.login.ActivitySignIn;
 import com.alboteanu.myapplicationdata.models.Contact;
 import com.alboteanu.myapplicationdata.viewholder.ContactHolder;
 import com.alboteanu.myapplicationdata.others.MyAnimationListener;
@@ -46,7 +46,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.ListIterator;
 import java.util.Objects;
 
 import static com.alboteanu.myapplicationdata.R.layout.contact_view;
@@ -490,7 +489,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void goToSignInActivity() {
-        Intent intent = new Intent(this, SignInActivity.class);
+        Intent intent = new Intent(this, ActivitySignIn.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
