@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +18,7 @@ import com.alboteanu.myapplicationdata.models.Contact;
 
 import java.util.Calendar;
 
+import static android.R.attr.id;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN;
 
@@ -67,15 +69,20 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
         return true;
     }
 
+
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_delete_contact) {
-            createDeleteDialogAlert(mContactKey);
-            return true;
-        } else if (id == R.id.action_edit) {
-            sendUserToEditActivity();
-            return true;
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+            case  R.id.action_delete_contact:
+                createDeleteDialogAlert(mContactKey);
+                return true;
+            case R.id.action_edit:
+                sendUserToEditActivity();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

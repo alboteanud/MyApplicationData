@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -62,6 +63,8 @@ import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION
 
 public class MainActivity extends BaseActivity {
     private static final String FLAG_SELECT_ALL = "select_all";
+    private static final String RECYCLER_STATE = "recycler_state";
+    private static final String SELECTED_BOXES_STATE = "selected_boxes";
     Toolbar toolbar;
     @NonNull
     HashMap<String, String> phonesMap = new HashMap<>();
@@ -76,6 +79,7 @@ public class MainActivity extends BaseActivity {
     private GoogleApiClient client;
     AdView mAdView;
     LinearLayoutManager mManager;
+    Bundle savedInstanceState;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,25 +94,19 @@ public class MainActivity extends BaseActivity {
                 startActivity(new Intent(MainActivity.this, EditActivity.class));
             }
         });
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
-        if (savedInstanceState != null)
-            selectedCheckBoxes = savedInstanceState.getStringArrayList("selectedCheckBoxes");
-
         String action = getIntent().getAction();
         if (action != null && action.equals(ACTION_UPDATE_LOCAL_CONTACTS)) {
             updateLocalDataBase();
             Utils.saveDefaultTitle(this);
         }
-
         mManager = new LinearLayoutManager(this);
         mRecycler = (RecyclerView) findViewById(R.id.contact_list);
         mRecycler.setHasFixedSize(true);
         mRecycler.setLayoutManager(mManager);
+        this.savedInstanceState = savedInstanceState;
 
-        loadAd();
+        // loadAd();
     }
 
     private void loadAd() {
@@ -125,8 +123,8 @@ public class MainActivity extends BaseActivity {
         mAdView.loadAd(adRequest);
     }
 
-    private void rebuilStateOfMapsAndCheckboxes() {
-        assert selectedCheckBoxes != null;
+    private void rebuilStateOfMapsAndCheckboxes(Bundle savedInstanceState) {
+        selectedCheckBoxes = savedInstanceState.getStringArrayList(SELECTED_BOXES_STATE);
         if (selectedCheckBoxes.contains(FLAG_SELECT_ALL)) {
             getAllPhones();
             getAllEmails();
@@ -136,39 +134,35 @@ public class MainActivity extends BaseActivity {
                 putEmailToMap(key);
             }
         }
+
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putStringArrayList("selectedCheckBoxes", selectedCheckBoxes);
-
-        // Save state
-        Parcelable recyclerViewState;
-        recyclerViewState = mManager.onSaveInstanceState();
-        outState.putParcelable("recyclerViewState", recyclerViewState);
-
+        outState.putStringArrayList(SELECTED_BOXES_STATE, selectedCheckBoxes);
+        outState.putParcelable(RECYCLER_STATE, mManager.onSaveInstanceState());
 //        int firstItem = mManager.findFirstCompletelyVisibleItemPosition();
 //        outState.putInt("recyclerOffset", firstItem);
-
         super.onSaveInstanceState(outState);
         Log.d("tag", "onSaveInstanceStates");
+        this.savedInstanceState = outState;
     }
-
-    Parcelable recyclerViewState;
 
     @Override
     protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        recyclerViewState = savedInstanceState.getParcelable("recyclerViewState");
-        rebuilStateOfMapsAndCheckboxes();
-//        Log.d("tag", "onRestoreInstanceStates");
+        this.savedInstanceState = savedInstanceState;
+        rebuilStateOfMapsAndCheckboxes(savedInstanceState);
+        Log.d("tag", "onRestoreInstanceStates");
     }
 
     private void restoreLayoutManagerPosition() {
-        if (recyclerViewState != null) {
+        if (savedInstanceState != null) {
+            Parcelable recyclerViewState = savedInstanceState.getParcelable(RECYCLER_STATE);
             mManager.onRestoreInstanceState(recyclerViewState);
-            Log.d("tag", "layoutManagerRestored sucess");
+            Log.d("tag", "restoreLayoutManagerPosition");
         }
+
     }
 
     private void populateRecyclerView() {
@@ -332,14 +326,13 @@ public class MainActivity extends BaseActivity {
                                     else
                                         selectedCheckBoxes.add(firebase_key);
                                     menu.findItem(R.id.action_select_none).setVisible(true);
-
-                                    //todo  alte chestii se pot face aici - la selectare
                                 } else {
                                     phonesMap.remove(firebase_key);
                                     emailsMap.remove(firebase_key);
                                     if (selectedCheckBoxes.contains(FLAG_SELECT_ALL))
                                         selectedCheckBoxes.add(firebase_key);
-                                    else selectedCheckBoxes.remove(firebase_key);
+                                    else
+                                        selectedCheckBoxes.remove(firebase_key);
                                     menu.findItem(R.id.action_email).setVisible(!emailsMap.isEmpty());
                                     menu_item_action_sms.setVisible(!phonesMap.isEmpty());
                                     menu.findItem(R.id.action_select_all).setVisible(true);
@@ -391,11 +384,13 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onStart() {
-//        Log.d("tag", "onStart");
-        super.onStart();// ATTENTION: This was auto-generated to implement the App Indexing API.
+        Log.d("tag", "onStart");
+        super.onStart();
+        populateRecyclerView();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
 // See https://g.co/AppIndexing/AndroidStudio for more information.
         client.connect();
-        populateRecyclerView();
+
 //        restoreLayoutManagerPosition();
 
         // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -407,6 +402,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d("tag", "onResume");
         toolbar.setTitle(Utils.getSavedTitle(this));
 //        toolbar.setTitle(getString(R.string.app_name));
         if (mAdView != null)
@@ -414,14 +410,15 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    protected void onDestroy() {
+        Log.d("tag", "onDestroy");
         if (firebaseRecyclerAdapter != null) {
             firebaseRecyclerAdapter.cleanup();
         }
         if (mAdView != null)
             mAdView.destroy();
         super.onDestroy();
+
     }
 
     @Override
@@ -524,14 +521,13 @@ public class MainActivity extends BaseActivity {
 
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        Log.d("tag", " putPhoneToMap onDataChange");
+                        Log.d("tag", " putPhoneToMap onDataChange");
                         String phone = dataSnapshot.getValue(String.class);
-                        if (phone != null)
+                        if (phone != null) {
                             phonesMap.put(dataSnapshot.getKey(), phone);
-
-                        if (menu != null)
-                            menu_item_action_sms.setVisible(!phonesMap.isEmpty());
-
+                            if (menu != null)
+                                menu_item_action_sms.setVisible(true);
+                        }
                     }
 
                     @Override
@@ -548,10 +544,11 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         String email = (String) dataSnapshot.getValue();
-                        if (email != null)
+                        if (email != null) {
                             emailsMap.put(dataSnapshot.getKey(), email);
-
-                        menu.findItem(R.id.action_email).setVisible(!emailsMap.isEmpty());
+                            if (menu != null)
+                                menu.findItem(R.id.action_email).setVisible(true);
+                        }
                     }
 
                     @Override
@@ -596,13 +593,13 @@ public class MainActivity extends BaseActivity {
                         emailsMap = (HashMap<String, String>) dataSnapshot.getValue();
 
                         //remouving the unselected
-                        assert selectedCheckBoxes != null;
-                        for (String key : selectedCheckBoxes) {
-                            if (!Objects.equals(key, FLAG_SELECT_ALL)) {
-                                emailsMap.remove(key);
+                        if (selectedCheckBoxes != null)
+                            for (String key : selectedCheckBoxes) {
+                                if (!Objects.equals(key, FLAG_SELECT_ALL)) {
+                                    emailsMap.remove(key);
+                                }
                             }
-                        }
-                        if (menu != null && emailsMap != null)
+                        if (menu != null && !emailsMap.isEmpty())
                             menu.findItem(R.id.action_email).setVisible(!emailsMap.isEmpty());
                     }
 
@@ -629,7 +626,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onStop() {
         super.onStop();
-
+        Log.d("tag", "onStop");
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         AppIndex.AppIndexApi.end(client, getIndexApiAction());
@@ -657,5 +654,6 @@ public class MainActivity extends BaseActivity {
         if (mAdView != null)
             mAdView.pause();
         super.onPause();
+        Log.d("tag", "onPause");
     }
 }
