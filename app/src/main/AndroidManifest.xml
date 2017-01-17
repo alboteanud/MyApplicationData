@@ -25,7 +25,8 @@
         <activity
             android:name=".screens.MainActivity"
             android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".screens.QuickContactActivity"
             android:label="@string/title_activity_detail"

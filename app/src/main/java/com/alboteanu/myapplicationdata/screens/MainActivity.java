@@ -33,6 +33,10 @@ import com.alboteanu.myapplicationdata.others.MyAnimationListener;
 import com.alboteanu.myapplicationdata.others.MyDragShadowBuilder;
 import com.alboteanu.myapplicationdata.others.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
@@ -65,12 +69,13 @@ public class MainActivity extends BaseActivity {
     HashMap<String, String> emailsMap = new HashMap<>();
     @Nullable
     ArrayList<String> selectedCheckBoxes = new ArrayList<>();
-    LinearLayoutManager mManager;
     RecyclerView mRecycler;
     MenuItem menu_item_action_sms;
     private FirebaseRecyclerAdapter<Contact, ContactHolder> firebaseRecyclerAdapter;
     private Menu menu;
     private GoogleApiClient client;
+    AdView mAdView;
+    LinearLayoutManager mManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -102,6 +107,22 @@ public class MainActivity extends BaseActivity {
         mRecycler = (RecyclerView) findViewById(R.id.contact_list);
         mRecycler.setHasFixedSize(true);
         mRecycler.setLayoutManager(mManager);
+
+        loadAd();
+    }
+
+    private void loadAd() {
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3931793949981809~8705632377");  //app ID din Banner Petru si Dan
+        mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                mAdView.setVisibility(View.VISIBLE);
+            }
+        });
+        mAdView.loadAd(adRequest);
     }
 
     private void rebuilStateOfMapsAndCheckboxes() {
@@ -388,6 +409,8 @@ public class MainActivity extends BaseActivity {
         super.onResume();
         toolbar.setTitle(Utils.getSavedTitle(this));
 //        toolbar.setTitle(getString(R.string.app_name));
+        if (mAdView != null)
+            mAdView.resume();
     }
 
     @Override
@@ -396,6 +419,9 @@ public class MainActivity extends BaseActivity {
         if (firebaseRecyclerAdapter != null) {
             firebaseRecyclerAdapter.cleanup();
         }
+        if (mAdView != null)
+            mAdView.destroy();
+        super.onDestroy();
     }
 
     @Override
@@ -626,4 +652,10 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+    @Override
+    protected void onPause() {
+        if (mAdView != null)
+            mAdView.pause();
+        super.onPause();
+    }
 }

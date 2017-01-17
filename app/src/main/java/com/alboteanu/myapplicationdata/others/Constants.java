@@ -3,6 +3,7 @@ package com.alboteanu.myapplicationdata.others;
 public final class Constants {
     public static final String FIREBASE_LOCATION_CONTACTS = "contacts";
     public static final String FIREBASE_LOCATION_NAMES_DATES = "names_dates";
+    public static final String FIREBASE_LOCATION_PHONES_EMAILS = "phones_emails";
 
     public static final String FIREBASE_LOCATION_NAME = "name";
     public static final String FIREBASE_LOCATION_PHONE = "phone";
