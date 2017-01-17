@@ -17,6 +17,7 @@
         android:orderInCategory="100"
         android:text="@string/action_select_all"
         android:title="@string/action_select_all"
+        android:visible="false"
         app:showAsAction="never" />
 
     <item
@@ -34,7 +35,7 @@
         android:orderInCategory="100"
         android:text="@string/action_email"
         android:title="@string/action_email"
-        android:visible="false"
+        android:visible="true"
         app:showAsAction="never" />
 
     <item
@@ -43,6 +44,7 @@
         android:orderInCategory="100"
         android:text="@string/action_sms"
         android:title="@string/action_sms"
+        android:visible="true"
         app:showAsAction="never" />
 
 

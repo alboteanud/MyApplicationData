@@ -2,6 +2,8 @@ package com.alboteanu.myapplicationdata.models;
 
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
+
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,7 +15,7 @@ import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION
 
 
 @IgnoreExtraProperties
-public class Contact {
+public class Contact implements Serializable {
     public String name;
     public String phone;
     public String email;
