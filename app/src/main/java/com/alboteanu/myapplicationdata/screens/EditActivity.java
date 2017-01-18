@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,21 +23,22 @@ import java.util.Map;
 
 import static com.alboteanu.myapplicationdata.R.id.phoneEditText;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
+import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_EDIT_DATE;
+import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_EDIT_NOTE;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACTS;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAILS;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAMES_DATES;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONES;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONES_EMAILS;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN;
 
 
 public class EditActivity extends BaseDetailsActivity
-        implements View.OnClickListener, DatePickerFragment.OnHeadlineSelectedListener {
-    EditText nameText, phoneText, emailText, otherText, returnText;
-    private String mContactKey;
+        implements View.OnClickListener, DatePickerFragment.OnDateSelectedListener {
+    EditText nameText, phoneText, emailText, editTextNote, dateText;
+    private String key;
     @Nullable
     private Calendar calendar;
     private CheckBox checkBox;
-    ImageView clearDateButton;
+    ImageView clearDateX;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,14 +48,22 @@ public class EditActivity extends BaseDetailsActivity
         setSupportActionBar(toolbar);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initViews();
-        mContactKey = getIntent().getStringExtra(EXTRA_CONTACT_KEY);
-//        Log.d("tag", "key " + mContactKey);
-        if(savedInstanceState == null && mContactKey != null)
-            updateUIfromFirebase(mContactKey);
-        if(QuickContactActivity.ACTION_SHOW_DATE_PICKER.equals(getIntent().getAction())){
+        if(getIntent().hasExtra(EXTRA_CONTACT_KEY)){
+            key = getIntent().getStringExtra(EXTRA_CONTACT_KEY);
+        }else if(getIntent().hasExtra(EXTRA_EDIT_NOTE)){
+            key = getIntent().getStringExtra(EXTRA_EDIT_NOTE);
+            editTextNote.requestFocus();
+        }else if(getIntent().hasExtra(EXTRA_EDIT_DATE)){
+            key = getIntent().getStringExtra(EXTRA_EDIT_DATE);
             showDatePickerDialog();
-        }else if(QuickContactActivity.ACTION_NOTE.equals(getIntent().getAction())){
-            otherText.requestFocus();
+        }
+        if(key == null){
+            clearDateX.setVisibility(View.GONE);
+        }else {
+            if(savedInstanceState == null)
+                updateUIfromFirebase(key);
+            else
+                clearDateX.setVisibility(View.VISIBLE);
         }
     }
 
@@ -68,36 +78,41 @@ public class EditActivity extends BaseDetailsActivity
         nameText.setSelection(contact.name.length());
         phoneText.setText(contact.phone);
         emailText.setText(contact.email);
-        otherText.setText(contact.other);
+        editTextNote.setText(contact.note);
         if(contact.retur.containsKey(FIREBASE_LOCATION_RETURN)) {
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(contact.retur.get(FIREBASE_LOCATION_RETURN));
-            returnText.setText(Utils.calendarToString(cal));
+            dateText.setText(Utils.calendarToString(cal));
             calendar = cal;
-            clearDateButton.setVisibility(View.VISIBLE);
+            clearDateX.setVisibility(View.VISIBLE);
         }else{
-            clearDateButton.setVisibility(View.GONE);
+            clearDateX.setVisibility(View.GONE);
         }
-        if(QuickContactActivity.ACTION_NOTE.equals(getIntent().getAction())) {
-            otherText.setSelection(otherText.length());
-            otherText.requestFocus();
+        if(getIntent().hasExtra(EXTRA_EDIT_NOTE)) {
+            editTextNote.setSelection(editTextNote.length());
+            editTextNote.requestFocus();
         }
-        else
+        else{
             nameText.requestFocus();
+            Log.d("tag EditActivity", "nameText.requestFocus()");
+        }
+
     }
 
     @Override
     public void onDateSelected(Calendar cal) {
-        returnText.setText(Utils.calendarToString(cal));
+        dateText.setText(Utils.calendarToString(cal));
         calendar = cal;
         checkBox.setChecked(false);
-        clearDateButton.setVisibility(View.VISIBLE);
+        clearDateX.setVisibility(View.VISIBLE);
+        dateText.requestFocus();
+        Log.d("tag EditActivity", "dateText.requestFocus()");
     }
 
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         getMenuInflater().inflate(R.menu.menu_contact_editor, menu);
-        if(mContactKey == null)
+        if(key == null)
             menu.findItem(R.id.action_delete_contact).setVisible(false);
         return super.onCreateOptionsMenu(menu);
     }
@@ -106,12 +121,12 @@ public class EditActivity extends BaseDetailsActivity
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete_contact:
-                createDeleteDialogAlert(mContactKey);
+                createDeleteDialogAlert(key);
                 break;
             case R.id.action_save:
                 if (isSucessfulSave()) {
                     Intent intent = new Intent(this, QuickContactActivity.class);
-                    intent.putExtra(EXTRA_CONTACT_KEY, mContactKey);
+                    intent.putExtra(EXTRA_CONTACT_KEY, key);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     finish();
@@ -125,59 +140,65 @@ public class EditActivity extends BaseDetailsActivity
         nameText = ((EditText) findViewById(R.id.nameEditText));
         phoneText = ((EditText) findViewById(phoneEditText));
         emailText = ((EditText) findViewById(R.id.emailEditText));
-        otherText = ((EditText) findViewById(R.id.noteEditText));
-        returnText = ((EditText) findViewById(R.id.dateEditText));
-        clearDateButton = (ImageView) findViewById(R.id.button_clear_date);
+        editTextNote = ((EditText) findViewById(R.id.noteEditText));
+        dateText = ((EditText) findViewById(R.id.dateEditText));
+        clearDateX = (ImageView) findViewById(R.id.button_clear_date);
         checkBox = (CheckBox) findViewById(R.id.checkBox);
-        returnText.setOnClickListener(this);
+        dateText.setOnClickListener(this);
         findViewById(R.id.icon_sandglass).setOnClickListener(this);
         checkBox.setOnClickListener(this);
-        clearDateButton.setOnClickListener(this);
+        clearDateX.setOnClickListener(this);
 
 
     }
 
     private boolean isSucessfulSave() {
-        Contact nameDateContact = new Contact();
-        Contact contact = new Contact();
-        if(nameText.getText().toString().isEmpty()) {
+        String name = nameText.getText().toString();
+        if(name.isEmpty()) {
             nameText.setError(getString(R.string.required));
             return false;
-        }else {
-            String name = nameText.getText().toString();
-            contact.name = name;
-            nameDateContact.name = name;
         }
-        if(!phoneText.getText().toString().isEmpty()) {
-            contact.phone = phoneText.getText().toString();
+        Contact contact = new Contact(name);
+        Contact contactPhoneEmail = new Contact();
+        Contact contactNameDate = new Contact(name);
+
+        String phone = phoneText.getText().toString();
+        if(!phone.isEmpty()) {
+            contact.phone = phone;
+            contactPhoneEmail.phone = phone;
         }
-        if(!emailText.getText().toString().isEmpty()) {
-            String email = emailText.getText().toString();
+        String email = emailText.getText().toString();
+        if(!email.isEmpty()) {
             if (!Utils.isValidEmail(email)) {
                 emailText.setError(getString(R.string.invalid_email));
                 return false;
             }
             contact.email = email;
+            contactPhoneEmail.email = email;
         }
-        if(!otherText.getText().toString().isEmpty())
-            contact.other = otherText.getText().toString();
-        if(calendar != null){
-            contact.retur.put(FIREBASE_LOCATION_RETURN, calendar.getTimeInMillis());
-            nameDateContact.retur.put(FIREBASE_LOCATION_RETURN, calendar.getTimeInMillis());
-        }
+        String note = editTextNote.getText().toString();
+        if(!note.isEmpty())
+            contact.note = note;
 
+        if(calendar!=null){
+            Long dateMills = calendar.getTimeInMillis();
+            contact.retur.put(FIREBASE_LOCATION_RETURN, dateMills);
+            contactNameDate.retur.put(FIREBASE_LOCATION_RETURN, dateMills);
+        }
         Map<String, Object> updates = new HashMap<>();
-//        Contact finalContact = new Contact(contact.name, contact.phone, contact.email, contact.other, contact.retur);
-        Map<String, Object> contactMap = contact.toMap();
-        Map<String, Object> nameDateMap = nameDateContact.toMap();
+//        Contact finalContact = new Contact(contact.name, contact.phone, contact.email, contact.note, contact.retur);
+        Map<String, Object> mapContact = contact.toMap();
+        Map<String, Object> mapContactNameDate = contactNameDate.toMap();
+        Map<String, Object> mapContactPhoneEmail = contactPhoneEmail.toMap();
 
-        if(mContactKey == null)
-            mContactKey = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).push().getKey();  //generate new key
+        if(key == null)
+            key = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).push().getKey();  //generate new key
 
-        updates.put(FIREBASE_LOCATION_CONTACTS + "/" + mContactKey, contactMap);
-        updates.put(FIREBASE_LOCATION_NAMES_DATES + "/" + mContactKey, nameDateMap);
-        updates.put(FIREBASE_LOCATION_PHONES + "/" + mContactKey, contact.phone);
-        updates.put(FIREBASE_LOCATION_EMAILS + "/" + mContactKey, contact.email);
+        updates.put(FIREBASE_LOCATION_CONTACTS + "/" + key, mapContact);
+        updates.put(FIREBASE_LOCATION_NAMES_DATES + "/" + key, mapContactNameDate);
+        updates.put(FIREBASE_LOCATION_PHONES_EMAILS + "/" + key, mapContactPhoneEmail);
+//        updates.put(FIREBASE_LOCATION_PHONES + "/" + key, contact.phone);
+//        updates.put(FIREBASE_LOCATION_EMAILS + "/" + key, contact.email);
         Utils.getUserNode().updateChildren(updates);
         return true;
     }
@@ -195,17 +216,17 @@ public class EditActivity extends BaseDetailsActivity
                 if(checkBox.isChecked()) {
                     calendar = Calendar.getInstance();
                     calendar.add(Calendar.MONTH, 6);
-                    returnText.setText(Utils.calendarToString(calendar));
-                    clearDateButton.setVisibility(View.VISIBLE);
+                    dateText.setText(Utils.calendarToString(calendar));
+                    clearDateX.setVisibility(View.VISIBLE);
                 }else {
                     calendar = null;
-                    returnText.setText(null);
-//                    clearDateButton.setVisibility(View.GONE);
+                    dateText.setText(null);
+//                    clearDateX.setVisibility(View.GONE);
                 }
                 break;
             case R.id.button_clear_date:
                 calendar = null;
-                returnText.setText(null);
+                dateText.setText(null);
                 checkBox.setChecked(false);
                 break;
         }

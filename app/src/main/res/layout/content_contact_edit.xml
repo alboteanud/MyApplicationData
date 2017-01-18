@@ -100,7 +100,7 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_action_clear_date"
                 android:padding="16dp"
-                android:visibility="gone"/>
+                android:visibility="visible"/>
             <!--style="?android:attr/borderlessButtonStyle"-->
 
         </TableRow>

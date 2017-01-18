@@ -14,7 +14,7 @@
     <string name="title_activity_settings">Settings</string>
     <string name="action_settings">Settings</string>
     <string name="action_notifications">Notif</string>
-    <string name="messaage_text">Hello..</string>
+    <string name="messaage_text">Dear Sir or Madam: </string>
     <string name="title_custom_text_settings">Message text</string>
     <string name="back">Back</string>
     <string name="display_title_text_key" translatable="false">DisplayName</string>

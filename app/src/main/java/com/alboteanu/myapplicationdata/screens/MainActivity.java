@@ -28,6 +28,7 @@ import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.login.ActivitySignIn;
 import com.alboteanu.myapplicationdata.models.Contact;
+import com.alboteanu.myapplicationdata.setting.SettingsActivity;
 import com.alboteanu.myapplicationdata.viewholder.ContactHolder;
 import com.alboteanu.myapplicationdata.others.MyAnimationListener;
 import com.alboteanu.myapplicationdata.others.MyDragShadowBuilder;
@@ -54,28 +55,18 @@ import java.util.List;
 
 import static com.alboteanu.myapplicationdata.R.layout.contact_view;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACTS;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAME;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAMES_DATES;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONES_EMAILS;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN;
+import static com.alboteanu.myapplicationdata.setting.SettingsActivity.ACTION_TITLE_CHANGED;
 
 public class MainActivity extends BaseActivity {
-    //    private static final String FLAG_SELECT_ALL = "select_all";
     private static final String RECYCLER_STATE = "recycler_state";
-    //    private static final String SELECTED_BOXES_STATE = "selected_boxes";
     private static final String SAVED_SELECTED_CONTACTS = "saved_contacts";
-    Toolbar toolbar;
-    //    @NonNull
-//    HashMap<String, String> phonesMap = new HashMap<>();
-//    @NonNull
-//    HashMap<String, String> emailsMap = new HashMap<>();
-    HashMap<String, Contact> selectedContacts = new HashMap<>();
-    //    @Nullable
-//    ArrayList<String> selectedCheckBoxes = new ArrayList<>();
+    HashMap<String, Contact> selectedContactsPhoneEmail = new HashMap<>();
     RecyclerView mRecycler;
-    //    MenuItem menu_item_action_sms;
-    private FirebaseRecyclerAdapter<Contact, ContactHolder> firebaseRecyclerAdapter;
-    //    private Menu menu;
+    private FirebaseRecyclerAdapter<Contact, ContactHolder> recyclerAdapter;
     private GoogleApiClient client;
     AdView mAdView;
     LinearLayoutManager mManager;
@@ -85,7 +76,8 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(Utils.getSavedTitle(this));
         setSupportActionBar(toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -106,7 +98,7 @@ public class MainActivity extends BaseActivity {
         mRecycler.setLayoutManager(mManager);
 //        this.savedInstanceState = savedInstanceState;
 
-        // loadAd();
+         loadAd();
     }
 
     private void loadAd() {
@@ -123,23 +115,9 @@ public class MainActivity extends BaseActivity {
         mAdView.loadAd(adRequest);
     }
 
-/*    private void rebuilStateOfMapsAndCheckboxes(Bundle savedInstanceState) {
-        selectedCheckBoxes = savedInstanceState.getStringArrayList(SELECTED_BOXES_STATE);
-//        if (selectedCheckBoxes.contains(FLAG_SELECT_ALL)) {
-//            getAllPhones();
-//            getAllEmails();
-//        } else {
-            for (String key : selectedCheckBoxes) {
-                putPhoneToMap(key);
-                putEmailToMap(key);
-            }
-//        }
-
-    }*/
-
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putSerializable(SAVED_SELECTED_CONTACTS, selectedContacts);
+        outState.putSerializable(SAVED_SELECTED_CONTACTS, selectedContactsPhoneEmail);
 //        outState.putStringArrayList(SELECTED_BOXES_STATE, selectedCheckBoxes);
         // save position of recyclerView
         outState.putParcelable(RECYCLER_STATE, mManager.onSaveInstanceState());
@@ -155,7 +133,7 @@ public class MainActivity extends BaseActivity {
         super.onRestoreInstanceState(savedInstanceState);
         this.savedInstanceState = savedInstanceState;
 //        rebuilStateOfMapsAndCheckboxes(savedInstanceState);
-        //      selectedContacts = (HashMap<String, Contact>) savedInstanceState.getSerializable(SAVED_SELECTED_CONTACTS);  //already dit it in onStart()
+        //      selectedContactsPhoneEmail = (HashMap<String, Contact>) savedInstanceState.getSerializable(SAVED_SELECTED_CONTACTS);  //already dit it in onStart()
         Log.d("tag", "onRestoreInstanceStates");
     }
 
@@ -170,7 +148,7 @@ public class MainActivity extends BaseActivity {
 
     private void populateRecyclerView() {
         final Query postsQuery = Utils.getUserNode().child(FIREBASE_LOCATION_NAMES_DATES).orderByChild(FIREBASE_LOCATION_NAME);
-        firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Contact, ContactHolder>(Contact.class, contact_view,
+        recyclerAdapter = new FirebaseRecyclerAdapter<Contact, ContactHolder>(Contact.class, contact_view,
                 ContactHolder.class, postsQuery) {
             @Override
             protected void populateViewHolder(@NonNull final ContactHolder contactHolder, @NonNull Contact contact_name_date, final int position) {
@@ -242,6 +220,7 @@ public class MainActivity extends BaseActivity {
                                 @Override
                                 public boolean onDrag(@NonNull View view, @NonNull DragEvent dragEvent) {
                                     switch (dragEvent.getAction()) {
+
                                         case DragEvent.ACTION_DRAG_STARTED:
                                             // returns true to indicate that the View can accept the dragged data.
                                             return true;
@@ -264,7 +243,9 @@ public class MainActivity extends BaseActivity {
                                         case DragEvent.ACTION_DROP:
                                             view.setBackgroundColor(Color.TRANSPARENT);
 //                                            view.invalidate();
-                                            clearReturnDate(position);
+//                                            String firebase_key = recyclerAdapter.getRef(position).getKey();
+                                            Utils.getUserNode().child(FIREBASE_LOCATION_NAMES_DATES + "/" + key)
+                                                    .child(FIREBASE_LOCATION_RETURN).removeValue();
                                             return true;
 
                                         case DragEvent.ACTION_DRAG_ENDED:
@@ -273,7 +254,6 @@ public class MainActivity extends BaseActivity {
                                             view.startAnimation(animationFadeOut);
                                             ((ImageView) view).clearColorFilter();
                                             view.invalidate();
-
                                             view.setOnDragListener(null);
                                             // returns true; the value is ignored.
                                             return true;
@@ -297,20 +277,22 @@ public class MainActivity extends BaseActivity {
                     });
                 }
                 contactHolder.sandglass.setVisibility(sunglassVisibility);
-                contactHolder.checkBox.setChecked(selectedContacts.containsKey(key));
+                contactHolder.checkBox.setChecked(selectedContactsPhoneEmail.containsKey(key));
                 View.OnClickListener onClickListener = new View.OnClickListener() {
                     @Override
                     public void onClick(@NonNull View view) {
                         int id = view.getId();
                         switch (id) {
+
                             case R.id.checkBoxSelectContact:
                                 boolean checked = ((CheckBox) view).isChecked();
                                 if (checked) {
                                     addContactToSelectedList(key);
                                 } else {
-                                    selectedContacts.remove(key);
+                                    selectedContactsPhoneEmail.remove(key);
                                 }
                                 break;
+
                             case R.id.contact_view:
                                 Intent intent = new Intent(MainActivity.this, QuickContactActivity.class);
                                 intent.putExtra(EXTRA_CONTACT_KEY, key);
@@ -344,7 +326,7 @@ public class MainActivity extends BaseActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-        mRecycler.setAdapter(firebaseRecyclerAdapter);
+        mRecycler.setAdapter(recyclerAdapter);
     }
 
     @Override
@@ -352,7 +334,7 @@ public class MainActivity extends BaseActivity {
         Log.d("tag", "onStart");
         super.onStart();
         if (savedInstanceState != null)
-            selectedContacts = (HashMap<String, Contact>) savedInstanceState.getSerializable(SAVED_SELECTED_CONTACTS);
+            selectedContactsPhoneEmail = (HashMap<String, Contact>) savedInstanceState.getSerializable(SAVED_SELECTED_CONTACTS);
         populateRecyclerView();
 
         client.connect();
@@ -362,17 +344,23 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("tag", "onResume");
-        toolbar.setTitle(Utils.getSavedTitle(this));
         if (mAdView != null)
             mAdView.resume();
+        if (getIntent().hasExtra(ACTION_TITLE_CHANGED)) {
+            final boolean titleChange = getIntent().getBooleanExtra(ACTION_TITLE_CHANGED, false);
+            if (titleChange) {
+                getSupportActionBar().setTitle(Utils.getSavedTitle(this));
+                getIntent().putExtra(ACTION_TITLE_CHANGED, false); //reset
+                Log.d("tag MainActivity", "titleChange");
+            }
+        }
     }
 
     @Override
     protected void onDestroy() {
         Log.d("tag", "onDestroy");
-        if (firebaseRecyclerAdapter != null) {
-            firebaseRecyclerAdapter.cleanup();
+        if (recyclerAdapter != null) {
+            recyclerAdapter.cleanup();
         }
         if (mAdView != null)
             mAdView.destroy();
@@ -400,16 +388,19 @@ public class MainActivity extends BaseActivity {
         switch (id) {
             case R.id.action_settings:
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+//                finish();  // this enables new title check in onCreate
                 break;
             case R.id.action_logout:
                 clearSavedTitle();
                 mAuth.signOut();
-                goToSignInActivity();
+                startActivity(new Intent(this, ActivitySignIn.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                finish();
                 break;
             case R.id.action_email:
                 List<String> emailsList = new ArrayList<>();
-                for (Contact contact : selectedContacts.values()) {
-                    if (contact.email != null)
+                for (Contact contact : selectedContactsPhoneEmail.values()) {
+                    if (contact != null && contact.email != null)
                         emailsList.add(contact.phone);
                 }
                 if (!emailsList.isEmpty())
@@ -417,8 +408,8 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.action_sms:
                 List<String> phonesList = new ArrayList<>();
-                for (Contact contact : selectedContacts.values()) {
-                    if (contact.phone != null)
+                for (Contact contact : selectedContactsPhoneEmail.values()) {
+                    if (contact != null && contact.phone != null)
                         phonesList.add(contact.phone);
                 }
                 if (!phonesList.isEmpty())
@@ -427,8 +418,35 @@ public class MainActivity extends BaseActivity {
                     Log.d("tag", "phonesList  empty");
                 }
                 break;
+            case R.id.action_select_all:
+                putAllContactsToMap();
+                recyclerAdapter.notifyDataSetChanged();
+                break;
+            case R.id.action_select_none:
+                selectedContactsPhoneEmail.clear();
+                recyclerAdapter.notifyDataSetChanged();
+                break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void putAllContactsToMap() {
+        Utils.getUserNode().child(FIREBASE_LOCATION_PHONES_EMAILS)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Log.d("tag MainActivity", "onDataChange  putALLContactsToSelectedList");
+                        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                            Contact contact = snapshot.getValue(Contact.class);
+                            selectedContactsPhoneEmail.put(snapshot.getKey(), contact);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+        // nu vor fi toate cheile in lista
     }
 
     private void clearSavedTitle() {
@@ -440,40 +458,21 @@ public class MainActivity extends BaseActivity {
         editor.apply();
     }
 
-    private void clearReturnDate(int position) {
-        String firebase_key = firebaseRecyclerAdapter.getRef(position).getKey();
-        Utils.getUserNode().child(FIREBASE_LOCATION_NAMES_DATES + "/" + firebase_key).child(FIREBASE_LOCATION_RETURN).removeValue();
-//        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS + "/" + firebase_key).child(FIREBASE_LOCATION_RETURN).removeValue();
-//        firebaseRecyclerAdapter.notifyItemChanged(position);
-//        firebaseRecyclerAdapter.notifyDataSetChanged();
-//        firebaseRecyclerAdapter.notifyItemChanged(position);  //OK
-//        firebaseRecyclerAdapter.notify();
-        Log.d("tag", "clearReturnDate(" + position + ")");
-    }
-
-    private void goToSignInActivity() {
-        Intent intent = new Intent(this, ActivitySignIn.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
-
-    void addContactToSelectedList(String key) {
-        Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).child(key)
+    void addContactToSelectedList(final String key) {
+        Utils.getUserNode().child(FIREBASE_LOCATION_PHONES_EMAILS).child(key)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Log.d("tag", "onDataChange  addContactToSelectedList");
-//                        String phone = dataSnapshot.getValue(String.class);
+                        Log.d("tag MainActivity", "onDataChange  addContactToSelectedList");
                         Contact contact = dataSnapshot.getValue(Contact.class);
-                        if (contact != null) {
-                            selectedContacts.put(dataSnapshot.getKey(), contact);
-                        }
+                        selectedContactsPhoneEmail.put(key, contact);
                     }
+
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                     }
                 });
+        //lista va fi completa incl cu cei ce nu au nr de tel
     }
 
     @NonNull

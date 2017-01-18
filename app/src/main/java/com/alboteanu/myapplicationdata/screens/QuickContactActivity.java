@@ -18,14 +18,15 @@ import com.alboteanu.myapplicationdata.models.Contact;
 
 import java.util.Calendar;
 
-import static android.R.attr.id;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
+import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_EDIT_DATE;
+import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_EDIT_NOTE;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN;
 
 public class QuickContactActivity extends BaseDetailsActivity implements View.OnClickListener {
-    public static final String ACTION_SHOW_DATE_PICKER = "action_date";
-    public static final String ACTION_NOTE = "note";
-    String mContactKey;
+//    public static final String ACTION_SHOW_DATE_PICKER = "action_date";
+//    public static final String ACTION_NOTE = "note";
+    String key;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,12 +34,12 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
         setContentView(R.layout.activity_quick_contact);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+//        getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // Get post key from intent
-        mContactKey = getIntent().getStringExtra(EXTRA_CONTACT_KEY);
-        Log.d("tag", "QuickContactActivity  mContactKey " + mContactKey);
-        updateUIfromFirebase(mContactKey);
+        key = getIntent().getStringExtra(EXTRA_CONTACT_KEY);
+        Log.d("tag", "QuickContactActivity  key " + key);
+        updateUIfromFirebase(key);
         findViewById(R.id.ic_action_phone).setOnClickListener(this);
         findViewById(R.id.ic_action_message).setOnClickListener(this);
         findViewById(R.id.ic_action_email).setOnClickListener(this);
@@ -49,12 +50,13 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
     public void updateUI(Contact contact) {
         super.updateUI(contact);
         Log.d("tag", "updateUI() in QuickContactActivity");
+        getSupportActionBar().setTitle(contact.name);
         ((TextView) findViewById(R.id.nameText)).setText(contact.name);
         ((TextView) findViewById(R.id.phoneText)).setText(contact.phone);
         if(contact.phone != null)
             findViewById(R.id.ic_action_message).setVisibility(View.VISIBLE);
         ((TextView) findViewById(R.id.emailText)).setText(contact.email);
-        ((TextView) findViewById(R.id.noteText)).setText(contact.other);
+        ((TextView) findViewById(R.id.noteText)).setText(contact.note);
         if (contact.retur.containsKey(FIREBASE_LOCATION_RETURN)) {
             Calendar cal = Calendar.getInstance();
             cal.setTimeInMillis(contact.retur.get(FIREBASE_LOCATION_RETURN));
@@ -78,7 +80,7 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
             case  R.id.action_delete_contact:
-                createDeleteDialogAlert(mContactKey);
+                createDeleteDialogAlert(key);
                 return true;
             case R.id.action_edit:
                 sendUserToEditActivity();
@@ -94,13 +96,13 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
         switch (id) {
             case R.id.ic_action_phone:
                 String phoneNumber = ((TextView) findViewById(R.id.phoneText)).getText().toString();
-                if (phoneNumber != null && !phoneNumber.isEmpty()) {
+                if (!phoneNumber.isEmpty()) {
                     startActivity(new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNumber)));
                 }
                 break;
             case R.id.ic_action_message:
                 String phoneMessage = ((TextView) findViewById(R.id.phoneText)).getText().toString();
-                if (phoneMessage != null && !phoneMessage.isEmpty()) {
+                if (!phoneMessage.isEmpty()) {
                     Utils.composeSMS( new String[]{phoneMessage} , this);
                 }
                 break;
@@ -112,15 +114,13 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
                 }
                 break;
             case R.id.ic_action_date:
-                Intent intent = new Intent(QuickContactActivity.this, EditActivity.class);
-                intent.putExtra(EXTRA_CONTACT_KEY, mContactKey);
-                intent.setAction(ACTION_SHOW_DATE_PICKER);
-                startActivity(intent);
+                Intent editDateIntent = new Intent(QuickContactActivity.this, EditActivity.class);
+                editDateIntent.putExtra(EXTRA_EDIT_DATE, key);
+                startActivity(editDateIntent);
                 break;
             case R.id.ic_action_note:
                 Intent noteIntent = new Intent(QuickContactActivity.this, EditActivity.class);
-                noteIntent.putExtra(EXTRA_CONTACT_KEY, mContactKey);
-                noteIntent.setAction(ACTION_NOTE);
+                noteIntent.putExtra(EXTRA_EDIT_NOTE, key);
                 startActivity(noteIntent);
                 break;
         }
@@ -129,7 +129,7 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
 
     private void sendUserToEditActivity(){
         Intent intent = new Intent(QuickContactActivity.this, EditActivity.class);
-        intent.putExtra(EXTRA_CONTACT_KEY, mContactKey);
+        intent.putExtra(EXTRA_CONTACT_KEY, key);
         startActivity(intent);
     }
 }

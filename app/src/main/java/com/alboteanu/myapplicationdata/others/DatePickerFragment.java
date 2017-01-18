@@ -36,13 +36,13 @@ public class DatePickerFragment extends DialogFragment
 //        ((CheckBox) getActivity().findViewById(R.id.checkBox6Luni)).setChecked(false);  //implica stregere datei TextView10 - DATA
 //        ((TextView)getActivity().findViewById(R.id.return_date_textView)).setText(dateString);
 //        ((BaseDetailsActivity)getActivity()).calendar = calendar;
-        OnHeadlineSelectedListener mCallback = (OnHeadlineSelectedListener) getActivity();
+        OnDateSelectedListener mCallback = (OnDateSelectedListener) getActivity();
         mCallback.onDateSelected(calendar);
     }
 
 
     // Container Activity must implement this interface
-    public interface OnHeadlineSelectedListener {
+    public interface OnDateSelectedListener {
         void onDateSelected(Calendar calendar);
     }
 
@@ -53,10 +53,10 @@ public class DatePickerFragment extends DialogFragment
         // This makes sure that the container activity has implemented
         // the callback interface. If not, it throws an exception
         try {
-            mCallback = (OnHeadlineSelectedListener) context;
+            mCallback = (OnTitleChangeListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement OnHeadlineSelectedListener");
+                    + " must implement OnTitleChangeListener");
         }
     }*/
 
