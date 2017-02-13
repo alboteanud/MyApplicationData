@@ -11,7 +11,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
 
 import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.others.DatePickerFragment;
@@ -28,7 +27,6 @@ import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_EDIT_NOTE;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACTS;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAMES_DATES;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONES_EMAILS;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN;
 
 
 public class EditActivity extends BaseDetailsActivity
@@ -38,7 +36,6 @@ public class EditActivity extends BaseDetailsActivity
     @Nullable
     private Calendar calendar;
     private CheckBox checkBox;
-    ImageView clearDateX;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,14 +54,8 @@ public class EditActivity extends BaseDetailsActivity
             key = getIntent().getStringExtra(EXTRA_EDIT_DATE);
             showDatePickerDialog();
         }
-        if(key == null){
-            clearDateX.setVisibility(View.GONE);
-        }else {
-            if(savedInstanceState == null)
-                updateUIfromFirebase(key);
-            else
-                clearDateX.setVisibility(View.VISIBLE);
-        }
+        if(key != null)
+            updateUIfromFirebase(key);
     }
 
     @Override
@@ -79,14 +70,12 @@ public class EditActivity extends BaseDetailsActivity
         phoneText.setText(contact.phone);
         emailText.setText(contact.email);
         editTextNote.setText(contact.note);
-        if(contact.retur.containsKey(FIREBASE_LOCATION_RETURN)) {
+        Log.d("tag EditActivity", "contact return_date_millis = " + contact.return_date_millis);
+        if(contact.return_date_millis != -1) {
             Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(contact.retur.get(FIREBASE_LOCATION_RETURN));
+            cal.setTimeInMillis(contact.return_date_millis);
             dateText.setText(Utils.calendarToString(cal));
             calendar = cal;
-            clearDateX.setVisibility(View.VISIBLE);
-        }else{
-            clearDateX.setVisibility(View.GONE);
         }
         if(getIntent().hasExtra(EXTRA_EDIT_NOTE)) {
             editTextNote.setSelection(editTextNote.length());
@@ -94,7 +83,6 @@ public class EditActivity extends BaseDetailsActivity
         }
         else{
             nameText.requestFocus();
-            Log.d("tag EditActivity", "nameText.requestFocus()");
         }
 
     }
@@ -104,9 +92,7 @@ public class EditActivity extends BaseDetailsActivity
         dateText.setText(Utils.calendarToString(cal));
         calendar = cal;
         checkBox.setChecked(false);
-        clearDateX.setVisibility(View.VISIBLE);
         dateText.requestFocus();
-        Log.d("tag EditActivity", "dateText.requestFocus()");
     }
 
     @Override
@@ -124,7 +110,7 @@ public class EditActivity extends BaseDetailsActivity
                 createDeleteDialogAlert(key);
                 break;
             case R.id.action_save:
-                if (isSucessfulSave()) {
+                if (saveToFirebase()) {
                     Intent intent = new Intent(this, QuickContactActivity.class);
                     intent.putExtra(EXTRA_CONTACT_KEY, key);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -142,17 +128,14 @@ public class EditActivity extends BaseDetailsActivity
         emailText = ((EditText) findViewById(R.id.emailEditText));
         editTextNote = ((EditText) findViewById(R.id.noteEditText));
         dateText = ((EditText) findViewById(R.id.dateEditText));
-        clearDateX = (ImageView) findViewById(R.id.button_clear_date);
-        checkBox = (CheckBox) findViewById(R.id.checkBox);
+        checkBox = (CheckBox) findViewById(R.id.checkBoxDate6M);
         dateText.setOnClickListener(this);
-        findViewById(R.id.icon_sandglass).setOnClickListener(this);
+        findViewById(R.id.icon_sandglass_edit_activity).setOnClickListener(this);
         checkBox.setOnClickListener(this);
-        clearDateX.setOnClickListener(this);
-
-
+        findViewById(R.id.button_clear_date).setOnClickListener(this);
     }
 
-    private boolean isSucessfulSave() {
+    private boolean saveToFirebase() {
         String name = nameText.getText().toString();
         if(name.isEmpty()) {
             nameText.setError(getString(R.string.required));
@@ -163,10 +146,11 @@ public class EditActivity extends BaseDetailsActivity
         Contact contactNameDate = new Contact(name);
 
         String phone = phoneText.getText().toString();
-        if(!phone.isEmpty()) {
+        contactPhoneEmail.phone = phone;  // even if null - to have complete list
+        if(!phone.isEmpty())
             contact.phone = phone;
-            contactPhoneEmail.phone = phone;
-        }
+
+
         String email = emailText.getText().toString();
         if(!email.isEmpty()) {
             if (!Utils.isValidEmail(email)) {
@@ -180,13 +164,10 @@ public class EditActivity extends BaseDetailsActivity
         if(!note.isEmpty())
             contact.note = note;
 
-        if(calendar!=null){
-            Long dateMills = calendar.getTimeInMillis();
-            contact.retur.put(FIREBASE_LOCATION_RETURN, dateMills);
-            contactNameDate.retur.put(FIREBASE_LOCATION_RETURN, dateMills);
-        }
+        contact.calendar = calendar;
+        contactNameDate.calendar = calendar;
+
         Map<String, Object> updates = new HashMap<>();
-//        Contact finalContact = new Contact(contact.name, contact.phone, contact.email, contact.note, contact.retur);
         Map<String, Object> mapContact = contact.toMap();
         Map<String, Object> mapContactNameDate = contactNameDate.toMap();
         Map<String, Object> mapContactPhoneEmail = contactPhoneEmail.toMap();
@@ -197,8 +178,6 @@ public class EditActivity extends BaseDetailsActivity
         updates.put(FIREBASE_LOCATION_CONTACTS + "/" + key, mapContact);
         updates.put(FIREBASE_LOCATION_NAMES_DATES + "/" + key, mapContactNameDate);
         updates.put(FIREBASE_LOCATION_PHONES_EMAILS + "/" + key, mapContactPhoneEmail);
-//        updates.put(FIREBASE_LOCATION_PHONES + "/" + key, contact.phone);
-//        updates.put(FIREBASE_LOCATION_EMAILS + "/" + key, contact.email);
         Utils.getUserNode().updateChildren(updates);
         return true;
     }
@@ -206,22 +185,20 @@ public class EditActivity extends BaseDetailsActivity
     @Override
     public void onClick(@NonNull View view) {
         switch (view.getId()) {
-            case R.id.icon_sandglass:
+            case R.id.icon_sandglass_edit_activity:
                 showDatePickerDialog();
                 break;
             case R.id.dateEditText:
                 showDatePickerDialog();
                 break;
-            case R.id.checkBox:
+            case R.id.checkBoxDate6M:
                 if(checkBox.isChecked()) {
                     calendar = Calendar.getInstance();
                     calendar.add(Calendar.MONTH, 6);
                     dateText.setText(Utils.calendarToString(calendar));
-                    clearDateX.setVisibility(View.VISIBLE);
                 }else {
                     calendar = null;
                     dateText.setText(null);
-//                    clearDateX.setVisibility(View.GONE);
                 }
                 break;
             case R.id.button_clear_date:

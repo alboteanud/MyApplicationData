@@ -119,6 +119,37 @@
           "status": 2
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:321083208041:android:ff0064f584bcc77d",
+        "android_client_info": {
+          "package_name": "com.alboteanu.patientsListFree"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "321083208041-7dkh0ms0q7qmgem9k50543qldpdc3e99.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDspEOx55sRdXEeT-swwmG6DfAp0w08gI8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
     }
   ],
   "configuration_version": "1"

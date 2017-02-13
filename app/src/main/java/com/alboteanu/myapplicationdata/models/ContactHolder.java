@@ -1,4 +1,4 @@
-package com.alboteanu.myapplicationdata.viewholder;
+package com.alboteanu.myapplicationdata.models;
 
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -30,7 +30,7 @@ public class ContactHolder extends RecyclerView.ViewHolder {
         name = (TextView) contact_layout.findViewById(R.id.contactNameText);
         sandglass = (ImageView) contact_layout.findViewById(R.id.icon_sandglass);
         bin = (ImageView) contact_layout.findViewById(R.id.icon_bin);
-        checkBox = (CheckBox) contact_layout.findViewById(R.id.checkBoxSelectContact);
+        checkBox = (CheckBox) contact_layout.findViewById(R.id.checkBoxSelect);
 
     }
 

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="true">My patients list</string>
+    <string name="app_name" translatable="true">Patients list</string>
     <string name="desc_firebase_lockup" translatable="true">logo and name</string>
     <string name="loading" translatable="false">Loading…</string>
     <string name="title_activity_main" translatable="true">Main</string>
@@ -14,11 +14,11 @@
     <string name="title_activity_settings">Settings</string>
     <string name="action_settings">Settings</string>
     <string name="action_notifications">Notif</string>
-    <string name="messaage_text">Dear Sir or Madam: </string>
+    <string name="custom_message">Dear Sir or Madam: </string>
     <string name="title_custom_text_settings">Message text</string>
     <string name="back">Back</string>
     <string name="display_title_text_key" translatable="false">DisplayName</string>
-    <string name="custom_text_key" translatable="false">my_custom_text</string>
+    <string name="custom_message_text_key" translatable="false">my_custom_text</string>
     <string name="confirmation_dialog_delete">Delete contact?</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>

@@ -10,28 +10,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.alboteanu.myapplicationdata.R;
-import com.alboteanu.myapplicationdata.models.DateToReturn;
 import com.alboteanu.myapplicationdata.models.User;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
 import static com.alboteanu.myapplicationdata.BaseActivity.getDatabase;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAIL;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN_DATES;
 
 public class Utils {
 
@@ -49,8 +38,8 @@ public class Utils {
     private static String getSavedTextMessage(@NonNull Context context) {
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
-        String key = context.getString(R.string.custom_text_key);
-        return sharedPrefs.getString(key, context.getString(R.string.messaage_text));
+        String key = context.getString(R.string.custom_message_text_key);
+        return sharedPrefs.getString(key, context.getString(R.string.custom_message));
     }
 
     public static DatabaseReference getUserNode() {
@@ -150,98 +139,6 @@ public class Utils {
         return Color.rgb(R, G, B);
     }
 
-    /*    private String[] allPhonesArray;
-    private void getAllPhones() {
-        Utils.getUserNode().child(FIREBASE_LOCATION_PHONES)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Map<String, String> map = (HashMap<String, String>) dataSnapshot.getValue();
-                        if (map == null)
-                            return;
-                        Collection<String> values = map.values();
-                        if(!values.isEmpty()){
-                            allPhonesArray = values.toArray(new String[0]);
-//                            menu.findItem(R.id.action_send_sms_to_all).setVisible(true);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-    }*/
-
-    String[] allEmailsArray;
-
-    private void getAllEmails() {
-        Utils.getUserNode().child(FIREBASE_LOCATION_EMAIL)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Map<String, String> map = (HashMap<String, String>) dataSnapshot.getValue();
-                        if (map == null)
-                            return;
-                        Collection<String> values = map.values();
-                        if (!values.isEmpty()) {
-                            allEmailsArray = values.toArray(new String[0]);
-//                            menu.findItem(R.id.action_send_email_to_all).setVisible(true);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-    }
-
-
-    @NonNull
-    final
-    List<String> phoneList = new ArrayList<>();
-
-    public void getExpired() {
-        final long currentTime = System.currentTimeMillis();
-        Utils.getUserNode().child(FIREBASE_LOCATION_RETURN_DATES).orderByChild(FIREBASE_LOCATION_RETURN).addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
-                DateToReturn dateToReturn = dataSnapshot.getValue(DateToReturn.class);
-                if (dateToReturn != null) {
-                    if (dateToReturn.date != 0 && currentTime > dateToReturn.date) {
-                        phoneList.add(dateToReturn.phone);
-//                        menu.findItem(R.id.action_sms_to_expired).setTitle(String.valueOf(phoneList.size())).setVisible(true);
-                    }
-
-                }
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
 
     public static void saveDefaultTitle(@NonNull Context context) {
         SharedPreferences sharedPrefs = PreferenceManager

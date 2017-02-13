@@ -7,18 +7,18 @@
         android:key="@string/display_title_text_key"
         android:maxLines="1"
         android:selectAllOnFocus="true"
-        android:title="@string/pref_title_display_name" />
-    <!--android:defaultValue="@string/app_name"-->
+        android:title="@string/pref_title_display_name"
+        android:defaultValue="@string/app_name"
+        />
 
 <EditTextPreference
         android:capitalize="words"
         android:inputType="textMultiLine"
-        android:key="@string/custom_text_key"
-        android:maxLines="6"
+        android:key="@string/custom_message_text_key"
+        android:maxLines="5"
         android:selectAllOnFocus="true"
-        android:defaultValue="@string/messaage_text"
+        android:defaultValue="@string/custom_message"
         android:title="@string/title_custom_text_settings" />
-    <!--android:defaultValue="@string/app_name"-->
 
 <!--
     <ListPreference

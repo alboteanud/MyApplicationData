@@ -79,7 +79,7 @@
 
             <ImageView
                 android:padding="16dp"
-                android:id="@+id/icon_sandglass"
+                android:id="@+id/icon_sandglass_edit_activity"
                 android:src="@drawable/ic_action_sandglass"
                 />
 
@@ -99,8 +99,7 @@
                 android:background="?android:attr/selectableItemBackground"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_action_clear_date"
-                android:padding="16dp"
-                android:visibility="visible"/>
+                android:padding="16dp"/>
             <!--style="?android:attr/borderlessButtonStyle"-->
 
         </TableRow>
@@ -108,7 +107,7 @@
         <TableRow>
 
             <CheckBox
-                android:id="@+id/checkBox"
+                android:id="@+id/checkBoxDate6M"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_column="1"

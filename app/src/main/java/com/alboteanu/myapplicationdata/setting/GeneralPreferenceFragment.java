@@ -7,12 +7,14 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.alboteanu.myapplicationdata.R;
 
 public class GeneralPreferenceFragment extends PreferenceFragment {
     Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener;
     boolean isPrefsInitialised = false;
+    OnTitleChangeListener mCallback;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,9 +45,13 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
                     if(preference.getKey().equals(getString(R.string.display_title_text_key))){
                         if(!isPrefsInitialised){
                             isPrefsInitialised = true;
-                        }else
+                            Log.d("tag GenFrag", "isPrefsInitialised " + isPrefsInitialised);
+                            if (mCallback==null)
+                                mCallback = (OnTitleChangeListener) getActivity();
+                        }else if(mCallback != null)
                             mCallback.onTitleChanged();
                     }
+                    Log.d("tag GenFrag", "mCalback= " + (mCallback != null ? mCallback.toString() : null));
                 }
                 return true;
             }
@@ -56,7 +62,7 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
         // updated to reflect the new value, per the Android Design
         // guidelines.
         bindPreferenceSummaryToValue(findPreference(getString(R.string.display_title_text_key)));
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.custom_text_key)));
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.custom_message_text_key)));
     }
 
     public GeneralPreferenceFragment() {
@@ -74,7 +80,7 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
                         .getString(preference.getKey(), ""));
     }
 
-    OnTitleChangeListener mCallback;
+
 
     // Container Activity must implement this interface
     public interface OnTitleChangeListener {

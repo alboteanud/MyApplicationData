@@ -15,7 +15,7 @@ public class DatePickerFragment extends DialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // Use the current date as the default date in the picker
+        // Use the current return_date_millis as the default return_date_millis in the picker
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -27,7 +27,7 @@ public class DatePickerFragment extends DialogFragment
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int day) {
-        // Do something with the date chosen by the user
+        // Do something with the return_date_millis chosen by the user
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_MONTH, day);
         calendar.set(Calendar.MONTH, month);

@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,7 +28,7 @@ import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.login.ActivitySignIn;
 import com.alboteanu.myapplicationdata.models.Contact;
 import com.alboteanu.myapplicationdata.setting.SettingsActivity;
-import com.alboteanu.myapplicationdata.viewholder.ContactHolder;
+import com.alboteanu.myapplicationdata.models.ContactHolder;
 import com.alboteanu.myapplicationdata.others.MyAnimationListener;
 import com.alboteanu.myapplicationdata.others.MyDragShadowBuilder;
 import com.alboteanu.myapplicationdata.others.Utils;
@@ -49,31 +48,34 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.os.Build.VERSION_CODES.M;
 import static com.alboteanu.myapplicationdata.R.layout.contact_view;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_DATE;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAME;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAMES_DATES;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONES_EMAILS;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN;
+import static com.alboteanu.myapplicationdata.screens.BaseDetailsActivity.ACTION_CONTACT_DELETED;
 import static com.alboteanu.myapplicationdata.setting.SettingsActivity.ACTION_TITLE_CHANGED;
 
 public class MainActivity extends BaseActivity {
+    private static final String TAG = "MainActivity";
     private static final String RECYCLER_STATE = "recycler_state";
     private static final String SAVED_SELECTED_CONTACTS = "saved_contacts";
-    HashMap<String, Contact> selectedContactsPhoneEmail = new HashMap<>();
-    RecyclerView mRecycler;
+    private HashMap<String, Contact> selectedContactsPE =  new HashMap<>();
     private FirebaseRecyclerAdapter<Contact, ContactHolder> recyclerAdapter;
     private GoogleApiClient client;
-    AdView mAdView;
-    LinearLayoutManager mManager;
-    Bundle savedInstanceState;
+    private AdView mAdView;
+    private LinearLayoutManager mManager;
+    private RecyclerView recyclerView;
+    private Bundle instanceState;
+    private Menu menu;
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -93,272 +95,90 @@ public class MainActivity extends BaseActivity {
             Utils.saveDefaultTitle(this);
         }
         mManager = new LinearLayoutManager(this);
-        mRecycler = (RecyclerView) findViewById(R.id.contact_list);
-        mRecycler.setHasFixedSize(true);
-        mRecycler.setLayoutManager(mManager);
-//        this.savedInstanceState = savedInstanceState;
+        recyclerView = (RecyclerView) findViewById(R.id.contact_list);
+        populateRecyclerView();
 
+        // com.alboteanu.patientsListFree
          loadAd();
-    }
+        // ic_launcher_lite  in Manifest
+        // google-services.json
 
-    private void loadAd() {
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3931793949981809~8705632377");  //app ID din Banner Petru si Dan
-        mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                super.onAdLoaded();
-                mAdView.setVisibility(View.VISIBLE);
-            }
-        });
-        mAdView.loadAd(adRequest);
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putSerializable(SAVED_SELECTED_CONTACTS, selectedContactsPhoneEmail);
-//        outState.putStringArrayList(SELECTED_BOXES_STATE, selectedCheckBoxes);
-        // save position of recyclerView
-        outState.putParcelable(RECYCLER_STATE, mManager.onSaveInstanceState());
-//        int firstItem = mManager.findFirstCompletelyVisibleItemPosition();
-//        outState.putInt("recyclerOffset", firstItem);
-        super.onSaveInstanceState(outState);
-        Log.d("tag", "onSaveInstanceStates");
-        this.savedInstanceState = outState;
-    }
-
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        this.savedInstanceState = savedInstanceState;
-//        rebuilStateOfMapsAndCheckboxes(savedInstanceState);
-        //      selectedContactsPhoneEmail = (HashMap<String, Contact>) savedInstanceState.getSerializable(SAVED_SELECTED_CONTACTS);  //already dit it in onStart()
-        Log.d("tag", "onRestoreInstanceStates");
-    }
-
-    private void restoreLayoutManagerPosition() {
-        if (savedInstanceState != null) {
-            Parcelable recyclerViewState = savedInstanceState.getParcelable(RECYCLER_STATE);
-            mManager.onRestoreInstanceState(recyclerViewState);
-            Log.d("tag", "restoreLayoutManagerPosition");
-        }
-
-    }
-
-    private void populateRecyclerView() {
-        final Query postsQuery = Utils.getUserNode().child(FIREBASE_LOCATION_NAMES_DATES).orderByChild(FIREBASE_LOCATION_NAME);
-        recyclerAdapter = new FirebaseRecyclerAdapter<Contact, ContactHolder>(Contact.class, contact_view,
-                ContactHolder.class, postsQuery) {
-            @Override
-            protected void populateViewHolder(@NonNull final ContactHolder contactHolder, @NonNull Contact contact_name_date, final int position) {
-//                Log.d("tag", " populateViewHolder()  pos " + position);
-                final DatabaseReference postRef = getRef(position);
-                final String key = postRef.getKey();
-                int sunglassVisibility = View.INVISIBLE;
-                if (contact_name_date.retur.containsKey(FIREBASE_LOCATION_RETURN)) {
-                    long returnMills = contact_name_date.retur.get(FIREBASE_LOCATION_RETURN);
-                    Calendar calendarReturn = Calendar.getInstance();
-                    calendarReturn.setTimeInMillis(returnMills);
-                    if (Calendar.getInstance().after(calendarReturn))
-                        sunglassVisibility = View.VISIBLE;
-                    contactHolder.sandglass.setOnLongClickListener(new View.OnLongClickListener() {
-                        @Override
-                        public boolean onLongClick(@NonNull View view) {
-                            View.DragShadowBuilder myShadow = new MyDragShadowBuilder(view);
-                            view.setOnDragListener(new View.OnDragListener() {
-
-                                @Override
-                                public boolean onDrag(@NonNull View view, @NonNull DragEvent dragEvent) {
-                                    switch (dragEvent.getAction()) {
-
-                                        case DragEvent.ACTION_DRAG_STARTED:
-                                            // Determines if this View can accept the dragged data
-                                            ((ImageView) view).setColorFilter(Color.LTGRAY);
-                                            view.invalidate();
-                                            // returns true to indicate that the View can accept the dragged data.
-                                            return true;
-
-                                        case DragEvent.ACTION_DRAG_ENTERED:
-//                                          Log.d("tag", "ACTION_DRAG_ENTERED  id " + id);
-                                            // Applies a green tint to the View. Return true; the return value is ignored.
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                                                ((ImageView) view).setColorFilter(getColor(R.color.colorPrimary));
-                                            else
-                                                ((ImageView) view).setColorFilter(getResources().getColor(R.color.colorPrimary));
-                                            view.invalidate();
-
-                                            return true;
-
-                                        case DragEvent.ACTION_DRAG_EXITED:  //out of the box
-                                            ((ImageView) view).setColorFilter(Color.LTGRAY);
-                                            // Invalidate the view to force a redraw in the new tint
-                                            view.invalidate();
-
-                                            return true;
-
-                                        case DragEvent.ACTION_DRAG_ENDED:
-                                            Log.d("tag", " sandGlass  ACTION_DRAG_ENDED");
-                                            if (dragEvent.getResult()) {      // Delete successful
-
-                                            } else
-                                                ((ImageView) view).clearColorFilter();
-                                            view.invalidate();
-                                            view.setOnDragListener(null);
-                                            // returns true; the value is ignored.
-                                            return true;
-
-                                        // An unknown action type was received.
-                                        default:
-                                            break;
-                                    }
-                                    return false;
-                                }
-                            });
-                            contactHolder.bin.setVisibility(View.VISIBLE);
-                            contactHolder.bin.setOnDragListener(new View.OnDragListener() {
-                                @Override
-                                public boolean onDrag(@NonNull View view, @NonNull DragEvent dragEvent) {
-                                    switch (dragEvent.getAction()) {
-
-                                        case DragEvent.ACTION_DRAG_STARTED:
-                                            // returns true to indicate that the View can accept the dragged data.
-                                            return true;
-
-                                        case DragEvent.ACTION_DRAG_ENTERED:
-                                            view.setBackgroundColor(Color.LTGRAY);
-                                            ((ImageView) view).setColorFilter(Color.RED);
-                                            view.invalidate();
-                                            return true;
-
-                                        case DragEvent.ACTION_DRAG_EXITED:  //out of the box
-                                            view.setBackgroundColor(Color.TRANSPARENT);
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-                                                ((ImageView) view).setColorFilter(getColor(R.color.colorPrimary));
-                                            else
-                                                ((ImageView) view).setColorFilter(getResources().getColor(R.color.colorPrimary));
-                                            view.invalidate();
-                                            return true;
-
-                                        case DragEvent.ACTION_DROP:
-                                            view.setBackgroundColor(Color.TRANSPARENT);
-//                                            view.invalidate();
-//                                            String firebase_key = recyclerAdapter.getRef(position).getKey();
-                                            Utils.getUserNode().child(FIREBASE_LOCATION_NAMES_DATES + "/" + key)
-                                                    .child(FIREBASE_LOCATION_RETURN).removeValue();
-                                            return true;
-
-                                        case DragEvent.ACTION_DRAG_ENDED:
-                                            Animation animationFadeOut = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_out);
-                                            animationFadeOut.setAnimationListener(new MyAnimationListener(view));
-                                            view.startAnimation(animationFadeOut);
-                                            ((ImageView) view).clearColorFilter();
-                                            view.invalidate();
-                                            view.setOnDragListener(null);
-                                            // returns true; the value is ignored.
-                                            return true;
-
-                                        // An unknown action type was received.
-                                        default:
-                                            break;
-                                    }
-                                    return true;
-                                }
-                            });
-
-                            // Starts the drag
-                            view.startDrag(null,  // the data to be dragged
-                                    myShadow,  // the drag shadow builder
-                                    null,      // no need to use local data
-                                    0          // flags (not currently used, set to 0)
-                            );
-                            return false;
-                        }
-                    });
-                }
-                contactHolder.sandglass.setVisibility(sunglassVisibility);
-                contactHolder.checkBox.setChecked(selectedContactsPhoneEmail.containsKey(key));
-                View.OnClickListener onClickListener = new View.OnClickListener() {
-                    @Override
-                    public void onClick(@NonNull View view) {
-                        int id = view.getId();
-                        switch (id) {
-
-                            case R.id.checkBoxSelectContact:
-                                boolean checked = ((CheckBox) view).isChecked();
-                                if (checked) {
-                                    addContactToSelectedList(key);
-                                } else {
-                                    selectedContactsPhoneEmail.remove(key);
-                                }
-                                break;
-
-                            case R.id.contact_view:
-                                Intent intent = new Intent(MainActivity.this, QuickContactActivity.class);
-                                intent.putExtra(EXTRA_CONTACT_KEY, key);
-                                startActivity(intent);
-                                break;
-
-                            case R.id.icon_sandglass:
-                                Intent intent3 = new Intent(MainActivity.this, QuickContactActivity.class);
-                                intent3.putExtra(EXTRA_CONTACT_KEY, key);
-                                startActivity(intent3);
-                                break;
-                        }
-
-                    }
-                };
-                contactHolder.itemView.setOnClickListener(onClickListener);
-                contactHolder.sandglass.setOnClickListener(onClickListener);
-                contactHolder.checkBox.setOnClickListener(onClickListener);
-                contactHolder.bindContact(contact_name_date, getDrawable(R.drawable.shape_oval));
-            }
-        };
-        postsQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("tag", "onDataChange in recycler");
-                restoreLayoutManagerPosition();
-                postsQuery.removeEventListener(this);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-        mRecycler.setAdapter(recyclerAdapter);
     }
 
     @Override
     protected void onStart() {
-        Log.d("tag", "onStart");
+        Log.d(TAG, "onStart");
         super.onStart();
-        if (savedInstanceState != null)
-            selectedContactsPhoneEmail = (HashMap<String, Contact>) savedInstanceState.getSerializable(SAVED_SELECTED_CONTACTS);
-        populateRecyclerView();
-
+//        populateRecyclerView();
         client.connect();
         AppIndex.AppIndexApi.start(client, getIndexApiAction());
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d(TAG, "onRestoreInstanceStates");
+        instanceState = savedInstanceState;
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.d(TAG, "onNewIntent()  " + intent.toString());
+        if (intent.hasExtra(ACTION_CONTACT_DELETED)) {
+            String key = intent.getStringExtra(ACTION_CONTACT_DELETED);
+            if(selectedContactsPE != null)
+                selectedContactsPE.remove(key);
+            intent.removeExtra(ACTION_CONTACT_DELETED);
+        }else if (intent.getAction() != null && intent.getAction().equals(ACTION_TITLE_CHANGED)) {
+            getSupportActionBar().setTitle(Utils.getSavedTitle(this));
+        }
+//        setIntent(intent);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        if (instanceState != null) {
+            selectedContactsPE = (HashMap<String, Contact>) instanceState.getSerializable(SAVED_SELECTED_CONTACTS);
+            restoreListPosition();
+        }
         if (mAdView != null)
             mAdView.resume();
-        if (getIntent().hasExtra(ACTION_TITLE_CHANGED)) {
-            final boolean titleChange = getIntent().getBooleanExtra(ACTION_TITLE_CHANGED, false);
-            if (titleChange) {
-                getSupportActionBar().setTitle(Utils.getSavedTitle(this));
-                getIntent().putExtra(ACTION_TITLE_CHANGED, false); //reset
-                Log.d("tag MainActivity", "titleChange");
-            }
-        }
+    }
+
+    // RUNNING APP
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        putInstanceStateToBundle();
+        outState = instanceState;
+        super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSaveInstanceStates");
+    }
+
+    @Override
+    protected void onPause() {
+        if (mAdView != null)
+            mAdView.pause();
+        super.onPause();
+        Log.d("tag", "onPause");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d("tag", "onStop");
+        putInstanceStateToBundle();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(client, getIndexApiAction());
+        client.disconnect();
     }
 
     @Override
     protected void onDestroy() {
-        Log.d("tag", "onDestroy");
+        Log.d("tag MainAct", "onDestroy");
         if (recyclerAdapter != null) {
             recyclerAdapter.cleanup();
         }
@@ -371,14 +191,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_activity, menu);
-//        this.menu = menu;
-//        rebuilStateOfMapsAndCheckboxes();
-        Log.d("tag", "onCreateOptionsMenu");
-//        menu_item_action_sms = menu.findItem(R.id.action_sms);
-//        menu.findItem(R.id.action_email).setVisible(!emailsMap.isEmpty());
-//        menu_item_action_sms.setVisible(!phonesMap.isEmpty());
-//        menu.findItem(R.id.action_select_none).setVisible(!(selectedCheckBoxes != null && selectedCheckBoxes.isEmpty()));
-//        menu.findItem(R.id.action_select_all).setVisible(!selectedCheckBoxes.contains(FLAG_SELECT_ALL));
+        this.menu = menu;
         return true;
     }
 
@@ -399,18 +212,18 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.action_email:
                 List<String> emailsList = new ArrayList<>();
-                for (Contact contact : selectedContactsPhoneEmail.values()) {
+                for (Contact contact : selectedContactsPE.values()) {
                     if (contact != null && contact.email != null)
-                        emailsList.add(contact.phone);
+                        emailsList.add(contact.email);
                 }
                 if (!emailsList.isEmpty())
                     Utils.composeEmail(this, emailsList.toArray(new String[0]));
                 break;
             case R.id.action_sms:
                 List<String> phonesList = new ArrayList<>();
-                for (Contact contact : selectedContactsPhoneEmail.values()) {
-                    if (contact != null && contact.phone != null)
-                        phonesList.add(contact.phone);
+                for (Contact contactPhoneEmail : selectedContactsPE.values()) {
+                    if (contactPhoneEmail != null && contactPhoneEmail.phone != null)
+                        phonesList.add(contactPhoneEmail.phone);
                 }
                 if (!phonesList.isEmpty())
                     Utils.composeSMS(phonesList.toArray(new String[0]), this);
@@ -420,14 +233,54 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.action_select_all:
                 putAllContactsToMap();
-                recyclerAdapter.notifyDataSetChanged();
+//                recyclerAdapter.notifyDataSetChanged();
                 break;
             case R.id.action_select_none:
-                selectedContactsPhoneEmail.clear();
+                selectedContactsPE.clear();
                 recyclerAdapter.notifyDataSetChanged();
+                menu.findItem(R.id.action_select_none).setVisible(false);
+                menu.findItem(R.id.action_select_all).setVisible(true);
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    //base function
+    private void populateRecyclerView() {
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(mManager);
+        Query postsQuery = Utils.getUserNode().child(FIREBASE_LOCATION_NAMES_DATES).orderByChild(FIREBASE_LOCATION_NAME);
+        recyclerAdapter = new FirebaseRecyclerAdapter<Contact, ContactHolder>(Contact.class, contact_view,
+                ContactHolder.class, postsQuery) {
+            @Override
+            protected void populateViewHolder(ContactHolder contactHolder,
+                                              Contact contact_name_date, int position) {
+                final DatabaseReference postRef = getRef(position);
+                final String key = postRef.getKey();
+                if(selectedContactsPE != null)
+                    contactHolder.checkBox.setChecked(selectedContactsPE.containsKey(key));
+                View.OnClickListener onClickListener = new View.OnClickListener() {
+                    @Override
+                    public void onClick(@NonNull View view) {
+                        if(view.getId() == R.id.checkBoxSelect) {
+                            if (((CheckBox) view).isChecked())
+                                addContactToSelectedList(key);
+                            else
+                                selectedContactsPE.remove(key);
+                        }else   // R.id.contact_view || R.id.icon_sandglass
+                            startActivity(new Intent(MainActivity.this, QuickContactActivity.class).putExtra(EXTRA_CONTACT_KEY, key));
+                    }
+                };
+                if (contact_name_date.return_date_millis > 0 &&  System.currentTimeMillis() > contact_name_date.return_date_millis)
+                    prepareIcons(contactHolder, key, onClickListener);
+                else
+                    contactHolder.sandglass.setVisibility(View.GONE);
+                contactHolder.itemView.setOnClickListener(onClickListener);
+                contactHolder.checkBox.setOnClickListener(onClickListener);
+                contactHolder.bindContact(contact_name_date, getDrawable(R.drawable.shape_oval));
+            }
+        };
+        recyclerView.setAdapter(recyclerAdapter);
     }
 
     private void putAllContactsToMap() {
@@ -436,10 +289,15 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Log.d("tag MainActivity", "onDataChange  putALLContactsToSelectedList");
-                        for(DataSnapshot snapshot : dataSnapshot.getChildren()){
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             Contact contact = snapshot.getValue(Contact.class);
-                            selectedContactsPhoneEmail.put(snapshot.getKey(), contact);
+                            if(selectedContactsPE == null)
+                                selectedContactsPE =  new HashMap<>();
+                            selectedContactsPE.put(snapshot.getKey(), contact);
                         }
+                        recyclerAdapter.notifyDataSetChanged();
+                        menu.findItem(R.id.action_select_none).setVisible(true);
+                        menu.findItem(R.id.action_select_all).setVisible(false);
                     }
 
                     @Override
@@ -463,9 +321,11 @@ public class MainActivity extends BaseActivity {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Log.d("tag MainActivity", "onDataChange  addContactToSelectedList");
                         Contact contact = dataSnapshot.getValue(Contact.class);
-                        selectedContactsPhoneEmail.put(key, contact);
+                        selectedContactsPE.put(key, contact);
+                        final int size = selectedContactsPE.size();
+                        Log.d(TAG, "selected size: " + size
+                                + " \n" + selectedContactsPE.toString());
                     }
 
                     @Override
@@ -488,16 +348,6 @@ public class MainActivity extends BaseActivity {
                 .build();
     }
 
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.d("tag", "onStop");
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        AppIndex.AppIndexApi.end(client, getIndexApiAction());
-        client.disconnect();
-    }
-
     private void updateLocalDataBase() {
         Log.d("tag", "updateLocalDataBase()");
         Utils.getUserNode().addListenerForSingleValueEvent(new ValueEventListener() {
@@ -514,11 +364,133 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    @Override
-    protected void onPause() {
-        if (mAdView != null)
-            mAdView.pause();
-        super.onPause();
-        Log.d("tag", "onPause");
+    private void prepareIcons(final ContactHolder contactHolder, final String key, View.OnClickListener onClickListener) {
+        contactHolder.sandglass.setVisibility(View.VISIBLE);
+        Log.d(TAG, "sandglass VISIBLE prepareIcons key= " + key);
+        contactHolder.sandglass.setOnClickListener(onClickListener);
+        contactHolder.sandglass.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(@NonNull View sandGlass) {
+                View.DragShadowBuilder myShadow = new MyDragShadowBuilder(sandGlass);
+                View.OnDragListener onDragListener = new View.OnDragListener() {
+                    @Override
+                    public boolean onDrag(View view, DragEvent dragEvent) {
+                        switch (dragEvent.getAction()) {
+                            case DragEvent.ACTION_DRAG_STARTED:
+                                if (view.getId() == R.id.icon_sandglass) {
+
+                                    ((ImageView) view).setColorFilter(Color.LTGRAY);
+                                    view.invalidate();
+                                } else if (view.getId() == R.id.icon_bin) {
+
+                                }
+                                return true;
+
+                            case DragEvent.ACTION_DRAG_ENTERED:
+                                if (view.getId() == R.id.icon_sandglass) {
+                                    if (Build.VERSION.SDK_INT >= M)
+                                        ((ImageView) view).setColorFilter(getColor(R.color.colorPrimary));
+                                    else
+                                        ((ImageView) view).setColorFilter(getResources().getColor(R.color.colorPrimary));
+                                } else if (view.getId() == R.id.icon_bin) {
+                                    view.setBackgroundColor(Color.LTGRAY);
+                                    ((ImageView) view).setColorFilter(Color.RED);
+                                }
+                                view.invalidate();
+                                return true;
+
+                            case DragEvent.ACTION_DRAG_EXITED:  //out of the box
+                                if (view.getId() == R.id.icon_sandglass) {
+                                    ((ImageView) view).setColorFilter(Color.LTGRAY);
+                                } else if (view.getId() == R.id.icon_bin) {
+                                    view.setBackgroundColor(Color.TRANSPARENT);
+                                    if (Build.VERSION.SDK_INT >= M)
+                                        ((ImageView) view).setColorFilter(getColor(R.color.colorPrimary));
+                                    else
+                                        ((ImageView) view).setColorFilter(getResources().getColor(R.color.colorPrimary));
+                                }
+                                view.invalidate();
+                                return true;
+
+                            case DragEvent.ACTION_DROP:
+                                if (view.getId() == R.id.icon_sandglass) {
+
+                                } else if (view.getId() == R.id.icon_bin) {
+                                    view.setBackgroundColor(Color.TRANSPARENT);
+                                    //delete
+                                    Utils.getUserNode().child(FIREBASE_LOCATION_NAMES_DATES + "/"
+                                            + key + "/" + FIREBASE_LOCATION_DATE).removeValue();
+                                }
+                                return true;
+
+                            case DragEvent.ACTION_DRAG_ENDED:
+                                if (view.getId() == R.id.icon_sandglass) {
+                                    if (dragEvent.getResult())       // Delete successful
+                                        view.setVisibility(View.GONE);
+                                } else if (view.getId() == R.id.icon_bin) {
+                                    Animation animationFadeOut = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_out);
+                                    animationFadeOut.setAnimationListener(new MyAnimationListener(view));
+                                    view.startAnimation(animationFadeOut);
+                                }
+                                ((ImageView) view).clearColorFilter();
+                                view.invalidate();
+                                view.setOnDragListener(null);
+                                // the value is ignored.
+                                return true;
+
+                            // An unknown action type was received.
+                            default:
+                                break;
+                            // returns true to indicate that the View can accept the dragged data.
+                        }
+
+                        return false;
+                    }
+                };
+                sandGlass.setOnDragListener(onDragListener);
+                contactHolder.bin.setVisibility(View.VISIBLE);
+                Log.d(TAG, "bin VISIBLE  key= " + key);
+                contactHolder.bin.setOnDragListener(onDragListener);
+
+                // Starts the drag
+                sandGlass.startDrag(null,  // the data to be dragged
+                        myShadow,  // the drag shadow builder
+                        null,      // no need to use local data
+                        0          // flags (not currently used, set to 0)
+                );
+                return false;
+            }
+        });
+    }
+
+    private void putInstanceStateToBundle(){
+        if(instanceState == null)
+            instanceState = new Bundle();
+        instanceState.putSerializable(SAVED_SELECTED_CONTACTS, selectedContactsPE);
+        final Parcelable state = mManager.onSaveInstanceState();
+        instanceState.putParcelable(RECYCLER_STATE, state);
+    }
+
+    private void restoreListPosition() {
+        Parcelable recyclerViewState = instanceState.getParcelable(RECYCLER_STATE);
+        mManager.onRestoreInstanceState(recyclerViewState);
+
+//        mManager.onLayoutCompleted();
+//        Object state = new RecyclerView.State();
+//        state.put(R.id.recycler_view_state_key, recyclerViewState.);
+    }
+
+    private void loadAd() {
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3931793949981809~8705632377");  //app ID din Banner Petru si Dan
+        mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                mAdView.setVisibility(View.VISIBLE);
+            }
+        });
+        mAdView.loadAd(adRequest);
     }
 }

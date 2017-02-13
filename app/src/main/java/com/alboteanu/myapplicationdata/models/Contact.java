@@ -4,14 +4,15 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_DATE;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAIL;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAME;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_OTHER;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONE;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN;
 
 
 @IgnoreExtraProperties
@@ -20,7 +21,8 @@ public class Contact implements Serializable {
     public String phone;
     public String email;
     public String note;
-    public Map<String, Long> retur = new HashMap<>();
+    public long return_date_millis = -1;
+    public Calendar calendar;
 
     public Contact() {
         // Default constructor required for calls to DataSnapshot.getValue(Contact.class)
@@ -31,7 +33,6 @@ public class Contact implements Serializable {
 //        this.phone = phone;
 //        this.email = email;
 //        this.note = note;
-//        this.retur = retur;
     }
 
 
@@ -42,8 +43,10 @@ public class Contact implements Serializable {
         result.put(FIREBASE_LOCATION_PHONE, phone);
         result.put(FIREBASE_LOCATION_EMAIL, email);
         result.put(FIREBASE_LOCATION_OTHER, note);
-        result.put(FIREBASE_LOCATION_RETURN, retur);
-
+        if(calendar != null){
+            return_date_millis = calendar.getTimeInMillis();
+            result.put(FIREBASE_LOCATION_DATE, return_date_millis);
+        }
         return result;
     }
 }

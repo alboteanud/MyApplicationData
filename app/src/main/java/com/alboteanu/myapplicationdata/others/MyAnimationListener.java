@@ -4,36 +4,31 @@ import android.os.Handler;
 import android.view.View;
 import android.view.animation.Animation;
 
-/**
- * Created by albot on 20.12.2016.
- */
+import static android.R.attr.visibility;
+
 
 public class MyAnimationListener  implements Animation.AnimationListener {
     private final View view;
-    private final Handler handler;
-    private final int visibility;
 
 
     public MyAnimationListener(View v) {
         this.view = v;
-        this.visibility = View.GONE;
-        handler = new Handler();
     }
 
     @Override
     public void onAnimationStart(Animation animation) {
-        handler.postDelayed( new Runnable() {
+        new Handler().postDelayed( new Runnable() {
 
             @Override
             public void run() {
-                view.setVisibility(visibility);
+                view.setVisibility(View.GONE);
             }
-        }, 1400);
+        }, 1000);
     }
 
     @Override
     public void onAnimationEnd(Animation animation) {
-        view.setVisibility(visibility);
+        view.setVisibility(View.GONE);
     }
 
     @Override

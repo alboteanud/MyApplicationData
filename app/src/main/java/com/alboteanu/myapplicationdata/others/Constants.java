@@ -11,8 +11,7 @@ public final class Constants {
     public static final String FIREBASE_LOCATION_EMAIL = "email";
     public static final String FIREBASE_LOCATION_EMAILS = "emails";
     public static final String FIREBASE_LOCATION_OTHER = "note";
-    public static final String FIREBASE_LOCATION_RETURN = "retur";
-    public static final String FIREBASE_LOCATION_RETURN_DATES = "dates";
+    public static final String FIREBASE_LOCATION_DATE = "return_date_millis";
 
     public static final String EXTRA_CONTACT_KEY = "contact_key";
     public static final String EXTRA_EDIT_NOTE = "edit_note";

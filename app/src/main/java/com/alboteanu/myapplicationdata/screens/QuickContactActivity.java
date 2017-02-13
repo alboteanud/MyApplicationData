@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.NavUtils;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -21,11 +20,8 @@ import java.util.Calendar;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_EDIT_DATE;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_EDIT_NOTE;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_RETURN;
 
 public class QuickContactActivity extends BaseDetailsActivity implements View.OnClickListener {
-//    public static final String ACTION_SHOW_DATE_PICKER = "action_date";
-//    public static final String ACTION_NOTE = "note";
     String key;
 
     @Override
@@ -34,7 +30,6 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
         setContentView(R.layout.activity_quick_contact);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-//        getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // Get post key from intent
         key = getIntent().getStringExtra(EXTRA_CONTACT_KEY);
@@ -57,9 +52,9 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
             findViewById(R.id.ic_action_message).setVisibility(View.VISIBLE);
         ((TextView) findViewById(R.id.emailText)).setText(contact.email);
         ((TextView) findViewById(R.id.noteText)).setText(contact.note);
-        if (contact.retur.containsKey(FIREBASE_LOCATION_RETURN)) {
+        if (contact.return_date_millis != -1) {
             Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(contact.retur.get(FIREBASE_LOCATION_RETURN));
+            cal.setTimeInMillis(contact.return_date_millis);
             String dateString = Utils.calendarToString(cal);
             ((TextView) findViewById(R.id.dateText)).setText(dateString);
         }
@@ -75,10 +70,6 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
             case  R.id.action_delete_contact:
                 createDeleteDialogAlert(key);
                 return true;

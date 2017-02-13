@@ -9,11 +9,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import com.alboteanu.myapplicationdata.R;
+import com.alboteanu.myapplicationdata.screens.BaseDetailsActivity;
+import com.alboteanu.myapplicationdata.screens.MainActivity;
 
 public class SettingsActivity extends AppCompatPreferenceActivity
-    implements GeneralPreferenceFragment.OnTitleChangeListener{
+                implements GeneralPreferenceFragment.OnTitleChangeListener{
     public static final String ACTION_TITLE_CHANGED = "title_changed";
-    private boolean titleChanged;
+    private static final String TAG= "SettingsActivity";
+    Intent upIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +25,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        Log.d("tag SettingsActivity", "onCreate()");
+        Log.d(TAG, "onCreate()");
+        upIntent = NavUtils.getParentActivityIntent(this);
     }
 
     @Override
@@ -30,7 +34,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                Intent upIntent = NavUtils.getParentActivityIntent(this);
+/*                Intent upIntent = NavUtils.getParentActivityIntent(this);
                 upIntent.putExtra(ACTION_TITLE_CHANGED, titleChanged);
 //                if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
                 if (titleChanged) {
@@ -44,10 +48,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity
                             .startActivities();
                 } else {
                     // This activity is part of this app's task, so simply
-                    // navigate up to the logical parent activity.
-                    NavUtils.navigateUpTo(this, upIntent);
-                    Log.d("tag", "NavUtils.navigateUpTo(this, upIntent)  ");
-                }
+                    // navigate up to the logical parent activity.*/
+                Log.d(TAG, "case android.R.id.home: ");
+                NavUtils.navigateUpTo(this, upIntent);
+//                upIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                startActivity(upIntent);
+//                finish();
+
+//                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -56,6 +64,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity
 
     @Override
     public void onTitleChanged() {
-        titleChanged = true;
+//        titleChanged = true;
+//        upIntent.putExtra(ACTION_TITLE_CHANGED, titleChanged);
+        upIntent.setAction(ACTION_TITLE_CHANGED);
+        Log.d(TAG, "onTitleChange");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy()");
     }
 }

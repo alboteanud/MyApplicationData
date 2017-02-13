@@ -20,7 +20,7 @@
 -keepattributes Signature
 -keepattributes *Annotation*
 
--keep class com.alboteanu.myapplicationdata.viewholder.** {
+-keep class com.alboteanu.myapplicationdata.models.viewholder.** {
     *;
 }
 

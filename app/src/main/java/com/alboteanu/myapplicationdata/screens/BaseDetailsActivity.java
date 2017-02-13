@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
@@ -22,21 +23,23 @@ import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAILS;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAMES_DATES;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONES;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONES_EMAILS;
 
 public class BaseDetailsActivity extends BaseActivity {
 
+    public static final String ACTION_CONTACT_DELETED = "action_contact_deleted";
+    private static final String TAG = "BaseActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
-
     public void deleteContact(String contactKey) {
         Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS + "/" + contactKey).removeValue();
         Utils.getUserNode().child(FIREBASE_LOCATION_NAMES_DATES + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(FIREBASE_LOCATION_EMAILS + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(FIREBASE_LOCATION_PHONES + "/" + contactKey).removeValue();
+        Utils.getUserNode().child(FIREBASE_LOCATION_PHONES_EMAILS + "/" + contactKey).removeValue();
+//        Utils.getUserNode().child(FIREBASE_LOCATION_PHONES + "/" + contactKey).removeValue();
     }
 
     public void createDeleteDialogAlert(final String contactKey) {
@@ -48,6 +51,7 @@ public class BaseDetailsActivity extends BaseActivity {
                         deleteContact(contactKey);
                         Intent intent = new Intent(BaseDetailsActivity.this, MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.putExtra(ACTION_CONTACT_DELETED, contactKey);
                         startActivity(intent);
                         finish();
                     }
@@ -62,6 +66,8 @@ public class BaseDetailsActivity extends BaseActivity {
         dialog.show();
     }
 
+
+
     public void showDatePickerDialog() {
         DialogFragment dialogFragment = new DatePickerFragment();
         dialogFragment.show(getFragmentManager(), "datePicker");
@@ -73,11 +79,12 @@ public class BaseDetailsActivity extends BaseActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Contact contact = dataSnapshot.getValue(Contact.class);
+                Log.d(TAG, "OnDataChange()");
                 if(contact != null){
                     updateUI(contact);
-                    ref.removeEventListener(this);
+//                    ref.removeEventListener(this);
                 }
-                Log.d("tag", "onDataChange in BaseDetailsActivity   children " + dataSnapshot.getChildrenCount());
+//                Log.d(TAG, "dataSnapshot.getChildrenCount()  " + dataSnapshot.getChildrenCount());
             }
 
             @Override
@@ -88,11 +95,8 @@ public class BaseDetailsActivity extends BaseActivity {
 
     }
 
-
     public void updateUI(Contact contact) {
-        Log.d("tag", "updateUI() in BaseDetailsActivity");
+        Log.d(TAG, "updateUI()");
     }
-
-
 
 }
