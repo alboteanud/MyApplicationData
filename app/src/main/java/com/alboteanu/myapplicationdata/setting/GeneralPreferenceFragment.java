@@ -21,7 +21,6 @@ public class GeneralPreferenceFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.pref_general);
         setHasOptionsMenu(true);
-
         sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, @NonNull Object value) {

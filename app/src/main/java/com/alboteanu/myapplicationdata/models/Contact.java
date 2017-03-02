@@ -4,7 +4,6 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,8 +20,9 @@ public class Contact implements Serializable {
     public String phone;
     public String email;
     public String note;
-    public long return_date_millis = -1;
-    public Calendar calendar;
+//    public long return_date_millis = -1;
+//    public Calendar calendar;
+    public long date = -1;
 
     public Contact() {
         // Default constructor required for calls to DataSnapshot.getValue(Contact.class)
@@ -43,10 +43,7 @@ public class Contact implements Serializable {
         result.put(FIREBASE_LOCATION_PHONE, phone);
         result.put(FIREBASE_LOCATION_EMAIL, email);
         result.put(FIREBASE_LOCATION_OTHER, note);
-        if(calendar != null){
-            return_date_millis = calendar.getTimeInMillis();
-            result.put(FIREBASE_LOCATION_DATE, return_date_millis);
-        }
+        result.put(FIREBASE_LOCATION_DATE, date);
         return result;
     }
 }

@@ -10,11 +10,11 @@ import java.util.Map;
 
 @IgnoreExtraProperties
 public class User {
-    private String timeJoined;
+    private String timeLastVisit;
     public String email;
 
-    public User(String email, String timeJoined) {
-        this.timeJoined = timeJoined;
+    public User(String email, String timeLastVisit) {
+        this.timeLastVisit = timeLastVisit;
         this.email = email;
     }
 
@@ -22,7 +22,7 @@ public class User {
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
-        result.put("joined", timeJoined);
+        result.put("visited", timeLastVisit);
         result.put("email", email);
 
         return result;

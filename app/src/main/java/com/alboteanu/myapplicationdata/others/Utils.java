@@ -8,16 +8,18 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.alboteanu.myapplicationdata.R;
-import com.alboteanu.myapplicationdata.models.User;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Map;
 import java.util.Random;
 
 import static com.alboteanu.myapplicationdata.BaseActivity.getDatabase;
@@ -29,13 +31,11 @@ public class Utils {
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
         String key = context.getString(R.string.display_title_text_key);
-        String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-
-        return sharedPrefs.getString(key, usernameFromEmail(userEmail));
+        return sharedPrefs.getString(key, getUsername());
     }
 
     @Nullable
-    private static String getSavedTextMessage(@NonNull Context context) {
+    public static String getSavedTextMessage(@NonNull Context context) {
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
         String key = context.getString(R.string.custom_message_text_key);
@@ -46,7 +46,8 @@ public class Utils {
         return getDatabase().getReference().child(FirebaseAuth.getInstance().getCurrentUser().getUid());
     }
 
-    static String usernameFromEmail(@NonNull String email) {
+    public static String getUsername() {
+        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
         if (email.contains("@")) {
             return email.split("@")[0];
         } else {
@@ -98,12 +99,7 @@ public class Utils {
     }
 //    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(getString(R.string.date_format));
 
-    public static void writeNewUser(String email) { //now
-        User user = new User(email, calendarToString(Calendar.getInstance()));
-        Map<String, Object> userMap = user.toMap();
-        Utils.getUserNode().child("-user").updateChildren(userMap);
 
-    }
 
     public static int getColorFromString(@NonNull String string) {
         int[] RGB = {0, 0, 0};
@@ -139,14 +135,26 @@ public class Utils {
         return Color.rgb(R, G, B);
     }
 
+    private void updateLocalDataBase() {
+        Log.d("tag", "updateLocalDataBase()");
+        Utils.getUserNode().addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+            }
 
-    public static void saveDefaultTitle(@NonNull Context context) {
-        SharedPreferences sharedPrefs = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        String key = context.getString(R.string.display_title_text_key);
-        String userEmail = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        String defaultTitle = usernameFromEmail(userEmail);
-
-        sharedPrefs.edit().putString(key, defaultTitle).apply();
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
     }
+
+
+    public static void clearPreferences(Context context) {
+        PreferenceManager.getDefaultSharedPreferences(context).edit().clear().apply();
+//        String key = getString(R.string.display_title_text_key);
+//        SharedPreferences.Editor editor = sharedPrefs.edit();
+//        editor.remove(key);
+//        editor.apply();
+    }
+
 }

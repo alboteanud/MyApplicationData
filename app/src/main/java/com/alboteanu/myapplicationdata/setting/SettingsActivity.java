@@ -4,18 +4,16 @@ package com.alboteanu.myapplicationdata.setting;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+
 import com.alboteanu.myapplicationdata.R;
-import com.alboteanu.myapplicationdata.screens.BaseDetailsActivity;
-import com.alboteanu.myapplicationdata.screens.MainActivity;
 
 public class SettingsActivity extends AppCompatPreferenceActivity
                 implements GeneralPreferenceFragment.OnTitleChangeListener{
     public static final String ACTION_TITLE_CHANGED = "title_changed";
-    private static final String TAG= "SettingsActivity";
+    private static final String TAG = "SettingsActivity";
     Intent upIntent;
 
     @Override

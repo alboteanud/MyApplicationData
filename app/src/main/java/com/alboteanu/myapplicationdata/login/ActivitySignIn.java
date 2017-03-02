@@ -33,7 +33,7 @@ import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.others.Utils;
 
 import static com.alboteanu.myapplicationdata.R.id.create_account_text;
-import static com.alboteanu.myapplicationdata.R.id.email_sign_in_button;
+import static com.alboteanu.myapplicationdata.R.id.button_sign_in;
 
 public class ActivitySignIn extends BaseActivity implements View.OnClickListener {
     private static final String FORGOT_PASSWORD = "password";
@@ -45,7 +45,7 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
         super.onCreate(savedInstanceState);
         // Check auth on Activity start
         if (mAuth.getCurrentUser() != null){
-            onAuthSuccess(null);
+            onAuthSuccess(mAuth.getCurrentUser());
             return;
         }
         setContentView(R.layout.activity_sign_in);
@@ -56,7 +56,7 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
         if (!mEmailField.getText().toString().isEmpty())
             mPasswordField.requestFocus();
         forgotPassword.setOnClickListener(this);
-        findViewById(R.id.email_sign_in_button).setOnClickListener(this);
+        findViewById(R.id.button_sign_in).setOnClickListener(this);
         findViewById(create_account_text).setOnClickListener(this);
         mPasswordField.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -114,12 +114,11 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
                 intent.putExtra("email", email);
                 startActivity(intent);
                 break;
-            case email_sign_in_button:
+            case button_sign_in:
                 if (validateEmail() && validatePassword()) {
                     saveEmail(email);
                     signIn(email, mPasswordField.getText().toString());
                 }
-
                 break;
             case R.id.forgot_password:
                 if (validateEmail()) {
@@ -129,8 +128,6 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
                 break;
         }
     }
-
-
 
     @Override
     public void onAuthFail(String message) {

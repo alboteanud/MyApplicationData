@@ -1,11 +1,12 @@
 package com.alboteanu.myapplicationdata.screens;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,9 +14,11 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.alboteanu.myapplicationdata.R;
+import com.alboteanu.myapplicationdata.models.Contact;
 import com.alboteanu.myapplicationdata.others.DatePickerFragment;
 import com.alboteanu.myapplicationdata.others.Utils;
-import com.alboteanu.myapplicationdata.models.Contact;
+
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +37,10 @@ public class EditActivity extends BaseDetailsActivity
     EditText nameText, phoneText, emailText, editTextNote, dateText;
     private String key;
     @Nullable
-    private Calendar calendar;
+    private long date = -1;
     private CheckBox checkBox;
+    SharedPreferences sharedPreferences;
+    public static final String IS_CHECKED= "is_checked";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,6 +48,8 @@ public class EditActivity extends BaseDetailsActivity
         setContentView(R.layout.activity_contact_edit);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        sharedPreferences = PreferenceManager
+                .getDefaultSharedPreferences(this);
 //        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initViews();
         if(getIntent().hasExtra(EXTRA_CONTACT_KEY)){
@@ -56,6 +63,15 @@ public class EditActivity extends BaseDetailsActivity
         }
         if(key != null)
             updateUIfromFirebase(key);
+        else{
+            boolean isChecked = sharedPreferences.getBoolean(IS_CHECKED, true);
+            if(isChecked){
+                checkBox.setChecked(true);  // 6 month by default
+                add6monthsToDate();
+            }
+
+        }
+
     }
 
     @Override
@@ -70,12 +86,10 @@ public class EditActivity extends BaseDetailsActivity
         phoneText.setText(contact.phone);
         emailText.setText(contact.email);
         editTextNote.setText(contact.note);
-        Log.d("tag EditActivity", "contact return_date_millis = " + contact.return_date_millis);
-        if(contact.return_date_millis != -1) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(contact.return_date_millis);
-            dateText.setText(Utils.calendarToString(cal));
-            calendar = cal;
+        date = contact.date;
+        if(date > 0) {
+            String dateFormated = DateFormat.getDateInstance().format(date);
+            dateText.setText(dateFormated);
         }
         if(getIntent().hasExtra(EXTRA_EDIT_NOTE)) {
             editTextNote.setSelection(editTextNote.length());
@@ -88,11 +102,12 @@ public class EditActivity extends BaseDetailsActivity
     }
 
     @Override
-    public void onDateSelected(Calendar cal) {
-        dateText.setText(Utils.calendarToString(cal));
-        calendar = cal;
+    public void onDateSelected(long date) {
+        String dateFormated = DateFormat.getDateInstance().format(date);
+        dateText.setText(dateFormated);
         checkBox.setChecked(false);
         dateText.requestFocus();
+        this.date = date;
     }
 
     @Override
@@ -164,8 +179,8 @@ public class EditActivity extends BaseDetailsActivity
         if(!note.isEmpty())
             contact.note = note;
 
-        contact.calendar = calendar;
-        contactNameDate.calendar = calendar;
+        contact.date = date;
+        contactNameDate.date = date;
 
         Map<String, Object> updates = new HashMap<>();
         Map<String, Object> mapContact = contact.toMap();
@@ -193,22 +208,28 @@ public class EditActivity extends BaseDetailsActivity
                 break;
             case R.id.checkBoxDate6M:
                 if(checkBox.isChecked()) {
-                    calendar = Calendar.getInstance();
-                    calendar.add(Calendar.MONTH, 6);
-                    dateText.setText(Utils.calendarToString(calendar));
+                    add6monthsToDate();
                 }else {
-                    calendar = null;
+                    date = -1;
                     dateText.setText(null);
                 }
+                sharedPreferences.edit().putBoolean(IS_CHECKED, checkBox.isChecked()).apply();
+
                 break;
             case R.id.button_clear_date:
-                calendar = null;
+                date = -1;
                 dateText.setText(null);
                 checkBox.setChecked(false);
                 break;
         }
     }
 
-
+private void add6monthsToDate(){
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MONTH, 6);
+    date = calendar.getTimeInMillis();
+    String dateFormated = DateFormat.getDateInstance().format(date);
+    dateText.setText(dateFormated);
+}
 
 }

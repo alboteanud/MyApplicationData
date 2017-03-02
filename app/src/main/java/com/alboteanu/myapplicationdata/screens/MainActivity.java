@@ -1,5 +1,6 @@
 package com.alboteanu.myapplicationdata.screens;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -27,11 +28,12 @@ import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.login.ActivitySignIn;
 import com.alboteanu.myapplicationdata.models.Contact;
-import com.alboteanu.myapplicationdata.setting.SettingsActivity;
 import com.alboteanu.myapplicationdata.models.ContactHolder;
+import com.alboteanu.myapplicationdata.models.SettingModel;
 import com.alboteanu.myapplicationdata.others.MyAnimationListener;
 import com.alboteanu.myapplicationdata.others.MyDragShadowBuilder;
 import com.alboteanu.myapplicationdata.others.Utils;
+import com.alboteanu.myapplicationdata.setting.SettingsActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -52,12 +54,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import static android.os.Build.VERSION_CODES.M;
+import static android.preference.PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES;
 import static com.alboteanu.myapplicationdata.R.layout.contact_view;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_DATE;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAME;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAMES_DATES;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONES_EMAILS;
+import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_SETTINGS;
 import static com.alboteanu.myapplicationdata.screens.BaseDetailsActivity.ACTION_CONTACT_DELETED;
 import static com.alboteanu.myapplicationdata.setting.SettingsActivity.ACTION_TITLE_CHANGED;
 
@@ -79,7 +83,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(Utils.getSavedTitle(this));
+
         setSupportActionBar(toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -90,20 +94,69 @@ public class MainActivity extends BaseActivity {
         });
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         String action = getIntent().getAction();
-        if (action != null && action.equals(ACTION_UPDATE_LOCAL_CONTACTS)) {
+/*        if (action != null && action.equals(ACTION_UPDATE_LOCAL_CONTACTS)) {
             updateLocalDataBase();
-            Utils.saveDefaultTitle(this);
-        }
+//            Utils.setDefaultSettings(this);
+        }*/
         mManager = new LinearLayoutManager(this);
         recyclerView = (RecyclerView) findViewById(R.id.contact_list);
+        setDefaultSettings(this);
+//        toolbar.setTitle(Utils.getSavedTitle(this));
+        changeTitle(Utils.getSavedTitle(this));
         populateRecyclerView();
 
+        // TODO
         // com.alboteanu.patientsListFree
          loadAd();
         // ic_launcher_lite  in Manifest
         // google-services.json
 
     }
+
+    public void setDefaultSettings(@NonNull final Context context) {
+        SharedPreferences sharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        if(!sharedPrefs.getBoolean(KEY_HAS_SET_DEFAULT_VALUES, false)){
+            Log.d(TAG, "saved default settings");
+            sharedPrefs.edit().putString(context.getString(R.string.display_title_text_key), Utils.getUsername()).apply();
+            Utils.getUserNode().child(FIREBASE_LOCATION_SETTINGS).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.d(TAG, "onDataChange");
+                    SettingModel settingModel = dataSnapshot.getValue(SettingModel.class);
+                    SharedPreferences sharedPrefs = PreferenceManager
+                            .getDefaultSharedPreferences(context);
+                    SharedPreferences.Editor editor = sharedPrefs.edit();
+                    if(settingModel!= null){
+                        String keyLocalTitle = context.getString(R.string.display_title_text_key);
+                        String keyLocalCustomMessage = context.getString(R.string.custom_message_text_key);
+                        editor.putString(keyLocalTitle, settingModel.title);
+                        editor.putString(keyLocalCustomMessage, settingModel.custom_message);
+                        changeTitle(settingModel.title);
+                    }
+                    editor.putBoolean(KEY_HAS_SET_DEFAULT_VALUES, true);
+                    editor.apply();
+
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+
+        }
+
+    }
+
+    private void changeTitle(String title){
+        if(title!=null) {
+            getSupportActionBar().setTitle(title);
+        }
+    }
+
 
     @Override
     protected void onStart() {
@@ -131,7 +184,12 @@ public class MainActivity extends BaseActivity {
                 selectedContactsPE.remove(key);
             intent.removeExtra(ACTION_CONTACT_DELETED);
         }else if (intent.getAction() != null && intent.getAction().equals(ACTION_TITLE_CHANGED)) {
-            getSupportActionBar().setTitle(Utils.getSavedTitle(this));
+            String newTitle = Utils.getSavedTitle(this);
+            changeTitle(newTitle);
+            SettingModel settingModel = new SettingModel();
+            settingModel.title = newTitle;
+            settingModel.custom_message = Utils.getSavedTextMessage(this);
+            Utils.getUserNode().child(FIREBASE_LOCATION_SETTINGS).setValue(settingModel);
         }
 //        setIntent(intent);
     }
@@ -204,7 +262,7 @@ public class MainActivity extends BaseActivity {
 //                finish();  // this enables new title check in onCreate
                 break;
             case R.id.action_logout:
-                clearSavedTitle();
+                Utils.clearPreferences(MainActivity.this);
                 mAuth.signOut();
                 startActivity(new Intent(this, ActivitySignIn.class)
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
@@ -271,8 +329,11 @@ public class MainActivity extends BaseActivity {
                             startActivity(new Intent(MainActivity.this, QuickContactActivity.class).putExtra(EXTRA_CONTACT_KEY, key));
                     }
                 };
-                if (contact_name_date.return_date_millis > 0 &&  System.currentTimeMillis() > contact_name_date.return_date_millis)
+                if (contact_name_date.date > 0 && (System.currentTimeMillis() > contact_name_date.date) ){
                     prepareIcons(contactHolder, key, onClickListener);
+                }
+//                if (contact_name_date.return_date_millis > 0 &&  System.currentTimeMillis() > contact_name_date.return_date_millis)
+//                    prepareIcons(contactHolder, key, onClickListener);
                 else
                     contactHolder.sandglass.setVisibility(View.GONE);
                 contactHolder.itemView.setOnClickListener(onClickListener);
@@ -307,15 +368,6 @@ public class MainActivity extends BaseActivity {
         // nu vor fi toate cheile in lista
     }
 
-    private void clearSavedTitle() {
-        SharedPreferences sharedPrefs = PreferenceManager
-                .getDefaultSharedPreferences(this);
-        String key = getString(R.string.display_title_text_key);
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.remove(key);
-        editor.apply();
-    }
-
     void addContactToSelectedList(final String key) {
         Utils.getUserNode().child(FIREBASE_LOCATION_PHONES_EMAILS).child(key)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -346,22 +398,6 @@ public class MainActivity extends BaseActivity {
                 .setObject(object)
                 .setActionStatus(Action.STATUS_TYPE_COMPLETED)
                 .build();
-    }
-
-    private void updateLocalDataBase() {
-        Log.d("tag", "updateLocalDataBase()");
-        Utils.getUserNode().addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-//                Contact contact = dataSnapshot.getValue(Contact.class);
-//                        if(contact != null)
-//                        updateUI(contact);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
     }
 
     private void prepareIcons(final ContactHolder contactHolder, final String key, View.OnClickListener onClickListener) {

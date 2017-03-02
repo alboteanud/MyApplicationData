@@ -12,10 +12,10 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.alboteanu.myapplicationdata.R;
-import com.alboteanu.myapplicationdata.others.Utils;
 import com.alboteanu.myapplicationdata.models.Contact;
+import com.alboteanu.myapplicationdata.others.Utils;
 
-import java.util.Calendar;
+import java.text.DateFormat;
 
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_EDIT_DATE;
@@ -52,11 +52,9 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
             findViewById(R.id.ic_action_message).setVisibility(View.VISIBLE);
         ((TextView) findViewById(R.id.emailText)).setText(contact.email);
         ((TextView) findViewById(R.id.noteText)).setText(contact.note);
-        if (contact.return_date_millis != -1) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTimeInMillis(contact.return_date_millis);
-            String dateString = Utils.calendarToString(cal);
-            ((TextView) findViewById(R.id.dateText)).setText(dateString);
+        if(contact.date > 0) {
+            String date = DateFormat.getDateInstance().format(contact.date);
+            ((TextView) findViewById(R.id.dateText)).setText(date);
         }
     }
 

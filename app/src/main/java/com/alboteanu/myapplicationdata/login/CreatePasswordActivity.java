@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
-import com.alboteanu.myapplicationdata.others.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -53,9 +52,7 @@ public class CreatePasswordActivity extends BaseActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         hideProgressDialog();
                         if (task.isSuccessful()) {
-                            Utils.writeNewUser( task.getResult().getUser().getEmail());
-//                            signIn(email, password);
-                            onAuthSuccess(null);
+                            onAuthSuccess(task.getResult().getUser());
                         } else {
                             String message = task.getException().getMessage();
                             Toast.makeText(CreatePasswordActivity.this, message,

@@ -10,12 +10,21 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.alboteanu.myapplicationdata.models.User;
+import com.alboteanu.myapplicationdata.others.Constants;
+import com.alboteanu.myapplicationdata.others.Utils;
 import com.alboteanu.myapplicationdata.screens.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Calendar;
+import java.util.Map;
+
+import static com.alboteanu.myapplicationdata.others.Utils.calendarToString;
 
 public class BaseActivity extends AppCompatActivity {
     public static final String ACTION_UPDATE_LOCAL_CONTACTS = "action_update_local";
@@ -77,7 +86,7 @@ public class BaseActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         hideProgressDialog();
                         if(task.isSuccessful()){
-                            onAuthSuccess(ACTION_UPDATE_LOCAL_CONTACTS);
+                            onAuthSuccess(task.getResult().getUser());
                         }
                         else {
                             onAuthFail(task.getException().getMessage());
@@ -97,20 +106,19 @@ public class BaseActivity extends AppCompatActivity {
 
 
 
-    public void onAuthSuccess(String actionUpdateLocalContacts) {
-//        String username = usernameFromEmail(user.getEmail());
-
-        // Write new user
-//        writeNewUser(user.getUid(), username, user.getEmail());
-
-        // Go to MainActivity
+    public void onAuthSuccess(FirebaseUser user) {
+        writeNewUser(user.getEmail());
         Intent intentToMainActivity = new Intent(this, MainActivity.class);
-        intentToMainActivity.setAction(actionUpdateLocalContacts);
+//        intentToMainActivity.setAction(ACTION_UPDATE_LOCAL_CONTACTS);
         intentToMainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intentToMainActivity);
         finish();
     }
 
-
+    private static void writeNewUser(String email) {
+        User user = new User(email, calendarToString(Calendar.getInstance()));
+        Map<String, Object> userMap = user.toMap();
+        Utils.getUserNode().child(Constants.FIREBASE_USER).updateChildren(userMap);
+    }
 
 }
