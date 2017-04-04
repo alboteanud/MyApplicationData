@@ -19,8 +19,6 @@ import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 
@@ -30,7 +28,6 @@ import com.alboteanu.myapplicationdata.login.ActivitySignIn;
 import com.alboteanu.myapplicationdata.models.Contact;
 import com.alboteanu.myapplicationdata.models.ContactHolder;
 import com.alboteanu.myapplicationdata.models.SettingModel;
-import com.alboteanu.myapplicationdata.others.MyAnimationListener;
 import com.alboteanu.myapplicationdata.others.MyDragShadowBuilder;
 import com.alboteanu.myapplicationdata.others.Utils;
 import com.alboteanu.myapplicationdata.setting.SettingsActivity;
@@ -461,12 +458,14 @@ public class MainActivity extends BaseActivity {
 
                             case DragEvent.ACTION_DRAG_ENDED:
                                 if (view.getId() == R.id.icon_sandglass) {
-                                    if (dragEvent.getResult())       // Delete successful
+                                    if (dragEvent.getResult()) {     // Delete successful
                                         view.setVisibility(View.GONE);
+                                    }
                                 } else if (view.getId() == R.id.icon_bin) {
-                                    Animation animationFadeOut = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_out);
+                                   /* Animation animationFadeOut = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_out);
                                     animationFadeOut.setAnimationListener(new MyAnimationListener(view));
-                                    view.startAnimation(animationFadeOut);
+                                    view.startAnimation(animationFadeOut);*/
+                                    view.setVisibility(View.GONE);
                                 }
                                 ((ImageView) view).clearColorFilter();
                                 view.invalidate();
