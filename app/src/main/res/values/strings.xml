@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="true">Patients list</string>
+    <string name="app_name" translatable="true">Clients</string>
     <string name="desc_firebase_lockup" translatable="true">logo and name</string>
     <string name="loading" translatable="false">Loading…</string>
     <string name="title_activity_main" translatable="true">Main</string>

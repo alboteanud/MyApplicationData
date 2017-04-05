@@ -19,7 +19,7 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.alboteanu.myapplicationdata",
-            "certificate_hash": "13290A45A113D3490483FF0D9672D72F1D375E48"
+            "certificate_hash": "13290a45a113d3490483ff0d9672d72f1d375e48"
           }
         },
         {
@@ -63,7 +63,7 @@
           "client_type": 1,
           "android_info": {
             "package_name": "com.alboteanu.myapplicationclient",
-            "certificate_hash": "13290A45A113D3490483FF0D9672D72F1D375E48"
+            "certificate_hash": "13290a45a113d3490483ff0d9672d72f1d375e48"
           }
         },
         {
@@ -125,6 +125,37 @@
         "mobilesdk_app_id": "1:321083208041:android:ff0064f584bcc77d",
         "android_client_info": {
           "package_name": "com.alboteanu.patientsListFree"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "321083208041-7dkh0ms0q7qmgem9k50543qldpdc3e99.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDspEOx55sRdXEeT-swwmG6DfAp0w08gI8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:321083208041:android:9275909de7a6683b",
+        "android_client_info": {
+          "package_name": "com.alboteanu.clientsFree"
         }
       },
       "oauth_client": [
