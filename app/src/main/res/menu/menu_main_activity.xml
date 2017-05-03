@@ -13,7 +13,6 @@
 
     <item
         android:id="@+id/action_select_all"
-        android:icon="@drawable/ic_action_email_white"
         android:orderInCategory="100"
         android:text="@string/action_select_all"
         android:title="@string/action_select_all"
@@ -31,7 +30,6 @@
 
     <item
         android:id="@+id/action_email"
-        android:icon="@drawable/ic_action_email_white"
         android:orderInCategory="100"
         android:text="@string/action_email"
         android:title="@string/action_email"
@@ -40,7 +38,6 @@
 
     <item
         android:id="@+id/action_sms"
-        android:icon="@mipmap/ic_action_message_white"
         android:orderInCategory="100"
         android:text="@string/action_sms"
         android:title="@string/action_sms"

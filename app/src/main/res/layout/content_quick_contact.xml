@@ -89,6 +89,21 @@
             android:id="@+id/dateText"/>
         </TableRow>
 
+        <TableRow android:gravity="center_vertical">
+
+            <ImageView
+                android:padding="16dp"
+                android:id="@+id/icon_auto_message"
+                android:src="@drawable/ic_action_text_sms"
+                android:clickable="true"
+                />
+
+
+            <TextView
+                android:id="@+id/autoTextSms"/>
+
+        </TableRow>
+
     </TableLayout>
 
 </ScrollView>

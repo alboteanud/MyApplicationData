@@ -53,6 +53,8 @@
                 android:padding="16dp"
                 android:src="@drawable/ic_action_email" />
 
+
+
             <EditText
                 android:id="@+id/emailEditText"
                 android:layout_weight="1"
@@ -105,35 +107,37 @@
                 android:padding="16dp"/>
             <!--style="?android:attr/borderlessButtonStyle"-->
 
-        </TableRow>        <TableRow android:gravity="center_vertical">
+        </TableRow>
+
+        <TableRow android:gravity="center_vertical">
 
             <ImageView
                 android:padding="16dp"
                 android:id="@+id/icon_auto_message"
-                android:src="@drawable/ic_action_auto_message"
+                android:src="@drawable/ic_action_text_sms"
                 android:clickable="true"
                 />
 
-        <RadioButton
-            android:id="@+id/radioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="auto message" />
+        <EditText
+            android:id="@+id/spinnerAutomessage"
+            android:layout_weight="1"
+            android:drawableEnd="@drawable/ic_action_drop_down"
+            android:editable="false"
+            android:focusable="false"
+            android:hint="@string/auto_message_hint"
+            android:inputType="none"
 
-        </TableRow>
+            />
 
-        <!--<TableRow>-->
+        <ImageView
+            android:id="@+id/button_clear_auto_message"
+            android:background="?android:attr/selectableItemBackground"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_action_clear_date"
+            android:padding="16dp"/>
 
-            <!--<CheckBox-->
-                <!--android:id="@+id/checkBoxDate6M"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_column="1"-->
-                <!--android:padding="8dp"-->
-                <!--android:text="@string/over_6_months" />-->
+    </TableRow>
 
-
-        <!--</TableRow>-->
 
 
     </TableLayout>
