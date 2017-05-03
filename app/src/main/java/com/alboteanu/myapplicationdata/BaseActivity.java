@@ -109,7 +109,7 @@ public class BaseActivity extends AppCompatActivity {
     public void onAuthSuccess(FirebaseUser user) {
         writeNewUser(user.getEmail());
         Intent intentToMainActivity = new Intent(this, MainActivity.class);
-//        intentToMainActivity.setAction(ACTION_UPDATE_LOCAL_CONTACTS);
+        intentToMainActivity.setAction(ACTION_UPDATE_LOCAL_CONTACTS);
         intentToMainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intentToMainActivity);
         finish();

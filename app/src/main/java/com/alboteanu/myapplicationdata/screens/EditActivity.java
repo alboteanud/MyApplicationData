@@ -10,7 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.alboteanu.myapplicationdata.R;
@@ -36,11 +35,8 @@ public class EditActivity extends BaseDetailsActivity
         implements View.OnClickListener, DatePickerFragment.OnDateSelectedListener {
     EditText nameText, phoneText, emailText, editTextNote, dateText;
     private String key;
-    @Nullable
-    private long date = -1;
-    private CheckBox checkBox;
+    private long longDate = -1;
     SharedPreferences sharedPreferences;
-    public static final String IS_CHECKED= "is_checked";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,17 +57,10 @@ public class EditActivity extends BaseDetailsActivity
             key = getIntent().getStringExtra(EXTRA_EDIT_DATE);
             showDatePickerDialog();
         }
-        if(key != null)
+        if(key != null)  // exista un contact
             updateUIfromFirebase(key);
-        else{
-            boolean isChecked = sharedPreferences.getBoolean(IS_CHECKED, true);
-            if(isChecked){
-                checkBox.setChecked(true);  // 6 month by default
-                add6monthsToDate();
-            }
-
-        }
-
+//        else
+//            addMonthsToDate(6);
     }
 
     @Override
@@ -86,9 +75,9 @@ public class EditActivity extends BaseDetailsActivity
         phoneText.setText(contact.phone);
         emailText.setText(contact.email);
         editTextNote.setText(contact.note);
-        date = contact.date;
-        if(date > 0) {
-            String dateFormated = DateFormat.getDateInstance().format(date);
+        longDate = contact.date;
+        if(longDate > 0) {
+            String dateFormated = DateFormat.getDateInstance().format(longDate);
             dateText.setText(dateFormated);
         }
         if(getIntent().hasExtra(EXTRA_EDIT_NOTE)) {
@@ -105,9 +94,8 @@ public class EditActivity extends BaseDetailsActivity
     public void onDateSelected(long date) {
         String dateFormated = DateFormat.getDateInstance().format(date);
         dateText.setText(dateFormated);
-        checkBox.setChecked(false);
         dateText.requestFocus();
-        this.date = date;
+        this.longDate = date;
     }
 
     @Override
@@ -143,10 +131,8 @@ public class EditActivity extends BaseDetailsActivity
         emailText = ((EditText) findViewById(R.id.emailEditText));
         editTextNote = ((EditText) findViewById(R.id.noteEditText));
         dateText = ((EditText) findViewById(R.id.dateEditText));
-        checkBox = (CheckBox) findViewById(R.id.checkBoxDate6M);
         dateText.setOnClickListener(this);
         findViewById(R.id.icon_sandglass_edit_activity).setOnClickListener(this);
-        checkBox.setOnClickListener(this);
         findViewById(R.id.button_clear_date).setOnClickListener(this);
     }
 
@@ -179,8 +165,8 @@ public class EditActivity extends BaseDetailsActivity
         if(!note.isEmpty())
             contact.note = note;
 
-        contact.date = date;
-        contactNameDate.date = date;
+        contact.date = longDate;
+        contactNameDate.date = longDate;
 
         Map<String, Object> updates = new HashMap<>();
         Map<String, Object> mapContact = contact.toMap();
@@ -201,34 +187,27 @@ public class EditActivity extends BaseDetailsActivity
     public void onClick(@NonNull View view) {
         switch (view.getId()) {
             case R.id.icon_sandglass_edit_activity:
-                showDatePickerDialog();
+//                showDatePickerDialog();
+                addMonthsToDate(1);
                 break;
             case R.id.dateEditText:
                 showDatePickerDialog();
                 break;
-            case R.id.checkBoxDate6M:
-                if(checkBox.isChecked()) {
-                    add6monthsToDate();
-                }else {
-                    date = -1;
-                    dateText.setText(null);
-                }
-                sharedPreferences.edit().putBoolean(IS_CHECKED, checkBox.isChecked()).apply();
-
-                break;
             case R.id.button_clear_date:
-                date = -1;
+                longDate = -1;
                 dateText.setText(null);
-                checkBox.setChecked(false);
                 break;
         }
     }
 
-private void add6monthsToDate(){
+private void addMonthsToDate(int months){
     Calendar calendar = Calendar.getInstance();
-    calendar.add(Calendar.MONTH, 6);
-    date = calendar.getTimeInMillis();
-    String dateFormated = DateFormat.getDateInstance().format(date);
+    if(longDate != -1)
+        calendar.setTimeInMillis(longDate);
+    calendar.add(Calendar.MONTH, months);
+    longDate = calendar.getTimeInMillis();
+
+    String dateFormated = DateFormat.getDateInstance().format(longDate);
     dateText.setText(dateFormated);
 }
 

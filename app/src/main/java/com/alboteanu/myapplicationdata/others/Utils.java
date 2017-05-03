@@ -135,7 +135,7 @@ public class Utils {
         return Color.rgb(R, G, B);
     }
 
-    private void updateLocalDataBase() {
+    public static void updateLocalDataBase() {
         Log.d("tag", "updateLocalDataBase()");
         Utils.getUserNode().addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

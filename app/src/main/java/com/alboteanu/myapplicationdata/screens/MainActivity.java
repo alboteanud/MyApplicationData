@@ -52,7 +52,6 @@ import java.util.List;
 
 import static android.os.Build.VERSION_CODES.M;
 import static android.preference.PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES;
-import static com.alboteanu.myapplicationdata.R.layout.contact_view;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_DATE;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAME;
@@ -66,7 +65,7 @@ public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
     private static final String RECYCLER_STATE = "recycler_state";
     private static final String SAVED_SELECTED_CONTACTS = "saved_contacts";
-    private HashMap<String, Contact> selectedContactsPE =  new HashMap<>();
+    private HashMap<String, Contact> selectedContacts =  new HashMap<>();
     private FirebaseRecyclerAdapter<Contact, ContactHolder> recyclerAdapter;
     private GoogleApiClient client;
     private AdView mAdView;
@@ -91,10 +90,10 @@ public class MainActivity extends BaseActivity {
         });
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
         String action = getIntent().getAction();
-/*        if (action != null && action.equals(ACTION_UPDATE_LOCAL_CONTACTS)) {
-            updateLocalDataBase();
+        if (action != null && action.equals(ACTION_UPDATE_LOCAL_CONTACTS)) {
+            Utils.updateLocalDataBase();
 //            Utils.setDefaultSettings(this);
-        }*/
+        }
         mManager = new LinearLayoutManager(this);
         recyclerView = (RecyclerView) findViewById(R.id.contact_list);
         setDefaultSettings(this);
@@ -177,8 +176,8 @@ public class MainActivity extends BaseActivity {
         Log.d(TAG, "onNewIntent()  " + intent.toString());
         if (intent.hasExtra(ACTION_CONTACT_DELETED)) {
             String key = intent.getStringExtra(ACTION_CONTACT_DELETED);
-            if(selectedContactsPE != null)
-                selectedContactsPE.remove(key);
+            if(selectedContacts != null)
+                selectedContacts.remove(key);
             intent.removeExtra(ACTION_CONTACT_DELETED);
         }else if (intent.getAction() != null && intent.getAction().equals(ACTION_TITLE_CHANGED)) {
             String newTitle = Utils.getSavedTitle(this);
@@ -195,7 +194,7 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         if (instanceState != null) {
-            selectedContactsPE = (HashMap<String, Contact>) instanceState.getSerializable(SAVED_SELECTED_CONTACTS);
+            selectedContacts = (HashMap<String, Contact>) instanceState.getSerializable(SAVED_SELECTED_CONTACTS);
             restoreListPosition();
         }
         if (mAdView != null)
@@ -267,7 +266,7 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.action_email:
                 List<String> emailsList = new ArrayList<>();
-                for (Contact contact : selectedContactsPE.values()) {
+                for (Contact contact : selectedContacts.values()) {
                     if (contact != null && contact.email != null)
                         emailsList.add(contact.email);
                 }
@@ -276,7 +275,7 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.action_sms:
                 List<String> phonesList = new ArrayList<>();
-                for (Contact contactPhoneEmail : selectedContactsPE.values()) {
+                for (Contact contactPhoneEmail : selectedContacts.values()) {
                     if (contactPhoneEmail != null && contactPhoneEmail.phone != null)
                         phonesList.add(contactPhoneEmail.phone);
                 }
@@ -291,7 +290,7 @@ public class MainActivity extends BaseActivity {
 //                recyclerAdapter.notifyDataSetChanged();
                 break;
             case R.id.action_select_none:
-                selectedContactsPE.clear();
+                selectedContacts.clear();
                 recyclerAdapter.notifyDataSetChanged();
                 menu.findItem(R.id.action_select_none).setVisible(false);
                 menu.findItem(R.id.action_select_all).setVisible(true);
@@ -305,15 +304,15 @@ public class MainActivity extends BaseActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(mManager);
         Query postsQuery = Utils.getUserNode().child(FIREBASE_LOCATION_NAMES_DATES).orderByChild(FIREBASE_LOCATION_NAME);
-        recyclerAdapter = new FirebaseRecyclerAdapter<Contact, ContactHolder>(Contact.class, contact_view,
+        recyclerAdapter = new FirebaseRecyclerAdapter<Contact, ContactHolder>(Contact.class, R.layout.contact_view,
                 ContactHolder.class, postsQuery) {
             @Override
             protected void populateViewHolder(ContactHolder contactHolder,
                                               Contact contact_name_date, int position) {
                 final DatabaseReference postRef = getRef(position);
                 final String key = postRef.getKey();
-                if(selectedContactsPE != null)
-                    contactHolder.checkBox.setChecked(selectedContactsPE.containsKey(key));
+                if(selectedContacts != null)
+                    contactHolder.checkBox.setChecked(selectedContacts.containsKey(key));
                 View.OnClickListener onClickListener = new View.OnClickListener() {
                     @Override
                     public void onClick(@NonNull View view) {
@@ -321,7 +320,7 @@ public class MainActivity extends BaseActivity {
                             if (((CheckBox) view).isChecked())
                                 addContactToSelectedList(key);
                             else
-                                selectedContactsPE.remove(key);
+                                selectedContacts.remove(key);
                         }else   // R.id.contact_view || R.id.icon_sandglass
                             startActivity(new Intent(MainActivity.this, QuickContactActivity.class).putExtra(EXTRA_CONTACT_KEY, key));
                     }
@@ -349,9 +348,9 @@ public class MainActivity extends BaseActivity {
                         Log.d("tag MainActivity", "onDataChange  putALLContactsToSelectedList");
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             Contact contact = snapshot.getValue(Contact.class);
-                            if(selectedContactsPE == null)
-                                selectedContactsPE =  new HashMap<>();
-                            selectedContactsPE.put(snapshot.getKey(), contact);
+                            if(selectedContacts == null)
+                                selectedContacts =  new HashMap<>();
+                            selectedContacts.put(snapshot.getKey(), contact);
                         }
                         recyclerAdapter.notifyDataSetChanged();
                         menu.findItem(R.id.action_select_none).setVisible(true);
@@ -371,10 +370,10 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Contact contact = dataSnapshot.getValue(Contact.class);
-                        selectedContactsPE.put(key, contact);
-                        final int size = selectedContactsPE.size();
+                        selectedContacts.put(key, contact);
+                        final int size = selectedContacts.size();
                         Log.d(TAG, "selected size: " + size
-                                + " \n" + selectedContactsPE.toString());
+                                + " \n" + selectedContacts.toString());
                     }
 
                     @Override
@@ -501,7 +500,7 @@ public class MainActivity extends BaseActivity {
     private void putInstanceStateToBundle(){
         if(instanceState == null)
             instanceState = new Bundle();
-        instanceState.putSerializable(SAVED_SELECTED_CONTACTS, selectedContactsPE);
+        instanceState.putSerializable(SAVED_SELECTED_CONTACTS, selectedContacts);
         final Parcelable state = mManager.onSaveInstanceState();
         instanceState.putParcelable(RECYCLER_STATE, state);
     }
