@@ -32,10 +32,6 @@ import com.alboteanu.myapplicationdata.others.MyDragShadowBuilder;
 import com.alboteanu.myapplicationdata.others.Utils;
 import com.alboteanu.myapplicationdata.setting.SettingsActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
@@ -68,7 +64,7 @@ public class MainActivity extends BaseActivity {
     private HashMap<String, Contact> selectedContacts =  new HashMap<>();
     private FirebaseRecyclerAdapter<Contact, ContactHolder> recyclerAdapter;
     private GoogleApiClient client;
-    private AdView mAdView;
+
     private LinearLayoutManager mManager;
     private RecyclerView recyclerView;
     private Bundle instanceState;
@@ -103,7 +99,7 @@ public class MainActivity extends BaseActivity {
 
         // TODO
         // com.alboteanu.patientsListFree
-         loadAd();
+
         // ic_launcher_lite  in Manifest
         // google-services.json
 
@@ -197,8 +193,7 @@ public class MainActivity extends BaseActivity {
             selectedContacts = (HashMap<String, Contact>) instanceState.getSerializable(SAVED_SELECTED_CONTACTS);
             restoreListPosition();
         }
-        if (mAdView != null)
-            mAdView.resume();
+
     }
 
     // RUNNING APP
@@ -209,14 +204,6 @@ public class MainActivity extends BaseActivity {
         outState = instanceState;
         super.onSaveInstanceState(outState);
         Log.d(TAG, "onSaveInstanceStates");
-    }
-
-    @Override
-    protected void onPause() {
-        if (mAdView != null)
-            mAdView.pause();
-        super.onPause();
-        Log.d("tag", "onPause");
     }
 
     @Override
@@ -236,8 +223,7 @@ public class MainActivity extends BaseActivity {
         if (recyclerAdapter != null) {
             recyclerAdapter.cleanup();
         }
-        if (mAdView != null)
-            mAdView.destroy();
+
         super.onDestroy();
 
     }
@@ -514,17 +500,4 @@ public class MainActivity extends BaseActivity {
 //        state.put(R.id.recycler_view_state_key, recyclerViewState.);
     }
 
-    private void loadAd() {
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3931793949981809~8705632377");  //app ID din Banner Petru si Dan
-        mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                super.onAdLoaded();
-                mAdView.setVisibility(View.VISIBLE);
-            }
-        });
-        mAdView.loadAd(adRequest);
-    }
 }
