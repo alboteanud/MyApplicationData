@@ -1,19 +1,27 @@
 package com.alboteanu.myapplicationdata.screens;
 
+import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.Menu;
@@ -61,7 +69,7 @@ public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
     private static final String RECYCLER_STATE = "recycler_state";
     private static final String SAVED_SELECTED_CONTACTS = "saved_contacts";
-    private HashMap<String, Contact> selectedContacts =  new HashMap<>();
+    private HashMap<String, Contact> selectedContacts = new HashMap<>();
     private FirebaseRecyclerAdapter<Contact, ContactHolder> recyclerAdapter;
     private GoogleApiClient client;
 
@@ -108,7 +116,7 @@ public class MainActivity extends BaseActivity {
     public void setDefaultSettings(@NonNull final Context context) {
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
-        if(!sharedPrefs.getBoolean(KEY_HAS_SET_DEFAULT_VALUES, false)){
+        if (!sharedPrefs.getBoolean(KEY_HAS_SET_DEFAULT_VALUES, false)) {
             Log.d(TAG, "saved default settings");
             sharedPrefs.edit().putString(context.getString(R.string.display_title_text_key), Utils.getUsername()).apply();
             Utils.getUserNode().child(FIREBASE_LOCATION_SETTINGS).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -119,7 +127,7 @@ public class MainActivity extends BaseActivity {
                     SharedPreferences sharedPrefs = PreferenceManager
                             .getDefaultSharedPreferences(context);
                     SharedPreferences.Editor editor = sharedPrefs.edit();
-                    if(settingModel!= null){
+                    if (settingModel != null) {
                         String keyLocalTitle = context.getString(R.string.display_title_text_key);
                         String keyLocalCustomMessage = context.getString(R.string.custom_message_text_key);
                         editor.putString(keyLocalTitle, settingModel.title);
@@ -143,8 +151,8 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    private void changeTitle(String title){
-        if(title!=null) {
+    private void changeTitle(String title) {
+        if (title != null) {
             getSupportActionBar().setTitle(title);
         }
     }
@@ -172,10 +180,10 @@ public class MainActivity extends BaseActivity {
         Log.d(TAG, "onNewIntent()  " + intent.toString());
         if (intent.hasExtra(ACTION_CONTACT_DELETED)) {
             String key = intent.getStringExtra(ACTION_CONTACT_DELETED);
-            if(selectedContacts != null)
+            if (selectedContacts != null)
                 selectedContacts.remove(key);
             intent.removeExtra(ACTION_CONTACT_DELETED);
-        }else if (intent.getAction() != null && intent.getAction().equals(ACTION_TITLE_CHANGED)) {
+        } else if (intent.getAction() != null && intent.getAction().equals(ACTION_TITLE_CHANGED)) {
             String newTitle = Utils.getSavedTitle(this);
             changeTitle(newTitle);
             SettingModel settingModel = new SettingModel();
@@ -281,6 +289,10 @@ public class MainActivity extends BaseActivity {
                 menu.findItem(R.id.action_select_none).setVisible(false);
                 menu.findItem(R.id.action_select_all).setVisible(true);
                 break;
+            case R.id.action_set_alarm:
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, 1);
+                setAlarm();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -297,21 +309,21 @@ public class MainActivity extends BaseActivity {
                                               Contact contact_name_date, int position) {
                 final DatabaseReference postRef = getRef(position);
                 final String key = postRef.getKey();
-                if(selectedContacts != null)
+                if (selectedContacts != null)
                     contactHolder.checkBox.setChecked(selectedContacts.containsKey(key));
                 View.OnClickListener onClickListener = new View.OnClickListener() {
                     @Override
                     public void onClick(@NonNull View view) {
-                        if(view.getId() == R.id.checkBoxSelect) {
+                        if (view.getId() == R.id.checkBoxSelect) {
                             if (((CheckBox) view).isChecked())
                                 addContactToSelectedList(key);
                             else
                                 selectedContacts.remove(key);
-                        }else   // R.id.contact_view || R.id.icon_sandglass
+                        } else   // R.id.contact_view || R.id.icon_sandglass
                             startActivity(new Intent(MainActivity.this, QuickContactActivity.class).putExtra(EXTRA_CONTACT_KEY, key));
                     }
                 };
-                if (contact_name_date.date > 0 && (System.currentTimeMillis() > contact_name_date.date) ){
+                if (contact_name_date.date > 0 && (System.currentTimeMillis() > contact_name_date.date)) {
                     prepareIcons(contactHolder, key, onClickListener);
                 }
 //                if (contact_name_date.return_date_millis > 0 &&  System.currentTimeMillis() > contact_name_date.return_date_millis)
@@ -334,8 +346,8 @@ public class MainActivity extends BaseActivity {
                         Log.d("tag MainActivity", "onDataChange  putALLContactsToSelectedList");
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             Contact contact = snapshot.getValue(Contact.class);
-                            if(selectedContacts == null)
-                                selectedContacts =  new HashMap<>();
+                            if (selectedContacts == null)
+                                selectedContacts = new HashMap<>();
                             selectedContacts.put(snapshot.getKey(), contact);
                         }
                         recyclerAdapter.notifyDataSetChanged();
@@ -483,8 +495,8 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    private void putInstanceStateToBundle(){
-        if(instanceState == null)
+    private void putInstanceStateToBundle() {
+        if (instanceState == null)
             instanceState = new Bundle();
         instanceState.putSerializable(SAVED_SELECTED_CONTACTS, selectedContacts);
         final Parcelable state = mManager.onSaveInstanceState();
@@ -499,5 +511,28 @@ public class MainActivity extends BaseActivity {
 //        Object state = new RecyclerView.State();
 //        state.put(R.id.recycler_view_state_key, recyclerViewState.);
     }
+
+    public void setAlarm() {
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent _) {
+                try {
+                    SmsManager.getDefault().sendTextMessage("0773360279", null, "mesaj de test " + String.valueOf(SystemClock.elapsedRealtime()), null, null);
+                } catch (Exception e) {
+
+                }
+                context.unregisterReceiver(this); // this == BroadcastReceiver, not Activity
+            }
+        };
+
+        this.registerReceiver(receiver, new IntentFilter("com.blah.blah.somemessage"));
+
+        PendingIntent pintent = PendingIntent.getBroadcast(this, 0, new Intent("com.blah.blah.somemessage"), 0);
+        AlarmManager manager = (AlarmManager) (getSystemService(Context.ALARM_SERVICE));
+//        manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 1000 * seconds, pintent);
+        manager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + 1000 * 20, 1000 * 20, pintent);
+    }
+
 
 }

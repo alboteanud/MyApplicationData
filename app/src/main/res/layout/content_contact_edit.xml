@@ -19,9 +19,9 @@
 
             <ImageView
                 android:layout_gravity="center"
+                android:contentDescription="face"
                 android:padding="16dp"
-                android:src="@drawable/ic_action_person"
-                android:contentDescription="face"/>
+                android:src="@drawable/ic_action_person" />
 
             <EditText
                 android:id="@+id/nameEditText"
@@ -81,11 +81,11 @@
         <TableRow android:gravity="center_vertical">
 
             <ImageView
-                android:padding="16dp"
                 android:id="@+id/icon_sandglass_edit_activity"
-                android:src="@drawable/ic_action_sandglass"
-                android:clickable="true"
                 android:background="?android:attr/selectableItemBackground"
+                android:clickable="true"
+                android:padding="16dp"
+                android:src="@drawable/ic_action_sandglass"
                 />
 
             <EditText
@@ -101,10 +101,10 @@
 
             <ImageView
                 android:id="@+id/button_clear_date"
-                android:background="?android:attr/selectableItemBackground"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_action_clear_date"
-                android:padding="16dp"/>
+                android:background="?android:attr/selectableItemBackground"
+                android:padding="16dp"
+                android:src="@drawable/ic_action_delete" />
             <!--style="?android:attr/borderlessButtonStyle"-->
 
         </TableRow>
@@ -112,10 +112,10 @@
         <TableRow android:gravity="center_vertical">
 
             <ImageView
-                android:padding="16dp"
                 android:id="@+id/icon_auto_message"
-                android:src="@drawable/ic_action_text_sms"
                 android:clickable="true"
+                android:padding="16dp"
+                android:src="@drawable/ic_action_text_sms"
                 />
 
         <EditText
@@ -131,10 +131,10 @@
 
         <ImageView
             android:id="@+id/button_clear_auto_message"
-            android:background="?android:attr/selectableItemBackground"
             android:layout_gravity="center"
-            android:src="@drawable/ic_action_clear_date"
-            android:padding="16dp"/>
+            android:background="?android:attr/selectableItemBackground"
+            android:padding="16dp"
+            android:src="@drawable/ic_action_delete" />
 
     </TableRow>
 
