@@ -45,17 +45,22 @@
         app:showAsAction="never" />
 
 
+    <!-- <item
+         android:id="@+id/action_set_alarm"
+         android:orderInCategory="100"
+         android:title="Set alarm"
+         app:showAsAction="never" />-->
+
+    <!-- <item
+         android:id="@+id/action_merge_with_google"
+         android:orderInCategory="100"
+         android:title="Merge with Google"
+         app:showAsAction="never" />-->
+
     <item
         android:id="@+id/action_logout"
         android:orderInCategory="100"
         android:text="@string/action_logout"
         android:title="@string/action_logout"
         app:showAsAction="never" />
-
-    <item
-        android:id="@+id/action_set_alarm"
-        android:orderInCategory="100"
-        android:title="Set alarm"
-        app:showAsAction="never" />
-
 </menu>

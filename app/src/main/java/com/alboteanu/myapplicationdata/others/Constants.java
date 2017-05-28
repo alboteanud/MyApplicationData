@@ -19,6 +19,6 @@ public final class Constants {
 
     public static final String FIREBASE_LOCATION_TITLE = "custom_title";
     public static final String FIREBASE_LOCATION_CUSTOM_MESSAGE = "custom_message";
-    public static final String FIREBASE_LOCATION_SETTINGS = "settings";
+    //    public static final String FIREBASE_LOCATION_SETTINGS = "settings";
     public static final String FIREBASE_USER = "-user";
 }

@@ -46,19 +46,11 @@ public class Utils {
     }
 
     @Nullable
-    public static String getSavedTitle(@NonNull Context context) {
-        SharedPreferences sharedPrefs = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        String key = context.getString(R.string.display_title_text_key);
-        return sharedPrefs.getString(key, getUsername());
-    }
-
-    @Nullable
     public static String getSavedTextMessage(@NonNull Context context) {
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(context);
         String key = context.getString(R.string.custom_message_text_key);
-        return sharedPrefs.getString(key, context.getString(R.string.custom_message));
+        return sharedPrefs.getString(key, context.getString(R.string.pref_default_text_message));
     }
 
     public static DatabaseReference getUserNode() {

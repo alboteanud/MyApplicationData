@@ -1,4 +1,4 @@
-package com.alboteanu.myapplicationdata.setting;
+package com.alboteanu.myapplicationdata.screens;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

@@ -8,17 +8,11 @@
     <string name="log_in_text" translatable="true">Sign in to get the most out of your device.</string>
     <string name="sign_out">Sign Out</string>
     <string name="disconnect">Disconnect</string>
-    <string name="pref_title_display_name">Display title</string>
     <string name="google_status_fmt">Google User: %s</string>
     <string name="action_delete">Delete</string>
-    <string name="title_activity_settings">Settings</string>
-    <string name="action_settings">Settings</string>
     <string name="action_notifications">Notif</string>
-    <string name="custom_message">Dear Sir or Madam: </string>
-    <string name="title_custom_text_settings">Message text</string>
     <string name="back">Back</string>
-    <string name="display_title_text_key" translatable="false">DisplayName</string>
-    <string name="custom_message_text_key" translatable="false">my_custom_text</string>
+
     <string name="confirmation_dialog_delete">Delete contact?</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
@@ -58,10 +52,99 @@
     <string name="action_select_all">Select all</string>
     <string name="over_6_months">6 months</string>
     <string name="banner_id">ca-app-pub-3931793949981809/3604469576</string>
-    <string name="title_activity_settings2">Settings2Activity</string>
-    <string name="large_text">
-    </string>
-    <string name="title_activity_settings4">SettingsActivity4</string>
     <string name="auto_message_hint">Auto text sms</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_auto_messenging">Enable auto messages</string>
+    <string name="pref_description_auto_messenging">Your device will automatically send text messages(sms)</string>
+    <string name="auto_message_text_key" translatable="false">auto_message_text</string>
+
+    <string name="pref_title_custom_text">Message text</string>
+    <string name="pref_default_text_message">Dear Sir or Madam: </string>
+    <string name="custom_message_text_key" translatable="false">my_custom_text</string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
+    <string-array name="list_preference_entries">
+        <item>Entry 1</item>
+        <item>Entry 2</item>
+        <item>Entry 3</item>
+    </string-array>
+
+    <string-array name="list_preference_entry_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="multi_select_list_preference_default_value" />
+
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+
+    <string name="pref_title_new_message_notifications">New message notifications</string>
+
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+
+    <string name="pref_title_vibrate">Vibrate</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_google_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="login_with_email">Sign in with email</string>
+    <string name="label_activity_email_sign_in">Sign in with email</string>
 
 </resources>

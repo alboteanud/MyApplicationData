@@ -31,24 +31,23 @@ import android.widget.TextView;
 import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.others.Utils;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 
-import static com.alboteanu.myapplicationdata.R.id.create_account_text;
 import static com.alboteanu.myapplicationdata.R.id.button_sign_in;
+import static com.alboteanu.myapplicationdata.R.id.create_account_text;
 
-public class ActivitySignIn extends BaseActivity implements View.OnClickListener {
+public class ActivityEmailSignIn extends BaseActivity implements View.OnClickListener {
     private static final String FORGOT_PASSWORD = "password";
     EditText mEmailField, mPasswordField;
     TextView forgotPassword;
+    boolean isForgotPass;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Check auth on Activity start
-        if (mAuth.getCurrentUser() != null){
-            onAuthSuccess(mAuth.getCurrentUser());
-            return;
-        }
-        setContentView(R.layout.activity_sign_in);
+        setContentView(R.layout.activity_password_sign_in);
         mEmailField = (EditText) findViewById(R.id.field_email);
         mPasswordField = (EditText) findViewById(R.id.field_password);
         forgotPassword = (TextView) findViewById(R.id.forgot_password);
@@ -66,7 +65,7 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
                     String email = mEmailField.getText().toString();
                     if (validateEmail() && validatePassword()) {
                         saveEmail(email);
-                        signIn(email, mPasswordField.getText().toString());
+                        emailSignIn(email, mPasswordField.getText().toString());
                         handled = true;
                     }
 
@@ -117,7 +116,7 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
             case button_sign_in:
                 if (validateEmail() && validatePassword()) {
                     saveEmail(email);
-                    signIn(email, mPasswordField.getText().toString());
+                    emailSignIn(email, mPasswordField.getText().toString());
                 }
                 break;
             case R.id.forgot_password:
@@ -136,7 +135,7 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
         isForgotPass = true;
         forgotPassword.setVisibility(View.VISIBLE);
     }
-    boolean isForgotPass;
+
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         if(isForgotPass)
@@ -144,12 +143,22 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
         super.onSaveInstanceState(outState);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
+    public void emailSignIn(@NonNull String email, @NonNull String password) {
+        showProgressDialog();
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        hideProgressDialog();
+                        if (task.isSuccessful()) {
+                            onAuthSuccess(task.getResult().getUser());
+                        } else {
+                            onAuthFail(task.getException().getMessage());
+                        }
 
+                    }
+                });
     }
-
 
 
 }

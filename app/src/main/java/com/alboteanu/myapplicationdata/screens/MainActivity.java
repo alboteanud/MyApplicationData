@@ -1,23 +1,19 @@
 package com.alboteanu.myapplicationdata.screens;
 
-import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -29,21 +25,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
-import com.alboteanu.myapplicationdata.login.ActivitySignIn;
+import com.alboteanu.myapplicationdata.login.GoogleLoginActivity;
 import com.alboteanu.myapplicationdata.models.Contact;
 import com.alboteanu.myapplicationdata.models.ContactHolder;
-import com.alboteanu.myapplicationdata.models.SettingModel;
 import com.alboteanu.myapplicationdata.others.MyDragShadowBuilder;
 import com.alboteanu.myapplicationdata.others.Utils;
-import com.alboteanu.myapplicationdata.setting.SettingsActivity;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,15 +57,12 @@ import java.util.HashMap;
 import java.util.List;
 
 import static android.os.Build.VERSION_CODES.M;
-import static android.preference.PreferenceManager.KEY_HAS_SET_DEFAULT_VALUES;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_DATE;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAME;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAMES_DATES;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONES_EMAILS;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_SETTINGS;
 import static com.alboteanu.myapplicationdata.screens.BaseDetailsActivity.ACTION_CONTACT_DELETED;
-import static com.alboteanu.myapplicationdata.setting.SettingsActivity.ACTION_TITLE_CHANGED;
 
 public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
@@ -96,13 +95,9 @@ public class MainActivity extends BaseActivity {
         String action = getIntent().getAction();
         if (action != null && action.equals(ACTION_UPDATE_LOCAL_CONTACTS)) {
             Utils.updateLocalDataBase();
-//            Utils.setDefaultSettings(this);
         }
         mManager = new LinearLayoutManager(this);
         recyclerView = (RecyclerView) findViewById(R.id.contact_list);
-        setDefaultSettings(this);
-//        toolbar.setTitle(Utils.getSavedTitle(this));
-        changeTitle(Utils.getSavedTitle(this));
         populateRecyclerView();
 
         // TODO
@@ -112,51 +107,6 @@ public class MainActivity extends BaseActivity {
         // google-services.json
 
     }
-
-    public void setDefaultSettings(@NonNull final Context context) {
-        SharedPreferences sharedPrefs = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        if (!sharedPrefs.getBoolean(KEY_HAS_SET_DEFAULT_VALUES, false)) {
-            Log.d(TAG, "saved default settings");
-            sharedPrefs.edit().putString(context.getString(R.string.display_title_text_key), Utils.getUsername()).apply();
-            Utils.getUserNode().child(FIREBASE_LOCATION_SETTINGS).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    Log.d(TAG, "onDataChange");
-                    SettingModel settingModel = dataSnapshot.getValue(SettingModel.class);
-                    SharedPreferences sharedPrefs = PreferenceManager
-                            .getDefaultSharedPreferences(context);
-                    SharedPreferences.Editor editor = sharedPrefs.edit();
-                    if (settingModel != null) {
-                        String keyLocalTitle = context.getString(R.string.display_title_text_key);
-                        String keyLocalCustomMessage = context.getString(R.string.custom_message_text_key);
-                        editor.putString(keyLocalTitle, settingModel.title);
-                        editor.putString(keyLocalCustomMessage, settingModel.custom_message);
-                        changeTitle(settingModel.title);
-                    }
-                    editor.putBoolean(KEY_HAS_SET_DEFAULT_VALUES, true);
-                    editor.apply();
-
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-
-        }
-
-    }
-
-    private void changeTitle(String title) {
-        if (title != null) {
-            getSupportActionBar().setTitle(title);
-        }
-    }
-
 
     @Override
     protected void onStart() {
@@ -183,13 +133,6 @@ public class MainActivity extends BaseActivity {
             if (selectedContacts != null)
                 selectedContacts.remove(key);
             intent.removeExtra(ACTION_CONTACT_DELETED);
-        } else if (intent.getAction() != null && intent.getAction().equals(ACTION_TITLE_CHANGED)) {
-            String newTitle = Utils.getSavedTitle(this);
-            changeTitle(newTitle);
-            SettingModel settingModel = new SettingModel();
-            settingModel.title = newTitle;
-            settingModel.custom_message = Utils.getSavedTextMessage(this);
-            Utils.getUserNode().child(FIREBASE_LOCATION_SETTINGS).setValue(settingModel);
         }
 //        setIntent(intent);
     }
@@ -251,13 +194,7 @@ public class MainActivity extends BaseActivity {
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
 //                finish();  // this enables new title check in onCreate
                 break;
-            case R.id.action_logout:
-                Utils.clearPreferences(MainActivity.this);
-                mAuth.signOut();
-                startActivity(new Intent(this, ActivitySignIn.class)
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                finish();
-                break;
+
             case R.id.action_email:
                 List<String> emailsList = new ArrayList<>();
                 for (Contact contact : selectedContacts.values()) {
@@ -289,12 +226,86 @@ public class MainActivity extends BaseActivity {
                 menu.findItem(R.id.action_select_none).setVisible(false);
                 menu.findItem(R.id.action_select_all).setVisible(true);
                 break;
-            case R.id.action_set_alarm:
+            case R.id.action_logout:
+                Utils.clearPreferences(MainActivity.this);
+                mAuth.signOut();
+                startActivity(new Intent(this, GoogleLoginActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                finish();
+                break;
+       /*     case R.id.action_set_alarm:
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.SEND_SMS}, 1);
                 setAlarm();
-                break;
+                break;*/
+         /*   case R.id.action_merge_with_google:
+                googleSignIn();
+                break;*/
         }
         return super.onOptionsItemSelected(item);
+    }
+
+/*    private void googleSignIn() {
+        // Configure Google Sign In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        //atentie  initializati doar o data
+        GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this  *//*FragmentActivity*//*, new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+                    }
+                } *//*OnConnectionFailedListener*//*)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+        showProgressDialog();
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+hideProgressDialog();
+        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if (result.isSuccess()) {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = result.getSignInAccount();
+             mergeAccounts(account);
+            } else {
+                // Google Sign In failed, update UI appropriately
+                Toast.makeText(MainActivity.this, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    }*/
+
+    private void mergeAccounts(GoogleSignInAccount acct) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.getCurrentUser().linkWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "linkWithCredential:success");
+                            FirebaseUser user = task.getResult().getUser();
+//                            updateUI(user);
+                        } else {
+                            Log.w(TAG, "linkWithCredential:failure", task.getException());
+                            Toast.makeText(MainActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+//                            updateUI(null);
+                            onAuthFail(task.getException().getMessage());
+                        }
+
+                    }
+                });
     }
 
     //base function
@@ -459,9 +470,6 @@ public class MainActivity extends BaseActivity {
                                         view.setVisibility(View.GONE);
                                     }
                                 } else if (view.getId() == R.id.icon_bin) {
-                                   /* Animation animationFadeOut = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_out);
-                                    animationFadeOut.setAnimationListener(new MyAnimationListener(view));
-                                    view.startAnimation(animationFadeOut);*/
                                     view.setVisibility(View.GONE);
                                 }
                                 ((ImageView) view).clearColorFilter();
