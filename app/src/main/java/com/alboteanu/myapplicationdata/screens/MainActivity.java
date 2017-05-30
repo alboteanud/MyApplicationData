@@ -308,10 +308,9 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         if (instanceState != null) {
-
+            selected = (HashMap<String, Contact>) instanceState.getSerializable(SAVED_SELECTED_CONTACTS);
             restoreListPosition();
         }
-//        restoreListPosition();
     }
 
     @Override
