@@ -1,16 +1,14 @@
 package com.alboteanu.myapplicationdata.screens;
 
-import android.arch.lifecycle.LifecycleActivity;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,11 +16,11 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 
+import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.login.GoogleLoginActivity;
 import com.alboteanu.myapplicationdata.models.Contact;
 import com.alboteanu.myapplicationdata.models.ContactHolder;
-import com.alboteanu.myapplicationdata.models.MyViewModel;
 import com.alboteanu.myapplicationdata.others.MyDragShadowBuilder;
 import com.alboteanu.myapplicationdata.others.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -40,13 +38,13 @@ import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACTS;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_DATE;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAME;
+import static com.alboteanu.myapplicationdata.screens.BaseDetailsActivity.ACTION_CONTACT_DELETED;
 
-public class MainActivity extends LifecycleActivity {
+public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
     private static final String RECYCLER_STATE = "recycler_state";
     private static final String SAVED_SELECTED_CONTACTS = "saved_contacts";
-    MyViewModel model;
-    //    private HashMap<String, Contact> selected = new HashMap<>();
+    private HashMap<String, Contact> selected = new HashMap<>();
     private FirebaseRecyclerAdapter<Contact, ContactHolder> recyclerAdapter;
     private LinearLayoutManager mManager;
     private Bundle instanceState;
@@ -56,7 +54,7 @@ public class MainActivity extends LifecycleActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,37 +64,26 @@ public class MainActivity extends LifecycleActivity {
         mManager = new LinearLayoutManager(this);
         populateRecyclerView();
 
-        model = ViewModelProviders.of(this).get(MyViewModel.class);
-        model.getSelected().observe(this, new Observer<HashMap<String, Contact>>() {
-            @Override
-            public void onChanged(@Nullable HashMap<String, Contact> selectedContacts) {
-
-            }
-        });
-
     }
 
-/*    @Override
+    @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         Log.d(TAG, "onRestoreInstanceStates");
         instanceState = savedInstanceState;
-    }*/
+    }
 
-/*    @Override
+    @Override
     protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
         Log.d(TAG, "onNewIntent()  " + intent.toString());
         if (intent.hasExtra(ACTION_CONTACT_DELETED)) {
             String key = intent.getStringExtra(ACTION_CONTACT_DELETED);
-//            selected.remove(key);
-            HashMap<String, Contact> newSelectedList = model.getSelected().getValue();
-            newSelectedList.remove(key);
-            model.setSelected(newSelectedList);
+            selected.remove(key);
             intent.removeExtra(ACTION_CONTACT_DELETED);
         }
 //        setIntent(intent);
-    }*/
+    }
 
 
 
@@ -109,8 +96,7 @@ public class MainActivity extends LifecycleActivity {
                 break;
             case R.id.action_email:
                 List<String> emailsList = new ArrayList<>();
-//                for (Contact contact : selected.values()) {
-                for (Contact contact : model.getSelected().getValue().values()) {
+                for (Contact contact : selected.values()) {
                     if (contact != null && contact.email != null)
                         emailsList.add(contact.email);
                 }
@@ -119,8 +105,7 @@ public class MainActivity extends LifecycleActivity {
                 break;
             case R.id.action_sms:
                 List<String> phonesList = new ArrayList<>();
-//                for (Contact contactPhoneEmail : selected.values()) {
-                for (Contact contactPhoneEmail : model.getSelected().getValue().values()) {
+                for (Contact contactPhoneEmail : selected.values()) {
                     if (contactPhoneEmail != null && contactPhoneEmail.phone != null)
                         phonesList.add(contactPhoneEmail.phone);
                 }
@@ -131,18 +116,13 @@ public class MainActivity extends LifecycleActivity {
                 addAllContactsToMapSelected();
                 break;
             case R.id.action_select_none:
-                HashMap<String, Contact> newSelectedList = model.getSelected().getValue();
-                if (newSelectedList != null) {
-                    newSelectedList.clear();
-                }
-                model.setSelected(newSelectedList);
-//                selected.clear();
+                selected.clear();
                 recyclerAdapter.notifyDataSetChanged();
                 menu.findItem(R.id.action_select_none).setVisible(false);
                 menu.findItem(R.id.action_select_all).setVisible(true);
                 break;
             case R.id.action_logout:
-//                mAuth.signOut();
+                mAuth.signOut();
                 startActivity(new Intent(this, GoogleLoginActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                 finish();
@@ -161,8 +141,7 @@ public class MainActivity extends LifecycleActivity {
                                               @NonNull Contact contact, int position) {
                 final DatabaseReference postRef = getRef(position);
                 final String key = postRef.getKey();
-                contactHolder.checkBox.setChecked(model.getSelected().getValue() != null && model.getSelected().getValue().containsKey(key));
-//                contactHolder.checkBox.setChecked( model.getSelectedContacts().getValue()!= null && selected.containsKey(key));
+                contactHolder.checkBox.setChecked(selected.containsKey(key));
                 View.OnClickListener onClickListener = new View.OnClickListener() {
 
                     @Override
@@ -171,10 +150,7 @@ public class MainActivity extends LifecycleActivity {
                             if (((CheckBox) view).isChecked())
                                 addContactToMapSelected(key);
                             else {
-                                HashMap<String, Contact> newSelectedList = model.getSelected().getValue();
-                                newSelectedList.remove(key);
-                                model.setSelected(newSelectedList);
-//                                selected.remove(key);
+                                selected.remove(key);
                             }
                         } else   // R.id.contact_view || R.id.icon_sandglass
                             startActivity(new Intent(MainActivity.this, QuickContactActivity.class).putExtra(EXTRA_CONTACT_KEY, key));
@@ -201,13 +177,10 @@ public class MainActivity extends LifecycleActivity {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        HashMap<String, Contact> newSelectedList = new HashMap<String, Contact>();
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                             Contact contact = snapshot.getValue(Contact.class);
-                            newSelectedList.put(snapshot.getKey(), contact);
-//                            selected.put(snapshot.getKey(), contact);
+                            selected.put(snapshot.getKey(), contact);
                         }
-                        model.setSelected(newSelectedList);
                         recyclerAdapter.notifyDataSetChanged();
                         menu.findItem(R.id.action_select_none).setVisible(true);
                         menu.findItem(R.id.action_select_all).setVisible(false);
@@ -226,12 +199,7 @@ public class MainActivity extends LifecycleActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         Contact contact = dataSnapshot.getValue(Contact.class);
-                        HashMap<String, Contact> newSelectedList = model.getSelected().getValue();
-                        if (newSelectedList == null)
-                            newSelectedList = new HashMap<String, Contact>();
-                        newSelectedList.put(key, contact);
-                        model.setSelected(newSelectedList);
-//                        selected.put(key, contact);
+                        selected.put(key, contact);
                     }
 
                     @Override
@@ -319,16 +287,15 @@ public class MainActivity extends LifecycleActivity {
     private void putInstanceStateToBundle() {
         if (instanceState == null)
             instanceState = new Bundle();
-        instanceState.putSerializable(SAVED_SELECTED_CONTACTS, model.getSelected().getValue());
-//        instanceState.putSerializable(SAVED_SELECTED_CONTACTS, selected);
+        instanceState.putSerializable(SAVED_SELECTED_CONTACTS, selected);
         final Parcelable state = mManager.onSaveInstanceState();
         instanceState.putParcelable(RECYCLER_STATE, state);
     }
 
- /*   private void restoreListPosition() {
+    private void restoreListPosition() {
         Parcelable recyclerViewState = instanceState.getParcelable(RECYCLER_STATE);
         mManager.onRestoreInstanceState(recyclerViewState);
-    }*/
+    }
 
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
@@ -340,29 +307,26 @@ public class MainActivity extends LifecycleActivity {
     @Override
     protected void onResume() {
         super.onResume();
-   /*     if (instanceState != null) {
-            HashMap<String, Contact> newSelectedList = model.getSelected().getValue();
-            newSelectedList.remove(key);
-            model.setSelected(newSelectedList);
-            model.getSelectedContacts().getValue()= (HashMap<String, Contact>) instanceState.getSerializable(SAVED_SELECTED_CONTACTS);
+        if (instanceState != null) {
+
             restoreListPosition();
-        }*/
+        }
 //        restoreListPosition();
     }
 
-  /*  @Override
+    @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         putInstanceStateToBundle();
         outState = instanceState;
         super.onSaveInstanceState(outState);
         Log.d(TAG, "onSaveInstanceStates");
-    }*/
+    }
 
-  /*  @Override
+    @Override
     public void onStop() {
         super.onStop();
         putInstanceStateToBundle();
-    }*/
+    }
 
     @Override
     protected void onDestroy() {
