@@ -48,7 +48,7 @@ public class EditActivity extends BaseDetailsActivity
         setSupportActionBar(toolbar);
         sharedPreferences = PreferenceManager
                 .getDefaultSharedPreferences(this);
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initViews();
         if(getIntent().hasExtra(EXTRA_CONTACT_KEY)){
             key = getIntent().getStringExtra(EXTRA_CONTACT_KEY);

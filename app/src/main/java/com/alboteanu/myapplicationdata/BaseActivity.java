@@ -1,13 +1,13 @@
 package com.alboteanu.myapplicationdata;
 
 import android.app.ProgressDialog;
-import android.arch.lifecycle.LifecycleActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.alboteanu.myapplicationdata.models.User;
@@ -23,7 +23,7 @@ import java.util.Map;
 
 import static com.alboteanu.myapplicationdata.others.Utils.calendarToString;
 
-public class BaseActivity extends LifecycleActivity {
+public class BaseActivity extends AppCompatActivity {
     private static final String ACTION_UPDATE_LOCAL_CONTACTS = "action_update_local";
     private static FirebaseDatabase mDatabase;
     protected FirebaseAuth mAuth;
