@@ -1,6 +1,7 @@
 package com.alboteanu.myapplicationdata.login;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -9,6 +10,9 @@ import android.widget.Toast;
 
 import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -25,7 +29,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class GoogleLoginActivity extends BaseActivity
         implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
-    public static final int RC_SIGN_IN = 9001;
+    private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "GoogleLoginActivity";
     private GoogleApiClient mGoogleApiClient;
 
@@ -42,10 +46,10 @@ public class GoogleLoginActivity extends BaseActivity
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .enableAutoManage(this  /*FragmentActivity*/, this  /*OnConnectionFailedListener*/)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .addApi(AppIndex.API)
                 .build();
 
         // Button listeners
@@ -79,7 +83,7 @@ public class GoogleLoginActivity extends BaseActivity
         }
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+    private void firebaseAuthWithGoogle(@NonNull GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -113,7 +117,7 @@ public class GoogleLoginActivity extends BaseActivity
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(@NonNull View v) {
         int id = v.getId();
         if (id == R.id.google_sign_in_button) {
             Log.w(TAG, "onClick() on R.id.google_sign_in_button");
@@ -122,5 +126,35 @@ public class GoogleLoginActivity extends BaseActivity
             Log.w(TAG, "onClick() on R.id.email_sign_in");
             startActivity(new Intent(GoogleLoginActivity.this, ActivityEmailSignIn.class));
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        AppIndex.AppIndexApi.end(mGoogleApiClient, getIndexApiAction());
+        mGoogleApiClient.disconnect();
+    }
+
+
+    @NonNull
+    private Action getIndexApiAction() {
+        Thing object = new Thing.Builder()
+                .setName(getString(R.string.app_name)) // TODO: Define a title for the content shown.
+                // TODO: Make sure this auto-generated URL is correct.
+                .setUrl(Uri.parse("https://play.google.com/store/apps/details?id=com.alboteanu.clientsFree"))
+                .build();
+        return new Action.Builder(Action.TYPE_VIEW)
+                .setObject(object)
+                .setActionStatus(Action.STATUS_TYPE_COMPLETED)
+                .build();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+        AppIndex.AppIndexApi.start(mGoogleApiClient, getIndexApiAction());
     }
 }

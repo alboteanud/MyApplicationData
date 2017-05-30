@@ -27,16 +27,18 @@ import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_EDIT_DATE;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_EDIT_NOTE;
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACTS;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAMES_DATES;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONES_EMAILS;
 
 
 public class EditActivity extends BaseDetailsActivity
         implements View.OnClickListener, DatePickerFragment.OnDateSelectedListener {
-    EditText nameText, phoneText, emailText, editTextNote, dateText;
+    private EditText nameText;
+    private EditText phoneText;
+    private EditText emailText;
+    private EditText editTextNote;
+    private EditText dateText;
     private String key;
     private long longDate = -1;
-    SharedPreferences sharedPreferences;
+    private SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,7 +71,7 @@ public class EditActivity extends BaseDetailsActivity
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    public void updateUI(Contact contact) {
+    public void updateUI(@NonNull Contact contact) {
         nameText.setText(contact.name);
         nameText.setSelection(contact.name.length());
         phoneText.setText(contact.phone);
@@ -125,7 +127,7 @@ public class EditActivity extends BaseDetailsActivity
         return super.onOptionsItemSelected(item);
     }
 
-    public void initViews() {
+    private void initViews() {
         nameText = ((EditText) findViewById(R.id.nameEditText));
         phoneText = ((EditText) findViewById(phoneEditText));
         emailText = ((EditText) findViewById(R.id.emailEditText));
@@ -154,7 +156,7 @@ public class EditActivity extends BaseDetailsActivity
 
         String email = emailText.getText().toString();
         if(!email.isEmpty()) {
-            if (!Utils.isValidEmail(email)) {
+            if (Utils.isValidEmail(email)) {
                 emailText.setError(getString(R.string.invalid_email));
                 return false;
             }
@@ -170,15 +172,11 @@ public class EditActivity extends BaseDetailsActivity
 
         Map<String, Object> updates = new HashMap<>();
         Map<String, Object> mapContact = contact.toMap();
-        Map<String, Object> mapContactNameDate = contactNameDate.toMap();
-        Map<String, Object> mapContactPhoneEmail = contactPhoneEmail.toMap();
 
         if(key == null)
             key = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).push().getKey();  //generate new key
 
         updates.put(FIREBASE_LOCATION_CONTACTS + "/" + key, mapContact);
-        updates.put(FIREBASE_LOCATION_NAMES_DATES + "/" + key, mapContactNameDate);
-        updates.put(FIREBASE_LOCATION_PHONES_EMAILS + "/" + key, mapContactPhoneEmail);
         Utils.getUserNode().updateChildren(updates);
         return true;
     }
@@ -188,7 +186,7 @@ public class EditActivity extends BaseDetailsActivity
         switch (view.getId()) {
             case R.id.icon_sandglass_edit_activity:
 //                showDatePickerDialog();
-                addMonthsToDate(1);
+                addMonthsToDate();
                 break;
             case R.id.dateEditText:
                 showDatePickerDialog();
@@ -200,11 +198,11 @@ public class EditActivity extends BaseDetailsActivity
         }
     }
 
-private void addMonthsToDate(int months){
+    private void addMonthsToDate() {
     Calendar calendar = Calendar.getInstance();
     if(longDate != -1)
         calendar.setTimeInMillis(longDate);
-    calendar.add(Calendar.MONTH, months);
+        calendar.add(Calendar.MONTH, 1);
     longDate = calendar.getTimeInMillis();
 
     String dateFormated = DateFormat.getDateInstance().format(longDate);

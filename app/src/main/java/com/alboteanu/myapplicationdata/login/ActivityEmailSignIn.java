@@ -40,9 +40,10 @@ import static com.alboteanu.myapplicationdata.R.id.create_account_text;
 
 public class ActivityEmailSignIn extends BaseActivity implements View.OnClickListener {
     private static final String FORGOT_PASSWORD = "password";
-    EditText mEmailField, mPasswordField;
-    TextView forgotPassword;
-    boolean isForgotPass;
+    private EditText mEmailField;
+    private EditText mPasswordField;
+    private TextView forgotPassword;
+    private boolean isForgotPass;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -74,7 +75,7 @@ public class ActivityEmailSignIn extends BaseActivity implements View.OnClickLis
             }
         });
 
-        if(savedInstanceState !=null){
+        if (savedInstanceState != null) {
             isForgotPass = savedInstanceState.getBoolean(FORGOT_PASSWORD);
             if(isForgotPass)
                 forgotPassword.setVisibility(View.VISIBLE);
@@ -87,7 +88,7 @@ public class ActivityEmailSignIn extends BaseActivity implements View.OnClickLis
         if (TextUtils.isEmpty(email)) {
             mEmailField.setError(getString(R.string.required));
             return false;
-        } else if (!Utils.isValidEmail(email)) {
+        } else if (Utils.isValidEmail(email)) {
             mEmailField.setError(getString(R.string.invalid_email));
             return false;
         } else
@@ -129,7 +130,7 @@ public class ActivityEmailSignIn extends BaseActivity implements View.OnClickLis
     }
 
     @Override
-    public void onAuthFail(String message) {
+    protected void onAuthFail(String message) {
         super.onAuthFail(message);
         mPasswordField.setError(null);
         isForgotPass = true;
@@ -139,11 +140,11 @@ public class ActivityEmailSignIn extends BaseActivity implements View.OnClickLis
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         if(isForgotPass)
-            outState.putBoolean(FORGOT_PASSWORD, isForgotPass);
+            outState.putBoolean(FORGOT_PASSWORD, true);
         super.onSaveInstanceState(outState);
     }
 
-    public void emailSignIn(@NonNull String email, @NonNull String password) {
+    private void emailSignIn(@NonNull String email, @NonNull String password) {
         showProgressDialog();
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {

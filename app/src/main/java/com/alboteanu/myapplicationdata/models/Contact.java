@@ -1,5 +1,7 @@
 package com.alboteanu.myapplicationdata.models;
 
+import android.support.annotation.NonNull;
+
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
@@ -36,6 +38,7 @@ public class Contact implements Serializable {
     }
 
 
+    @NonNull
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();

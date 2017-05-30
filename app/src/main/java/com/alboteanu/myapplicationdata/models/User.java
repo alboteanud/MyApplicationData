@@ -11,7 +11,7 @@ import java.util.Map;
 @IgnoreExtraProperties
 public class User {
     private String timeLastVisit;
-    public String email;
+    private String email;
 
     public User(String email, String timeLastVisit) {
         this.timeLastVisit = timeLastVisit;

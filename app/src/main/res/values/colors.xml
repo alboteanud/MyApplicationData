@@ -10,8 +10,5 @@
     <!--<color name="colorAccent">#e63f77</color>-->
     <color name="colorAccent">#0288d1</color>
 
-    <color name="black_overlay">#66000000</color>
-    <color name="transparent">#00000000</color>
-
 </resources>
 

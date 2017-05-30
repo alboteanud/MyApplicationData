@@ -16,7 +16,7 @@ import com.google.firebase.auth.AuthResult;
 import static com.alboteanu.myapplicationdata.R.id.create_account_button;
 
 public class CreatePasswordActivity extends BaseActivity {
-    EditText mPasswordField;
+    private EditText mPasswordField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +44,7 @@ public class CreatePasswordActivity extends BaseActivity {
         return true;
     }
 
-    private void createAccount(final String email, final String password) {
+    private void createAccount(@NonNull final String email, @NonNull final String password) {
         showProgressDialog();
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {

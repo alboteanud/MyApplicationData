@@ -14,7 +14,7 @@ import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.others.Utils;
 
 public class CreateEmailActivity extends BaseActivity {
-    EditText emailField;
+    private EditText emailField;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +51,11 @@ public class CreateEmailActivity extends BaseActivity {
         }
     }
 
-    boolean validateEmail(String email) {
+    private boolean validateEmail(String email) {
         if (TextUtils.isEmpty(email)) {
             emailField.setError(getString(R.string.required));
             return false;
-        } else if (!Utils.isValidEmail(emailField.getText().toString())) {
+        } else if (Utils.isValidEmail(emailField.getText().toString())) {
             emailField.setError(getString(R.string.invalid_email));
             return false;
         } else

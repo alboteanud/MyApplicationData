@@ -1,12 +1,13 @@
 package com.alboteanu.myapplicationdata;
 
 import android.app.ProgressDialog;
+import android.arch.lifecycle.LifecycleActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.alboteanu.myapplicationdata.models.User;
@@ -22,8 +23,8 @@ import java.util.Map;
 
 import static com.alboteanu.myapplicationdata.others.Utils.calendarToString;
 
-public class BaseActivity extends AppCompatActivity {
-    public static final String ACTION_UPDATE_LOCAL_CONTACTS = "action_update_local";
+public class BaseActivity extends LifecycleActivity {
+    private static final String ACTION_UPDATE_LOCAL_CONTACTS = "action_update_local";
     private static FirebaseDatabase mDatabase;
     protected FirebaseAuth mAuth;
     private ProgressDialog mProgressDialog;
@@ -42,13 +43,17 @@ public class BaseActivity extends AppCompatActivity {
         Utils.getUserNode().child(Constants.FIREBASE_USER).updateChildren(userMap);
     }
 
+    public static String getActionUpdateLocalContacts() {
+        return ACTION_UPDATE_LOCAL_CONTACTS;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
     }
 
-    public void showProgressDialog() {
+    protected void showProgressDialog() {
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setMessage(getString(R.string.loading));
@@ -58,13 +63,13 @@ public class BaseActivity extends AppCompatActivity {
         mProgressDialog.show();
     }
 
-    public void hideProgressDialog() {
+    protected void hideProgressDialog() {
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
     }
 
-    public void saveEmail(@Nullable String email) {
+    protected void saveEmail(@Nullable String email) {
         String savedEmail = getSavedEmail();
         if(email != null && !email.equals(savedEmail)){
             SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
@@ -75,21 +80,22 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     @Nullable
-    public String getSavedEmail() {
+    protected String getSavedEmail() {
         SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         return sharedPref.getString("email", null);
     }
 
-    public void onAuthFail(String message) {
+    protected void onAuthFail(String message) {
         Toast.makeText(BaseActivity.this, message,
                 Toast.LENGTH_SHORT).show();
 //        Snackbar.make(getWindow().getDecorView(), message, Snackbar.LENGTH_LONG).show();
     }
 
-    public void onAuthSuccess(FirebaseUser user) {
+
+    protected void onAuthSuccess(@NonNull FirebaseUser user) {
         writeNewUser(user.getEmail());
         Intent intentToMainActivity = new Intent(this, MainActivity.class);
-        intentToMainActivity.setAction(ACTION_UPDATE_LOCAL_CONTACTS);
+        intentToMainActivity.setAction(getActionUpdateLocalContacts());
         intentToMainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intentToMainActivity);
         finish();

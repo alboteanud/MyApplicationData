@@ -13,6 +13,7 @@
     <RingtonePreference
         android:defaultValue="content://settings/system/notification_sound"
         android:dependency="notifications_new_message"
+        android:enabled="false"
         android:key="notifications_new_message_ringtone"
         android:ringtoneType="notification"
         android:title="@string/pref_title_ringtone" />
@@ -21,6 +22,7 @@
     <SwitchPreference
         android:defaultValue="true"
         android:dependency="notifications_new_message"
+        android:enabled="false"
         android:key="notifications_new_message_vibrate"
         android:title="@string/pref_title_vibrate" />
 

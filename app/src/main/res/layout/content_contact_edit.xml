@@ -12,8 +12,7 @@
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="?android:attr/listPreferredItemPaddingStart"
-      >
+        android:padding="?android:attr/listPreferredItemPaddingStart">
 
         <TableRow android:gravity="center_vertical">
 
@@ -53,8 +52,6 @@
                 android:padding="16dp"
                 android:src="@drawable/ic_action_email" />
 
-
-
             <EditText
                 android:id="@+id/emailEditText"
                 android:layout_weight="1"
@@ -85,14 +82,12 @@
                 android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
                 android:padding="16dp"
-                android:src="@drawable/ic_action_sandglass"
-                />
+                android:src="@drawable/ic_action_sandglass" />
 
             <EditText
                 android:id="@+id/dateEditText"
                 android:layout_weight="1"
                 android:drawableEnd="@drawable/ic_action_drop_down"
-                android:editable="false"
                 android:focusable="false"
                 android:hint="@string/return_date_hint"
                 android:inputType="none"
@@ -112,33 +107,26 @@
         <TableRow android:gravity="center_vertical">
 
             <ImageView
-                android:id="@+id/icon_auto_message"
                 android:clickable="true"
                 android:padding="16dp"
-                android:src="@drawable/ic_action_text_sms"
+                android:src="@drawable/ic_action_text_sms" />
+
+            <EditText
+                android:layout_weight="1"
+                android:drawableEnd="@drawable/ic_action_drop_down"
+                android:focusable="false"
+                android:hint="@string/auto_message_hint"
+                android:inputType="none"
+
                 />
 
-        <EditText
-            android:id="@+id/spinnerAutomessage"
-            android:layout_weight="1"
-            android:drawableEnd="@drawable/ic_action_drop_down"
-            android:editable="false"
-            android:focusable="false"
-            android:hint="@string/auto_message_hint"
-            android:inputType="none"
+            <ImageView
+                android:layout_gravity="center"
+                android:background="?android:attr/selectableItemBackground"
+                android:padding="16dp"
+                android:src="@drawable/ic_action_delete" />
 
-            />
-
-        <ImageView
-            android:id="@+id/button_clear_auto_message"
-            android:layout_gravity="center"
-            android:background="?android:attr/selectableItemBackground"
-            android:padding="16dp"
-            android:src="@drawable/ic_action_delete" />
-
-    </TableRow>
-
-
+        </TableRow>
 
     </TableLayout>
 

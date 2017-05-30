@@ -4,14 +4,6 @@
     tools:context="com.alboteanu.mylist.MainActivity">
 
     <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:text="@string/action_settings"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
-
-
-    <item
         android:id="@+id/action_select_all"
         android:orderInCategory="100"
         android:text="@string/action_select_all"
@@ -27,6 +19,13 @@
         android:visible="false"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_sms"
+        android:orderInCategory="100"
+        android:text="@string/action_sms"
+        android:title="@string/action_sms"
+        android:visible="true"
+        app:showAsAction="never" />
 
     <item
         android:id="@+id/action_email"
@@ -37,13 +36,11 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_sms"
+        android:id="@+id/action_settings"
         android:orderInCategory="100"
-        android:text="@string/action_sms"
-        android:title="@string/action_sms"
-        android:visible="true"
+        android:text="@string/action_settings"
+        android:title="@string/action_settings"
         app:showAsAction="never" />
-
 
     <!-- <item
          android:id="@+id/action_set_alarm"
@@ -60,7 +57,7 @@
     <item
         android:id="@+id/action_logout"
         android:orderInCategory="100"
-        android:text="@string/action_logout"
-        android:title="@string/action_logout"
+        android:text="@string/action_sign_out"
+        android:title="@string/action_sign_out"
         app:showAsAction="never" />
 </menu>

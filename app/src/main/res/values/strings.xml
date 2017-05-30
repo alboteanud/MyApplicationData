@@ -1,19 +1,13 @@
 <resources>
-    <string name="app_name" translatable="true">Patients list</string>
+    <string name="app_name" translatable="true">Customers</string>
     <string name="desc_firebase_lockup" translatable="true">logo and name</string>
     <string name="loading" translatable="false">Loading…</string>
-    <string name="title_activity_main" translatable="true">Main</string>
-    <string name="action_logout" translatable="true">Logout</string>
+    <string name="action_sign_out" translatable="true">Sign out</string>
     <string name="title_activity_detail" translatable="true">Details</string>
     <string name="log_in_text" translatable="true">Sign in to get the most out of your device.</string>
-    <string name="sign_out">Sign Out</string>
-    <string name="disconnect">Disconnect</string>
-    <string name="google_status_fmt">Google User: %s</string>
     <string name="action_delete">Delete</string>
-    <string name="action_notifications">Notif</string>
-    <string name="back">Back</string>
 
-    <string name="confirmation_dialog_delete">Delete contact?</string>
+    <string name="confirmation_dialog_delete">Delete?</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="title_activity_edit_details">Edit</string>
@@ -23,10 +17,6 @@
     <string name="hint_password">Password</string>
     <string name="log_in" translatable="false">Sign in</string>
     <string name="create_account">Create account</string>
-    <string name="emailpassword_title_text">Email and Password</string>
-    <string name="auth_failed">Authentication failed</string>
-    <string name="emailpassword_status_fmt" translatable="false">Email User: %s</string>
-    <string name="label_emailpassword" translatable="false">Email/Password Authentication</string>
     <string name="required">Required.</string>
     <string name="invalid_email">Invalid email</string>
     <string name="forgot_password">Forgot password?</string>
@@ -34,25 +24,18 @@
     <string name="phone_hint">Phone</string>
     <string name="email_hint">Email</string>
     <string name="note_hint">Note</string>
-    <string name="return_date_hint">Return date</string>
-    <string name="need_email">We sent you an email at %s</string>
-    <string name="ChoseEmailClient">ChoseEmailClient</string>
-    <string name="have_account">I already have an account</string>
+    <string name="return_date_hint">Date</string>
+    <string name="need_email">An email was sent at %s to reset your password</string>
     <string name="next_button_text">next</string>
     <string name="account_email">Account email</string>
     <string name="account_password">Account password</string>
     <string name="preference_file_key">com.alboteanu.myappicationdata.PREFERENCE_FILE_KEY</string>
-    <string name="action_campaign">Promotional campaign</string>
-    <string name="text_button_send_emails">Emails to all</string>
-    <string name="text_button_send_to_exprired">Send sms to expired</string>
-    <string name="text_button_send_email_to_exprired">Send emails to expired</string>
-    <string name="action_email">Email</string>
-    <string name="action_sms">Message</string>
+    <string name="action_email">Send email</string>
+    <string name="action_sms">Send sms message</string>
     <string name="action_select_none">Select none</string>
     <string name="action_select_all">Select all</string>
-    <string name="over_6_months">6 months</string>
-    <string name="banner_id">ca-app-pub-3931793949981809/3604469576</string>
-    <string name="auto_message_hint">Auto text sms</string>
+    <string name="banner_id">ca-app-pub-3931793949981809/4949221973</string>
+    <string name="auto_message_hint">Automatic sms (not implemented yet)</string>
     <string name="title_activity_settings">Settings</string>
 
     <!-- Strings related to Settings -->
@@ -104,20 +87,6 @@
         <item>-1</item>
     </string-array>
 
-    <string-array name="list_preference_entries">
-        <item>Entry 1</item>
-        <item>Entry 2</item>
-        <item>Entry 3</item>
-    </string-array>
-
-    <string-array name="list_preference_entry_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-
-    <string-array name="multi_select_list_preference_default_value" />
-
     <string name="pref_title_system_sync_settings">System sync settings</string>
 
     <!-- Example settings for Notifications -->
@@ -133,17 +102,6 @@
     <string name="title_activity_google_login">Sign in</string>
 
     <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
     <string name="login_with_email">Sign in with email</string>
     <string name="label_activity_email_sign_in">Sign in with email</string>
 

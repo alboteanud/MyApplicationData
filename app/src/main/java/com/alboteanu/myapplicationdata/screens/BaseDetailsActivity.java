@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 
@@ -20,10 +19,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 
 import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_CONTACTS;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_EMAILS;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_NAMES_DATES;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONES;
-import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION_PHONES_EMAILS;
 
 public class BaseDetailsActivity extends BaseActivity {
 
@@ -35,14 +30,11 @@ public class BaseDetailsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
     }
 
-    public void deleteContact(String contactKey) {
+    private void deleteContact(String contactKey) {
         Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(FIREBASE_LOCATION_NAMES_DATES + "/" + contactKey).removeValue();
-        Utils.getUserNode().child(FIREBASE_LOCATION_PHONES_EMAILS + "/" + contactKey).removeValue();
-//        Utils.getUserNode().child(FIREBASE_LOCATION_PHONES + "/" + contactKey).removeValue();
     }
 
-    public void createDeleteDialogAlert(final String contactKey) {
+    void createDeleteDialogAlert(final String contactKey) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.confirmation_dialog_delete))
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -67,17 +59,16 @@ public class BaseDetailsActivity extends BaseActivity {
     }
 
 
-
-    public void showDatePickerDialog() {
+    void showDatePickerDialog() {
         DialogFragment dialogFragment = new DatePickerFragment();
         dialogFragment.show(getFragmentManager(), "datePicker");
     }
 
-    public void updateUIfromFirebase(final String contactKey) {
+    void updateUIfromFirebase(@NonNull final String contactKey) {
         final DatabaseReference ref = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).child(contactKey);
         ref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Contact contact = dataSnapshot.getValue(Contact.class);
                 Log.d(TAG, "OnDataChange()");
                 if(contact != null){
@@ -95,7 +86,7 @@ public class BaseDetailsActivity extends BaseActivity {
 
     }
 
-    public void updateUI(Contact contact) {
+    void updateUI(Contact contact) {
         Log.d(TAG, "updateUI()");
     }
 

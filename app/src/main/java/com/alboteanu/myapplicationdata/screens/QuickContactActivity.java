@@ -26,7 +26,7 @@ import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_EDIT_DATE;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_EDIT_NOTE;
 
 public class QuickContactActivity extends BaseDetailsActivity implements View.OnClickListener {
-    String key;
+    private String key;
     private AdView mAdView;
 
     @Override
@@ -36,9 +36,7 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        // Get post key from intent
         key = getIntent().getStringExtra(EXTRA_CONTACT_KEY);
-        Log.d("tag", "QuickContactActivity  key " + key);
         updateUIfromFirebase(key);
         findViewById(R.id.ic_action_phone).setOnClickListener(this);
         findViewById(R.id.ic_action_message).setOnClickListener(this);
@@ -49,7 +47,7 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
         loadAd();
     }
 
-    public void updateUI(Contact contact) {
+    public void updateUI(@NonNull Contact contact) {
         super.updateUI(contact);
         Log.d("tag", "updateUI() in QuickContactActivity");
         getSupportActionBar().setTitle(contact.name);
@@ -73,7 +71,7 @@ public class QuickContactActivity extends BaseDetailsActivity implements View.On
 
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case  R.id.action_delete_contact:
                 createDeleteDialogAlert(key);

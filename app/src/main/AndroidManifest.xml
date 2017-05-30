@@ -5,10 +5,6 @@
     <uses-permission android:name="com.android.vending.BILLING" />
     <uses-permission android:name="android.permission.SEND_SMS" />
 
-    <receiver android:name=".AlarmReciever" />
-
-    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
-
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -35,7 +31,7 @@
             android:label="@string/label_activity_email_sign_in"
             android:parentActivityName=".login.GoogleLoginActivity"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <activity
             android:name=".login.CreateEmailActivity"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -46,6 +42,7 @@
             android:name=".screens.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".screens.QuickContactActivity"
@@ -64,15 +61,6 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
-        <service
-            android:name=".MyFirebaseMessagingService"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
 
         <activity
             android:name=".screens.SettingsActivity"

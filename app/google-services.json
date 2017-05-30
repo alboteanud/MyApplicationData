@@ -168,6 +168,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "321083208041-is648o4j0kpdk1e7vke23p8440svncqk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.alboteanu.clientsFree",
+            "certificate_hash": "4a39814008ba9597a7cfd6949ca5efad32e35739"
+          }
+        },
+        {
           "client_id": "321083208041-7dkh0ms0q7qmgem9k50543qldpdc3e99.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -182,8 +190,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "321083208041-7dkh0ms0q7qmgem9k50543qldpdc3e99.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

@@ -87,13 +87,12 @@
         <TableRow android:gravity="center_vertical">
 
             <ImageView
-                android:id="@+id/icon_auto_message"
                 android:clickable="true"
                 android:padding="16dp"
                 android:src="@drawable/ic_action_text_sms" />
 
 
-            <TextView android:id="@+id/autoTextSms" />
+            <TextView />
 
         </TableRow>
         <!--
