@@ -38,7 +38,7 @@ import com.google.firebase.auth.AuthResult;
 import static com.alboteanu.myapplicationdata.R.id.button_sign_in;
 import static com.alboteanu.myapplicationdata.R.id.create_account_text;
 
-public class ActivityEmailSignIn extends BaseActivity implements View.OnClickListener {
+public class SignInEmailActivity extends BaseActivity implements View.OnClickListener {
     private static final String FORGOT_PASSWORD = "password";
     private EditText mEmailField;
     private EditText mPasswordField;
@@ -81,6 +81,10 @@ public class ActivityEmailSignIn extends BaseActivity implements View.OnClickLis
                 forgotPassword.setVisibility(View.VISIBLE);
 
         }
+
+//        mEmailField.setText("alboteanud@gmail.com");
+//        mPasswordField.setText("dan28888");
+//        findViewById(R.id.button_sign_in).callOnClick();
     }
 
     private boolean validateEmail() {

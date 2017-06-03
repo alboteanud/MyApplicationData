@@ -66,16 +66,14 @@ public class BaseDetailsActivity extends BaseActivity {
 
     void updateUIfromFirebase(@NonNull final String contactKey) {
         final DatabaseReference ref = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).child(contactKey);
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 Contact contact = dataSnapshot.getValue(Contact.class);
                 Log.d(TAG, "OnDataChange()");
                 if(contact != null){
                     updateUI(contact);
-//                    ref.removeEventListener(this);
                 }
-//                Log.d(TAG, "dataSnapshot.getChildrenCount()  " + dataSnapshot.getChildrenCount());
             }
 
             @Override

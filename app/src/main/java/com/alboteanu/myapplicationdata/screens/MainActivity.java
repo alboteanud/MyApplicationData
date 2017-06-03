@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,15 +17,18 @@ import android.widget.ImageView;
 
 import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
-import com.alboteanu.myapplicationdata.login.GoogleLoginActivity;
+import com.alboteanu.myapplicationdata.login.SignInGoogleActivity;
 import com.alboteanu.myapplicationdata.models.Contact;
 import com.alboteanu.myapplicationdata.models.ContactHolder;
 import com.alboteanu.myapplicationdata.others.MyDragShadowBuilder;
 import com.alboteanu.myapplicationdata.others.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
@@ -49,6 +51,7 @@ public class MainActivity extends BaseActivity {
     private LinearLayoutManager mManager;
     private Bundle instanceState;
     private Menu menu;
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,29 +66,28 @@ public class MainActivity extends BaseActivity {
         });
         mManager = new LinearLayoutManager(this);
         populateRecyclerView();
-
+        loadAd();
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        Log.d(TAG, "onRestoreInstanceStates");
         instanceState = savedInstanceState;
+        if (instanceState != null) {
+            selected = (HashMap<String, Contact>) instanceState.getSerializable(SAVED_SELECTED_CONTACTS);
+            restoreListPosition();
+        }
     }
 
     @Override
     protected void onNewIntent(@NonNull Intent intent) {
         super.onNewIntent(intent);
-        Log.d(TAG, "onNewIntent()  " + intent.toString());
         if (intent.hasExtra(ACTION_CONTACT_DELETED)) {
             String key = intent.getStringExtra(ACTION_CONTACT_DELETED);
             selected.remove(key);
             intent.removeExtra(ACTION_CONTACT_DELETED);
         }
-//        setIntent(intent);
     }
-
-
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -102,15 +104,16 @@ public class MainActivity extends BaseActivity {
                 }
                 if (!emailsList.isEmpty())
                     Utils.composeEmail(this, emailsList.toArray(new String[0]));
+
                 break;
             case R.id.action_sms:
                 List<String> phonesList = new ArrayList<>();
                 for (Contact contactPhoneEmail : selected.values()) {
                     if (contactPhoneEmail != null && contactPhoneEmail.phone != null)
                         phonesList.add(contactPhoneEmail.phone);
+                    if (!phonesList.isEmpty())
+                        Utils.composeSMS(phonesList.toArray(new String[0]), this);
                 }
-                if (!phonesList.isEmpty())
-                    Utils.composeSMS(phonesList.toArray(new String[0]), this);
                 break;
             case R.id.action_select_all:
                 addAllContactsToMapSelected();
@@ -123,7 +126,8 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.action_logout:
                 mAuth.signOut();
-                startActivity(new Intent(this, GoogleLoginActivity.class)
+                googleSignOut();
+                startActivity(new Intent(this, SignInGoogleActivity.class)
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
                 finish();
                 break;
@@ -133,15 +137,13 @@ public class MainActivity extends BaseActivity {
 
     private void populateRecyclerView() {
         Query postsQuery = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).orderByChild(FIREBASE_LOCATION_NAME);
-
         recyclerAdapter = new FirebaseRecyclerAdapter<Contact, ContactHolder>(Contact.class, R.layout.contact_view,
                 ContactHolder.class, postsQuery) {
             @Override
-            protected void populateViewHolder(@NonNull ContactHolder contactHolder,
-                                              @NonNull Contact contact, int position) {
-                final DatabaseReference postRef = getRef(position);
-                final String key = postRef.getKey();
-                contactHolder.checkBox.setChecked(selected.containsKey(key));
+            protected void populateViewHolder(ContactHolder contactHolder, Contact contact, int position) {
+                final String key = getRef(position).getKey();
+                if (selected != null)
+                    contactHolder.checkBox.setChecked(selected.containsKey(key));
                 View.OnClickListener onClickListener = new View.OnClickListener() {
 
                     @Override
@@ -158,8 +160,7 @@ public class MainActivity extends BaseActivity {
                 };
                 if (contact.date > 0 && (System.currentTimeMillis() > contact.date)) {
                     prepareIcons(contactHolder, key, onClickListener);
-                }
-                else
+                } else
                     contactHolder.sandglass.setVisibility(View.GONE);
                 contactHolder.itemView.setOnClickListener(onClickListener);
                 contactHolder.checkBox.setOnClickListener(onClickListener);
@@ -223,7 +224,7 @@ public class MainActivity extends BaseActivity {
                             case DragEvent.ACTION_DRAG_STARTED:
                                 if (view.getId() == R.id.icon_sandglass)
                                     ((ImageView) view).setColorFilter(Color.LTGRAY);
-                                    view.invalidate();
+                                view.invalidate();
                                 return true;
 
                             case DragEvent.ACTION_DRAG_ENTERED:
@@ -307,10 +308,8 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (instanceState != null) {
-            selected = (HashMap<String, Contact>) instanceState.getSerializable(SAVED_SELECTED_CONTACTS);
-            restoreListPosition();
-        }
+        if (mAdView != null)
+            mAdView.resume();
     }
 
     @Override
@@ -318,7 +317,6 @@ public class MainActivity extends BaseActivity {
         putInstanceStateToBundle();
         outState = instanceState;
         super.onSaveInstanceState(outState);
-        Log.d(TAG, "onSaveInstanceStates");
     }
 
     @Override
@@ -327,12 +325,37 @@ public class MainActivity extends BaseActivity {
         putInstanceStateToBundle();
     }
 
+
+    @Override
+    protected void onPause() {
+        if (mAdView != null)
+            mAdView.pause();
+        super.onPause();
+    }
+
     @Override
     protected void onDestroy() {
         if (recyclerAdapter != null) {
             recyclerAdapter.cleanup();
         }
+
+        if (mAdView != null)
+            mAdView.destroy();
         super.onDestroy();
+    }
+
+    private void loadAd() {
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3931793949981809~8285899978");  //app ID din Customer list
+        mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                mAdView.setVisibility(View.VISIBLE);
+            }
+        });
+        mAdView.loadAd(adRequest);
     }
 
 }

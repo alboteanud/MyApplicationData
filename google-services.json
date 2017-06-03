@@ -15,14 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "321083208041-57g4l46qkjrikrujnsgsv90mu9jb5emj.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.alboteanu.myapplicationdata",
-            "certificate_hash": "57449e6e4113d1a328ddec2fccaa094494c1b3f6"
-          }
-        },
-        {
           "client_id": "321083208041-tnar5bhgnod828edj1q0oi71584fod5k.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -176,15 +168,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "321083208041-3shud58l35a4kbe6s4t9oiqa4cqlsbcj.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.alboteanu.clientsFree",
-            "certificate_hash": "d3ae07622cf090f8827373c2b92965cb5a48bc52"
-          }
-        },
-        {
-          "client_id": "321083208041-g0u2fdjt5nm7f1fpijjuclf0seadkth5.apps.googleusercontent.com",
+          "client_id": "321083208041-9bhdlmmadeuqoj8roc1oeljk7ec40lvp.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.alboteanu.clientsFree",

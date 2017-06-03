@@ -14,16 +14,17 @@
         android:layout_height="wrap_content"
         android:padding="?android:attr/listPreferredItemPaddingStart">
 
-        <TableRow android:gravity="center_vertical">
+        <!--
+                <TableRow android:gravity="center_vertical">
+                    <ImageView
+                        android:layout_width="@dimen/icons_column_width"
+                        android:contentDescription="face"
+                        android:padding="16dp"
+                        android:src="@drawable/ic_action_person" />
 
-            <ImageView
-                android:layout_width="@dimen/icons_column_width"
-                android:contentDescription="face"
-                android:padding="16dp"
-                android:src="@drawable/ic_action_person" />
-
-            <TextView android:id="@+id/nameText" />
-        </TableRow>
+                    <TextView android:id="@+id/nameText" />
+                </TableRow>
+         -->
 
         <TableRow android:gravity="center_vertical">
 

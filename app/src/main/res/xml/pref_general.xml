@@ -1,11 +1,5 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <SwitchPreference
-        android:defaultValue="true"
-        android:key="@string/auto_message_text_key"
-        android:summary="@string/pref_description_auto_messenging"
-        android:title="@string/pref_title_auto_messenging" />
-
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
     <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
 
@@ -18,6 +12,13 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_title_custom_text" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:enabled="false"
+        android:key="@string/auto_message_text_key"
+        android:summary="@string/pref_description_auto_messenging"
+        android:title="@string/pref_title_auto_messenging" />
 
     <!--    <EditTextPreference
             android:capitalize="words"

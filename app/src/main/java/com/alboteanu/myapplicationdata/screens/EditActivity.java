@@ -1,9 +1,7 @@
 package com.alboteanu.myapplicationdata.screens;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
@@ -38,16 +36,14 @@ public class EditActivity extends BaseDetailsActivity
     private EditText dateText;
     private String key;
     private long longDate = -1;
-    private SharedPreferences sharedPreferences;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_contact_edit);
+        setContentView(R.layout.activity_edit_contact);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(this);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initViews();
         if(getIntent().hasExtra(EXTRA_CONTACT_KEY)){
@@ -59,10 +55,8 @@ public class EditActivity extends BaseDetailsActivity
             key = getIntent().getStringExtra(EXTRA_EDIT_DATE);
             showDatePickerDialog();
         }
-        if(key != null)  // exista un contact
+        if (key != null && savedInstanceState == null)  // exista un contact si e prima data
             updateUIfromFirebase(key);
-//        else
-//            addMonthsToDate(6);
     }
 
     @Override
@@ -111,6 +105,10 @@ public class EditActivity extends BaseDetailsActivity
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                finish();
+                return true;
             case R.id.action_delete_contact:
                 createDeleteDialogAlert(key);
                 break;
@@ -208,5 +206,6 @@ public class EditActivity extends BaseDetailsActivity
     String dateFormated = DateFormat.getDateInstance().format(longDate);
     dateText.setText(dateFormated);
 }
+
 
 }

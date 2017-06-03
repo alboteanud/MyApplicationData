@@ -3,19 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".screens.EditActivity">
 
-    <item
-        android:title="@string/action_delete"
-        android:id="@+id/action_delete_contact"
-        android:orderInCategory="100"
-        app:showAsAction="never"
-        />
 
     <item
-        android:title="@string/action_save"
         android:id="@+id/action_save"
+        android:icon="@drawable/ic_action_done"
         android:orderInCategory="100"
+        android:title="@string/action_save"
         app:showAsAction="ifRoom"
-        android:icon="@mipmap/ic_action_save"
-        />
 
+        />
+    <item
+        android:id="@+id/action_delete_contact"
+        android:icon="@android:drawable/ic_menu_delete"
+        android:orderInCategory="100"
+        android:title="@string/action_delete"
+        app:showAsAction="ifRoom" />
 </menu>

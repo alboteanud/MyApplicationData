@@ -16,10 +16,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name="login.GoogleLoginActivity"
-            android:label="@string/title_activity_google_login" />
-        <activity android:name=".login.GoogleLoginActivity">
+        <activity android:name=".login.SignInGoogleActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,22 +24,23 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".login.ActivityEmailSignIn"
+            android:name=".login.SignInEmailActivity"
             android:label="@string/label_activity_email_sign_in"
-            android:parentActivityName=".login.GoogleLoginActivity"
+            android:parentActivityName=".login.SignInGoogleActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <activity
             android:name=".login.CreateEmailActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/account_email"
+            android:parentActivityName=".login.SignInEmailActivity" />
         <activity
             android:name=".login.CreatePasswordActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:label="@string/account_password"
+            android:parentActivityName=".login.SignInEmailActivity" />
         <activity
             android:name=".screens.MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".screens.QuickContactActivity"
