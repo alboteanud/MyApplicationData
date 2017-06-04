@@ -3,9 +3,7 @@ package com.alboteanu.myapplicationdata.screens;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.DragEvent;
@@ -21,6 +19,7 @@ import com.alboteanu.myapplicationdata.login.SignInGoogleActivity;
 import com.alboteanu.myapplicationdata.models.Contact;
 import com.alboteanu.myapplicationdata.models.ContactHolder;
 import com.alboteanu.myapplicationdata.others.MyDragShadowBuilder;
+import com.alboteanu.myapplicationdata.others.MyLayoutManager;
 import com.alboteanu.myapplicationdata.others.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.ads.AdListener;
@@ -43,13 +42,11 @@ import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION
 import static com.alboteanu.myapplicationdata.screens.BaseDetailsActivity.ACTION_CONTACT_DELETED;
 
 public class MainActivity extends BaseActivity {
-    private static final String TAG = "MainActivity";
-    private static final String RECYCLER_STATE = "recycler_state";
-    private static final String SAVED_SELECTED_CONTACTS = "saved_contacts";
+    private static final String tag = "MainActivity";
+    private static final String SAVED_CONTACTS = "saved_contacts";
     private HashMap<String, Contact> selected = new HashMap<>();
-    private FirebaseRecyclerAdapter<Contact, ContactHolder> recyclerAdapter;
-    private LinearLayoutManager mManager;
-    private Bundle instanceState;
+    private FirebaseRecyclerAdapter<Contact, ContactHolder> adapter;
+    private MyLayoutManager layoutManager;
     private Menu menu;
     private AdView mAdView;
 
@@ -64,20 +61,14 @@ public class MainActivity extends BaseActivity {
                 startActivity(new Intent(MainActivity.this, EditActivity.class));
             }
         });
-        mManager = new LinearLayoutManager(this);
+        layoutManager = new MyLayoutManager(this);
+        if (savedInstanceState != null)
+            selected = (HashMap<String, Contact>) savedInstanceState.getSerializable(SAVED_CONTACTS);
         populateRecyclerView();
         loadAd();
     }
 
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        instanceState = savedInstanceState;
-        if (instanceState != null) {
-            selected = (HashMap<String, Contact>) instanceState.getSerializable(SAVED_SELECTED_CONTACTS);
-            restoreListPosition();
-        }
-    }
+
 
     @Override
     protected void onNewIntent(@NonNull Intent intent) {
@@ -89,55 +80,10 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.action_settings:
-                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-                break;
-            case R.id.action_email:
-                List<String> emailsList = new ArrayList<>();
-                for (Contact contact : selected.values()) {
-                    if (contact != null && contact.email != null)
-                        emailsList.add(contact.email);
-                }
-                if (!emailsList.isEmpty())
-                    Utils.composeEmail(this, emailsList.toArray(new String[0]));
-
-                break;
-            case R.id.action_sms:
-                List<String> phonesList = new ArrayList<>();
-                for (Contact contactPhoneEmail : selected.values()) {
-                    if (contactPhoneEmail != null && contactPhoneEmail.phone != null)
-                        phonesList.add(contactPhoneEmail.phone);
-                    if (!phonesList.isEmpty())
-                        Utils.composeSMS(phonesList.toArray(new String[0]), this);
-                }
-                break;
-            case R.id.action_select_all:
-                addAllContactsToMapSelected();
-                break;
-            case R.id.action_select_none:
-                selected.clear();
-                recyclerAdapter.notifyDataSetChanged();
-                menu.findItem(R.id.action_select_none).setVisible(false);
-                menu.findItem(R.id.action_select_all).setVisible(true);
-                break;
-            case R.id.action_logout:
-                mAuth.signOut();
-                googleSignOut();
-                startActivity(new Intent(this, SignInGoogleActivity.class)
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                finish();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     private void populateRecyclerView() {
         Query postsQuery = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).orderByChild(FIREBASE_LOCATION_NAME);
-        recyclerAdapter = new FirebaseRecyclerAdapter<Contact, ContactHolder>(Contact.class, R.layout.contact_view,
+        adapter = new FirebaseRecyclerAdapter<Contact, ContactHolder>(Contact.class, R.layout.contact_view,
                 ContactHolder.class, postsQuery) {
             @Override
             protected void populateViewHolder(ContactHolder contactHolder, Contact contact, int position) {
@@ -150,7 +96,7 @@ public class MainActivity extends BaseActivity {
                     public void onClick(@NonNull View view) {
                         if (view.getId() == R.id.checkBoxSelect) {
                             if (((CheckBox) view).isChecked())
-                                addContactToMapSelected(key);
+                                addToSelected(key);
                             else {
                                 selected.remove(key);
                             }
@@ -169,11 +115,11 @@ public class MainActivity extends BaseActivity {
         };
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.contact_list);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(mManager);
-        recyclerView.setAdapter(recyclerAdapter);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
     }
 
-    private void addAllContactsToMapSelected() {
+    private void addAllToSelected() {
         Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -182,7 +128,7 @@ public class MainActivity extends BaseActivity {
                             Contact contact = snapshot.getValue(Contact.class);
                             selected.put(snapshot.getKey(), contact);
                         }
-                        recyclerAdapter.notifyDataSetChanged();
+                        adapter.notifyDataSetChanged();
                         menu.findItem(R.id.action_select_none).setVisible(true);
                         menu.findItem(R.id.action_select_all).setVisible(false);
                     }
@@ -194,7 +140,7 @@ public class MainActivity extends BaseActivity {
         // nu vor fi toate cheile in lista
     }
 
-    private void addContactToMapSelected(@NonNull final String key) {
+    private void addToSelected(@NonNull final String key) {
         Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).child(key)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -285,24 +231,57 @@ public class MainActivity extends BaseActivity {
         });
     }
 
-    private void putInstanceStateToBundle() {
-        if (instanceState == null)
-            instanceState = new Bundle();
-        instanceState.putSerializable(SAVED_SELECTED_CONTACTS, selected);
-        final Parcelable state = mManager.onSaveInstanceState();
-        instanceState.putParcelable(RECYCLER_STATE, state);
-    }
-
-    private void restoreListPosition() {
-        Parcelable recyclerViewState = instanceState.getParcelable(RECYCLER_STATE);
-        mManager.onRestoreInstanceState(recyclerViewState);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_activity, menu);
         this.menu = menu;
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.action_settings:
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                break;
+            case R.id.action_email:
+                List<String> emailsList = new ArrayList<>();
+                for (Contact contact : selected.values()) {
+                    if (contact != null && contact.email != null)
+                        emailsList.add(contact.email);
+                }
+                if (!emailsList.isEmpty())
+                    Utils.composeEmail(this, emailsList.toArray(new String[0]));
+
+                break;
+            case R.id.action_sms:
+                List<String> phonesList = new ArrayList<>();
+                for (Contact contactPhoneEmail : selected.values()) {
+                    if (contactPhoneEmail != null && contactPhoneEmail.phone != null)
+                        phonesList.add(contactPhoneEmail.phone);
+                    if (!phonesList.isEmpty())
+                        Utils.composeSMS(phonesList.toArray(new String[0]), this);
+                }
+                break;
+            case R.id.action_select_all:
+                addAllToSelected();
+                break;
+            case R.id.action_select_none:
+                selected.clear();
+                adapter.notifyDataSetChanged();
+                menu.findItem(R.id.action_select_none).setVisible(false);
+                menu.findItem(R.id.action_select_all).setVisible(true);
+                break;
+            case R.id.action_logout:
+                mAuth.signOut();
+                googleSignOut();
+                startActivity(new Intent(this, SignInGoogleActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -314,17 +293,9 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
-        putInstanceStateToBundle();
-        outState = instanceState;
+        outState.putSerializable(SAVED_CONTACTS, selected);
         super.onSaveInstanceState(outState);
     }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        putInstanceStateToBundle();
-    }
-
 
     @Override
     protected void onPause() {
@@ -335,13 +306,11 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        if (recyclerAdapter != null) {
-            recyclerAdapter.cleanup();
-        }
-
+        super.onDestroy();
+        if (adapter != null)
+            adapter.cleanup();
         if (mAdView != null)
             mAdView.destroy();
-        super.onDestroy();
     }
 
     private void loadAd() {

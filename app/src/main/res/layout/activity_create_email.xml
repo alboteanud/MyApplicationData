@@ -11,10 +11,11 @@
     tools:context=".login.CreateEmailActivity">
 
     <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="8dp">
 
         <ImageView
             style="@style/ThemeOverlay.FirebaseIcon"
@@ -25,23 +26,23 @@
             android:src="@mipmap/logo" />
 
         <EditText
-        android:id="@+id/field_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+            android:id="@+id/field_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-        android:hint="@string/hint_email"
-        android:imeOptions="actionNext"
+            android:hint="@string/hint_email"
+            android:imeOptions="actionNext"
             android:inputType="textEmailAddress" />
 
 
-    <Button
-        android:id="@+id/next_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:minWidth="160dp"
-        android:text="@string/next_button_text"
-        android:theme="@style/ThemeOverlay.MyDarkButton" />
+        <Button
+            android:id="@+id/next_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:minWidth="160dp"
+            android:text="@string/next_button_text"
+            android:theme="@style/ThemeOverlay.MyDarkButton" />
 
         <!--<TextView
             android:layout_width="wrap_content"

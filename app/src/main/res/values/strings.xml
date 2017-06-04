@@ -4,7 +4,7 @@
     <string name="loading" translatable="false">Loading…</string>
     <string name="action_sign_out" translatable="true">Sign out</string>
     <string name="title_activity_detail" translatable="true">Details</string>
-    <string name="log_in_text" translatable="true">Sign in to get the most out of your device.</string>
+    <string name="log_in_text" translatable="true">Sign in to get the most out of your device</string>
     <string name="action_delete">Delete</string>
 
     <string name="confirmation_dialog_delete">Delete?</string>

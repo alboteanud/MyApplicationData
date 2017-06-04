@@ -17,18 +17,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".login.SignInGoogleActivity">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity
             android:name=".login.SignInEmailActivity"
             android:label="@string/label_activity_email_sign_in"
             android:parentActivityName=".login.SignInGoogleActivity"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+
+
+        </activity>
         <activity
             android:name=".login.CreateEmailActivity"
             android:label="@string/account_email"
