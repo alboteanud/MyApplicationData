@@ -43,7 +43,7 @@ import static com.alboteanu.myapplicationdata.screens.BaseDetailsActivity.ACTION
 
 public class MainActivity extends BaseActivity {
     private static final String tag = "MainActivity";
-    private static final String SAVED_CONTACTS = "saved_contacts";
+    private static final String KEY_SAVED_CONTACTS = "saved_contacts";
     private HashMap<String, Contact> selected = new HashMap<>();
     private FirebaseRecyclerAdapter<Contact, ContactHolder> adapter;
     private MyLayoutManager layoutManager;
@@ -63,12 +63,10 @@ public class MainActivity extends BaseActivity {
         });
         layoutManager = new MyLayoutManager(this);
         if (savedInstanceState != null)
-            selected = (HashMap<String, Contact>) savedInstanceState.getSerializable(SAVED_CONTACTS);
+            selected = (HashMap<String, Contact>) savedInstanceState.getSerializable(KEY_SAVED_CONTACTS);
         populateRecyclerView();
         loadAd();
     }
-
-
 
     @Override
     protected void onNewIntent(@NonNull Intent intent) {
@@ -293,7 +291,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putSerializable(SAVED_CONTACTS, selected);
+        outState.putSerializable(KEY_SAVED_CONTACTS, selected);
         super.onSaveInstanceState(outState);
     }
 

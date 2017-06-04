@@ -18,7 +18,7 @@ public class MyLayoutManager extends LinearLayoutManager {
     @Override
     public void onLayoutCompleted(RecyclerView.State state) {
         super.onLayoutCompleted(state);
-        Log.d(tag, "onLayoutCompleted " + state.toString());
+        Log.d(tag, "onLayoutCompleted ");
         if (this.state != null && state.getItemCount() > 0) {
             onRestoreInstanceState(this.state);
             this.state = null;
