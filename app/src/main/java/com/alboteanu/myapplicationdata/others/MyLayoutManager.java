@@ -1,34 +1,30 @@
 package com.alboteanu.myapplicationdata.others;
 
 import android.content.Context;
+import android.os.Handler;
 import android.os.Parcelable;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 
 public class MyLayoutManager extends LinearLayoutManager {
-    private static final String tag = "MyLayoutManager";
-    private Parcelable state;
+    Parcelable savedState;
 
     public MyLayoutManager(Context context) {
         super(context);
     }
 
     @Override
-    public void onLayoutCompleted(RecyclerView.State state) {
-        super.onLayoutCompleted(state);
-        Log.d(tag, "onLayoutCompleted ");
-        if (this.state != null && state.getItemCount() > 0) {
-            onRestoreInstanceState(this.state);
-            this.state = null;
+    public void onRestoreInstanceState(Parcelable state) {
+        super.onRestoreInstanceState(state);
+        if (savedState == null) {
+            savedState = state;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    onRestoreInstanceState(savedState);
+                }
+            }, 300);
         }
     }
 
-    @Override
-    public void onRestoreInstanceState(Parcelable state) {
-        super.onRestoreInstanceState(state);
-        Log.d(tag, "onRestoreInstanceState ");
-        this.state = state;
-    }
 }

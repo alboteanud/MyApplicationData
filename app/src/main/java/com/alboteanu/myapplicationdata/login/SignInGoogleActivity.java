@@ -68,8 +68,8 @@ public class SignInGoogleActivity extends BaseActivity implements View.OnClickLi
             } else {
                 hideProgressDialog();
                 // Google Sign In failed, update UI appropriately
-                Toast.makeText(SignInGoogleActivity.this, "Authentication failed",
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(SignInGoogleActivity.this, "Sign in error",
+                        Toast.LENGTH_SHORT).show();
                 Log.d(TAG, result.getStatus() + "  " + data.toString());
             }
         }

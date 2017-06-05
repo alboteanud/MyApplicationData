@@ -46,7 +46,6 @@ public class MainActivity extends BaseActivity {
     private static final String KEY_SAVED_CONTACTS = "saved_contacts";
     private HashMap<String, Contact> selected = new HashMap<>();
     private FirebaseRecyclerAdapter<Contact, ContactHolder> adapter;
-    private MyLayoutManager layoutManager;
     private Menu menu;
     private AdView mAdView;
 
@@ -61,9 +60,9 @@ public class MainActivity extends BaseActivity {
                 startActivity(new Intent(MainActivity.this, EditActivity.class));
             }
         });
-        layoutManager = new MyLayoutManager(this);
-        if (savedInstanceState != null)
+        if (savedInstanceState != null) {
             selected = (HashMap<String, Contact>) savedInstanceState.getSerializable(KEY_SAVED_CONTACTS);
+        }
         populateRecyclerView();
         loadAd();
     }
@@ -77,7 +76,6 @@ public class MainActivity extends BaseActivity {
             intent.removeExtra(ACTION_CONTACT_DELETED);
         }
     }
-
 
     private void populateRecyclerView() {
         Query postsQuery = Utils.getUserNode().child(FIREBASE_LOCATION_CONTACTS).orderByChild(FIREBASE_LOCATION_NAME);
@@ -113,7 +111,7 @@ public class MainActivity extends BaseActivity {
         };
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.contact_list);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setLayoutManager(new MyLayoutManager(this));
         recyclerView.setAdapter(adapter);
     }
 
@@ -292,6 +290,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putSerializable(KEY_SAVED_CONTACTS, selected);
+//        outState.putParcelable(KEY_LIST_STATE, layoutManager.onSaveInstanceState());
         super.onSaveInstanceState(outState);
     }
 
@@ -314,7 +313,9 @@ public class MainActivity extends BaseActivity {
     private void loadAd() {
         MobileAds.initialize(getApplicationContext(), "ca-app-pub-3931793949981809~8285899978");  //app ID din Customer list
         mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice("D7C3FED6C0273D67D38E0186CFA3B220")  //LG G3
+                .build();
         mAdView.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {

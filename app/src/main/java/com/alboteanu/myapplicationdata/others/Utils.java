@@ -104,9 +104,8 @@ public class Utils {
                 sub_string[i] = " ";
             for (char c : sub_string[i].toCharArray()) {
                 int c_val = Character.getNumericValue(c) - Character.getNumericValue('a');          // for 'a' -> 0     for 'z' -> 25
-                if (c_val < 0)                                                                       //  spaces, numbers ...
+//                if (c_val < 0)                                                                       //  spaces, numbers ...
 //                    c_val = new Random().nextInt(25);
-                    c_val = 15;
                 RGB[i] = RGB[i] + c_val;
             }
         }

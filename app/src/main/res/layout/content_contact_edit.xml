@@ -49,6 +49,7 @@
 
             <ImageView
                 android:layout_gravity="center"
+                android:contentDescription="icon email"
                 android:padding="16dp"
                 android:src="@drawable/ic_action_email" />
 
@@ -63,6 +64,7 @@
 
             <ImageView
 
+                android:contentDescription="icon pen"
                 android:padding="16dp"
                 android:src="@drawable/ic_action_note" />
 
@@ -81,6 +83,7 @@
                 android:id="@+id/icon_sandglass_edit_activity"
                 android:background="?android:attr/selectableItemBackground"
                 android:clickable="true"
+                android:contentDescription="sandglass icon"
                 android:padding="16dp"
                 android:src="@drawable/ic_action_sandglass" />
 
@@ -98,6 +101,7 @@
                 android:id="@+id/button_clear_date"
                 android:layout_gravity="center"
                 android:background="?android:attr/selectableItemBackground"
+                android:contentDescription="clear date icon"
                 android:padding="16dp"
                 android:src="@drawable/ic_action_delete" />
             <!--style="?android:attr/borderlessButtonStyle"-->
@@ -108,6 +112,7 @@
 
             <ImageView
                 android:clickable="true"
+                android:contentDescription="auto message icon"
                 android:padding="16dp"
                 android:src="@drawable/ic_action_text_sms" />
 
@@ -123,6 +128,7 @@
             <ImageView
                 android:layout_gravity="center"
                 android:background="?android:attr/selectableItemBackground"
+                android:contentDescription="clear auto message icon"
                 android:padding="16dp"
                 android:src="@drawable/ic_action_delete" />
 

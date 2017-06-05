@@ -73,6 +73,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.alboteanu.myapplicationdata.screens.MainActivity" />
         </activity>
+        <activity android:name=".BaseActivity" />
 
     </application>
 

@@ -17,15 +17,15 @@
     <string name="hint_password">Password</string>
     <string name="log_in" translatable="false">Sign in</string>
     <string name="create_account">Create account</string>
-    <string name="required">Required.</string>
-    <string name="invalid_email">Invalid email</string>
+    <string name="required">Required</string>
+    <string name="invalid_email">Incorrect email</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="name_hint">Name</string>
     <string name="phone_hint">Phone</string>
     <string name="email_hint">Email</string>
     <string name="note_hint">Note</string>
     <string name="return_date_hint">Date</string>
-    <string name="need_email">An email was sent at %s to reset your password</string>
+    <string name="need_email">An email was sent to reset your password: %s</string>
     <string name="next_button_text">next</string>
     <string name="account_email">Account email</string>
     <string name="account_password">Account password</string>
