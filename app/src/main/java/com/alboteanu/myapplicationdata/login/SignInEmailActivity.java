@@ -16,12 +16,15 @@
 
 package com.alboteanu.myapplicationdata.login;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -29,19 +32,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.alboteanu.myapplicationdata.BaseActivity;
+import com.alboteanu.myapplicationdata.MainActivity;
 import com.alboteanu.myapplicationdata.R;
+import com.alboteanu.myapplicationdata.models.User;
+import com.alboteanu.myapplicationdata.others.Constants;
 import com.alboteanu.myapplicationdata.others.Utils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.Calendar;
+import java.util.Map;
 
 import static com.alboteanu.myapplicationdata.R.id.button_sign_in;
 import static com.alboteanu.myapplicationdata.R.id.create_account_text;
 
 public class SignInEmailActivity extends BaseActivity implements View.OnClickListener {
     private static final String FORGOT_PASSWORD = "password";
-    private EditText mEmailField;
-    private EditText mPasswordField;
+    private EditText mEmailField, mPasswordField;
     private TextView forgotPassword;
     private boolean isForgotPass;
 
@@ -49,10 +58,10 @@ public class SignInEmailActivity extends BaseActivity implements View.OnClickLis
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_sign_in);
-        mEmailField = (EditText) findViewById(R.id.field_email);
-        mPasswordField = (EditText) findViewById(R.id.field_password);
-        forgotPassword = (TextView) findViewById(R.id.forgot_password);
-        mEmailField.setText(getSavedEmail());
+        mEmailField = findViewById(R.id.field_email);
+        mPasswordField = findViewById(R.id.field_password);
+        forgotPassword = findViewById(R.id.forgot_password);
+        mEmailField.setText(Utils.getSavedEmail(this));
         if (!mEmailField.getText().toString().isEmpty())
             mPasswordField.requestFocus();
         forgotPassword.setOnClickListener(this);
@@ -65,7 +74,7 @@ public class SignInEmailActivity extends BaseActivity implements View.OnClickLis
                 if (actionId == EditorInfo.IME_ACTION_GO) {
                     String email = mEmailField.getText().toString();
                     if (validateEmail() && validatePassword()) {
-                        saveEmail(email);
+                        Utils.saveEmail(SignInEmailActivity.this, email);
                         emailSignIn(email, mPasswordField.getText().toString());
                         handled = true;
                     }
@@ -81,10 +90,6 @@ public class SignInEmailActivity extends BaseActivity implements View.OnClickLis
                 forgotPassword.setVisibility(View.VISIBLE);
 
         }
-
-//        mEmailField.setText("alboteanud@gmail.com");
-//        mPasswordField.setText("dan28888");
-//        findViewById(R.id.button_sign_in).callOnClick();
     }
 
     private boolean validateEmail() {
@@ -120,26 +125,19 @@ public class SignInEmailActivity extends BaseActivity implements View.OnClickLis
                 break;
             case button_sign_in:
                 if (validateEmail() && validatePassword()) {
-                    saveEmail(email);
+                    Utils.saveEmail(SignInEmailActivity.this, email);
                     emailSignIn(email, mPasswordField.getText().toString());
                 }
                 break;
             case R.id.forgot_password:
                 if (validateEmail()) {
-                    mAuth.sendPasswordResetEmail(email);
+                    FirebaseAuth.getInstance().sendPasswordResetEmail(email);
                     Snackbar.make(v, getString(R.string.need_email, email), Snackbar.LENGTH_LONG).show();
                 }
                 break;
         }
     }
 
-    @Override
-    protected void onAuthFail(String message) {
-        super.onAuthFail(message);
-        mPasswordField.setError(null);
-        isForgotPass = true;
-        forgotPassword.setVisibility(View.VISIBLE);
-    }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -150,19 +148,34 @@ public class SignInEmailActivity extends BaseActivity implements View.OnClickLis
 
     private void emailSignIn(@NonNull String email, @NonNull String password) {
         showProgressDialog();
-        mAuth.signInWithEmailAndPassword(email, password)
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         hideProgressDialog();
                         if (task.isSuccessful()) {
-                            onAuthSuccess(task.getResult().getUser());
+                            writeNewUser(task.getResult().getUser().getEmail());
+                            Intent intentToMainActivity = new Intent(SignInEmailActivity.this, MainActivity.class);
+                            intentToMainActivity.setAction(Constants.ACTION_UPDATE_LOCAL_CONTACTS);
+                            intentToMainActivity.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intentToMainActivity);
+                            finish();
+
                         } else {
-                            onAuthFail(task.getException().getMessage());
+                            Log.d("SignInActivity" ,task.getException().getMessage());
+                            mPasswordField.setError(null);
+                            isForgotPass = true;
+                            forgotPassword.setVisibility(View.VISIBLE);
                         }
 
                     }
                 });
+    }
+
+    public static void writeNewUser(String email) {
+        User user = new User(email, Utils.calendarToString(Calendar.getInstance()));
+        Map<String, Object> userMap = user.toMap();
+        getUserNode().child(Constants.FIREBASE_USER).updateChildren(userMap);
     }
 
 

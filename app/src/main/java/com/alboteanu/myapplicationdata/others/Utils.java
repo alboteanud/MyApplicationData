@@ -10,14 +10,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.alboteanu.myapplicationdata.R;
+import com.alboteanu.myapplicationdata.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
-import static com.alboteanu.myapplicationdata.BaseActivity.getDatabase;
 
 public class Utils {
 
@@ -29,9 +30,7 @@ public class Utils {
         return sharedPrefs.getString(key, context.getString(R.string.pref_default_text_message));
     }
 
-    public static DatabaseReference getUserNode() {
-        return getDatabase().getReference().child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-    }
+
 
     @Nullable
     public static String getUsername() {
@@ -119,5 +118,26 @@ public class Utils {
 
         return Color.rgb(R, G, B);
     }
+
+
+    public static void saveEmail(Context context, String email) {
+        String savedEmail = getSavedEmail(context);
+        if(email != null && !email.equals(savedEmail)){
+            SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString("email", email);
+            editor.apply();
+        }
+    }
+
+    public static String getSavedEmail(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        return sharedPref.getString("email", null);
+    }
+
+
+
+
+
 
 }

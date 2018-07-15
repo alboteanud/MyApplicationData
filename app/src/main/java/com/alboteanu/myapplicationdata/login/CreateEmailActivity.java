@@ -2,18 +2,17 @@ package com.alboteanu.myapplicationdata.login;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
-
-import com.alboteanu.myapplicationdata.BaseActivity;
 import com.alboteanu.myapplicationdata.R;
 import com.alboteanu.myapplicationdata.others.Utils;
 
-public class CreateEmailActivity extends BaseActivity {
+public class CreateEmailActivity extends AppCompatActivity {
     private EditText emailField;
 
     @Override
@@ -26,7 +25,7 @@ public class CreateEmailActivity extends BaseActivity {
                 onNextPressed();
             }
         });
-        emailField = (EditText) findViewById(R.id.field_email);
+        emailField = findViewById(R.id.field_email);
         emailField.setText(getIntent().getStringExtra("email"));
         emailField.setSelection(emailField.getText().length());
         emailField.setOnEditorActionListener(new TextView.OnEditorActionListener() {

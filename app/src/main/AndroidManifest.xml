@@ -2,10 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.alboteanu.myapplicationdata">
 
-    <uses-permission android:name="com.android.vending.BILLING" />
+    <!--<uses-permission android:name="com.android.vending.BILLING" />-->
     <uses-permission android:name="android.permission.SEND_SMS" />
-
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -17,13 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".login.SignInGoogleActivity">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".login.SignInEmailActivity"
@@ -31,8 +26,6 @@
             android:parentActivityName=".login.SignInGoogleActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
-
-
         </activity>
         <activity
             android:name=".login.CreateEmailActivity"
@@ -43,35 +36,31 @@
             android:label="@string/account_password"
             android:parentActivityName=".login.SignInEmailActivity" />
         <activity
-            android:name=".screens.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme" />
         <activity
-            android:name=".screens.QuickContactActivity"
+            android:name=".DetailsActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".screens.MainActivity"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".screens.EditActivity"
+            android:name=".EditActivity"
             android:label="@string/title_activity_edit_details"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <!--
-     ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
-        -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".screens.SettingsActivity"
+            android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".screens.MainActivity">
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.alboteanu.myapplicationdata.screens.MainActivity" />
+                android:value="com.alboteanu.myapplicationdata.MainActivity" />
         </activity>
         <activity android:name=".BaseActivity" />
 

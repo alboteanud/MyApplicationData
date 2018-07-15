@@ -8,34 +8,34 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:321083208041:android:e9a773a35d699148",
+        "mobilesdk_app_id": "1:321083208041:android:9275909de7a6683b",
         "android_client_info": {
-          "package_name": "com.alboteanu.myapplicationdata"
+          "package_name": "com.alboteanu.clientsFree"
         }
       },
       "oauth_client": [
         {
-          "client_id": "321083208041-57g4l46qkjrikrujnsgsv90mu9jb5emj.apps.googleusercontent.com",
+          "client_id": "321083208041-3shud58l35a4kbe6s4t9oiqa4cqlsbcj.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.alboteanu.myapplicationdata",
-            "certificate_hash": "57449e6e4113d1a328ddec2fccaa094494c1b3f6"
+            "package_name": "com.alboteanu.clientsFree",
+            "certificate_hash": "d3ae07622cf090f8827373c2b92965cb5a48bc52"
           }
         },
         {
-          "client_id": "321083208041-tnar5bhgnod828edj1q0oi71584fod5k.apps.googleusercontent.com",
+          "client_id": "321083208041-g0u2fdjt5nm7f1fpijjuclf0seadkth5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.alboteanu.myapplicationdata",
+            "package_name": "com.alboteanu.clientsFree",
             "certificate_hash": "4a39814008ba9597a7cfd6949ca5efad32e35739"
           }
         },
         {
-          "client_id": "321083208041-l8i9vp1j8av7re03rmaeciqb1ka3cjuk.apps.googleusercontent.com",
+          "client_id": "321083208041-is648o4j0kpdk1e7vke23p8440svncqk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.alboteanu.myapplicationdata",
-            "certificate_hash": "13290a45a113d3490483ff0d9672d72f1d375e48"
+            "package_name": "com.alboteanu.clientsFree",
+            "certificate_hash": "57449e6e4113d1a328ddec2fccaa094494c1b3f6"
           }
         },
         {
@@ -68,18 +68,18 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:321083208041:android:cf0497a481f93680",
+        "mobilesdk_app_id": "1:321083208041:android:2913c3dabfdb00ed",
         "android_client_info": {
-          "package_name": "com.alboteanu.myapplicationclient"
+          "package_name": "com.alboteanu.customers.paid"
         }
       },
       "oauth_client": [
         {
-          "client_id": "321083208041-jlc6f5at21oqes3ht3d1oqn9tcicg7fs.apps.googleusercontent.com",
+          "client_id": "321083208041-n44oi7i5rllk5jj957rn0959hjcsgpsh.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.alboteanu.myapplicationclient",
-            "certificate_hash": "13290a45a113d3490483ff0d9672d72f1d375e48"
+            "package_name": "com.alboteanu.customers.paid",
+            "certificate_hash": "6e1f8a3f1df97c6e34f7762255d50dabb8772f7c"
           }
         },
         {
@@ -97,39 +97,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
-        },
-        "ads_service": {
-          "status": 2
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:321083208041:android:75ac3ab779ffa9a7",
-        "android_client_info": {
-          "package_name": "com.alboteanu.patientsList"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "321083208041-7dkh0ms0q7qmgem9k50543qldpdc3e99.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDspEOx55sRdXEeT-swwmG6DfAp0w08gI8"
-        }
-      ],
-      "services": {
-        "analytics_service": {
-          "status": 1
-        },
-        "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "321083208041-7dkh0ms0q7qmgem9k50543qldpdc3e99.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2
@@ -169,34 +143,18 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:321083208041:android:9275909de7a6683b",
+        "mobilesdk_app_id": "1:321083208041:android:36fb83fbb99fd40f",
         "android_client_info": {
-          "package_name": "com.alboteanu.clientsFree"
+          "package_name": "com.craiovadata.applicationhidestatus"
         }
       },
       "oauth_client": [
         {
-          "client_id": "321083208041-3shud58l35a4kbe6s4t9oiqa4cqlsbcj.apps.googleusercontent.com",
+          "client_id": "321083208041-sd8n2pou3nkmipojnc68i0rkccenjhj7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.alboteanu.clientsFree",
-            "certificate_hash": "d3ae07622cf090f8827373c2b92965cb5a48bc52"
-          }
-        },
-        {
-          "client_id": "321083208041-g0u2fdjt5nm7f1fpijjuclf0seadkth5.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.alboteanu.clientsFree",
+            "package_name": "com.craiovadata.applicationhidestatus",
             "certificate_hash": "4a39814008ba9597a7cfd6949ca5efad32e35739"
-          }
-        },
-        {
-          "client_id": "321083208041-is648o4j0kpdk1e7vke23p8440svncqk.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.alboteanu.clientsFree",
-            "certificate_hash": "57449e6e4113d1a328ddec2fccaa094494c1b3f6"
           }
         },
         {
