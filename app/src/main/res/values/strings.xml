@@ -90,5 +90,6 @@
     <string name="label_activity_email_sign_in">Sign in with email</string>
     <string name="my_web_client_id">321083208041-is648o4j0kpdk1e7vke23p8440svncqk.apps.googleusercontent.com</string>
     <string name="please_select_contact">Please select a contact</string>
+    <string name="wellcome_text">Sign in to make the most out of your device</string>
 
 </resources>
