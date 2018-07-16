@@ -18,6 +18,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import java.util.Random;
 
 
 public class Utils {
@@ -28,18 +29,6 @@ public class Utils {
                 .getDefaultSharedPreferences(context);
         String key = context.getString(R.string.custom_message_text_key);
         return sharedPrefs.getString(key, context.getString(R.string.pref_default_text_message));
-    }
-
-
-
-    @Nullable
-    public static String getUsername() {
-        String email = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        if (email != null && email.contains("@")) {
-            return email.split("@")[0];
-        } else {
-            return email;
-        }
     }
 
     public static boolean isValidEmail(@Nullable CharSequence target) {
@@ -85,59 +74,54 @@ public class Utils {
         return dateString;
     }
 
-    public static int getColorFromString(@NonNull String string) {
-        int[] RGB = {0, 0, 0};
-        int l = string.length();
-        String sub_string_0 = string.substring(0, (int) Math.ceil((double) l / 3));                 // responsable for Red
-        int l_0 = sub_string_0.length();
-        String sub_string_1 = string.substring(l_0, l_0 + (int) Math.ceil((double) (l - l_0) / 2));  // responsable for Green
-        String sub_string_2 = string.substring(l_0 + sub_string_1.length(), string.length());       // responsable for Blue
-
-        String[] sub_string = new String[]{
-                sub_string_0,
-                sub_string_1,
-                sub_string_2
+    public static int getLetterColor(String name) {
+        String[] colors = {
+                "#B71C1C",
+                "#880E4F",
+                "#4A148C",
+                "#311B92",
+                "#1A237E",
+                "#0D47A1",
+                "#1E88E5",
+                "#01579B",
+                "#006064",
+                "#004D40",
+                "#1B5E20",
+                "#33691E",
+                "#827717",
+                "#E65100",
+                "#BF360C",
+                "#5D4037",
+                "#8D6E63",
+                "#424242",
+                "#607D8B",
+                "#E91E63",
+                "#9C27B0",
+                "#FF1744",
+                "#7986CB",
+                "#0097A7",
+                "#43A047",
+                "#9E9D24",
+                "#FBC02D",
+                "#A1887F",
+                "#757575",
+                "#78909C",
         };
-        for (int i = 0; i < sub_string.length; i++) {
-            if (sub_string[i].length() == 0)
-                sub_string[i] = " ";
-            for (char c : sub_string[i].toCharArray()) {
-                int c_val = Character.getNumericValue(c) - Character.getNumericValue('a');          // for 'a' -> 0     for 'z' -> 25
-//                if (c_val < 0)                                                                       //  spaces, numbers ...
-//                    c_val = new Random().nextInt(25);
-                RGB[i] = RGB[i] + c_val;
-            }
+        final long n = stringToNumber(name);
+        final int colorNo = (int) (n % colors.length);
+        return Color.parseColor(colors[colorNo]);
+    }
+
+    private static long stringToNumber(String s) {
+        long result = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+            final char ch = s.charAt(i);
+            result += (int) ch;
         }
 
-        int letters_number = Character.getNumericValue('z') - Character.getNumericValue('a');       //  z - a    35 - 10
-
-        // normalizing
-        int R = 255 * RGB[0] / sub_string[0].length() / letters_number;
-        int G = 255 * RGB[1] / sub_string[1].length() / letters_number;
-        int B = 255 * RGB[2] / sub_string[2].length() / letters_number;
-
-        return Color.rgb(R, G, B);
+        return result;
     }
-
-
-    public static void saveEmail(Context context, String email) {
-        String savedEmail = getSavedEmail(context);
-        if(email != null && !email.equals(savedEmail)){
-            SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString("email", email);
-            editor.apply();
-        }
-    }
-
-    public static String getSavedEmail(Context context) {
-        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        return sharedPref.getString("email", null);
-    }
-
-
-
-
 
 
 }

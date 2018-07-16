@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,10 +33,7 @@ public class DetailsActivity extends BaseActivity implements View.OnClickListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_quick_contact);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setContentView(R.layout.activity_details);
         key = getIntent().getStringExtra(EXTRA_CONTACT_KEY);
         updateUIfromFirebase(key);
         findViewById(R.id.ic_action_phone).setOnClickListener(this);
@@ -126,7 +122,7 @@ public class DetailsActivity extends BaseActivity implements View.OnClickListene
     }
 
     void updateUIfromFirebase(@NonNull final String contactKey) {
-        final DatabaseReference ref = getUserNode().child(FIREBASE_LOCATION_CONTACTS).child(contactKey);
+        final DatabaseReference ref = getMainNode().child(FIREBASE_LOCATION_CONTACTS).child(contactKey);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -170,7 +166,7 @@ public class DetailsActivity extends BaseActivity implements View.OnClickListene
 
 
     public static void deleteContact(String contactKey) {
-        getUserNode().child(FIREBASE_LOCATION_CONTACTS + "/" + contactKey).removeValue();
+        getMainNode().child(FIREBASE_LOCATION_CONTACTS + "/" + contactKey).removeValue();
     }
 
 

@@ -18,12 +18,7 @@ import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION
 
 @IgnoreExtraProperties
 public class Contact implements Serializable {
-    public String name;
-    public String phone;
-    public String email;
-    public String note;
-//    public long return_date_millis = -1;
-//    public Calendar calendar;
+    public String name, phone, email, note;
     public long date = -1;
 
     public Contact() {
@@ -35,6 +30,14 @@ public class Contact implements Serializable {
 //        this.phone = phone;
 //        this.email = email;
 //        this.note = note;
+    }
+
+ public Contact(String name, String phone, String email, String note, long date) {
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.note = note;
+        this.date = date;
     }
 
 

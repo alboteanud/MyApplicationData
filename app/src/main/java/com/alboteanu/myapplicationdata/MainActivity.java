@@ -2,38 +2,49 @@ package com.alboteanu.myapplicationdata;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.icu.util.DateInterval;
+import android.icu.util.TimeUnit;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.DragEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.alboteanu.myapplicationdata.login.SignInGoogleActivity;
 import com.alboteanu.myapplicationdata.models.Contact;
 import com.alboteanu.myapplicationdata.models.ContactHolder;
+import com.alboteanu.myapplicationdata.models.User;
+import com.alboteanu.myapplicationdata.others.Constants;
 import com.alboteanu.myapplicationdata.others.MyDragShadowBuilder;
 import com.alboteanu.myapplicationdata.others.MyLayoutManager;
+import com.alboteanu.myapplicationdata.others.SettingsActivity;
 import com.alboteanu.myapplicationdata.others.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.alboteanu.myapplicationdata.others.Constants.ACTION_CONTACT_DELETED;
 import static com.alboteanu.myapplicationdata.others.Constants.EXTRA_CONTACT_KEY;
@@ -44,14 +55,13 @@ import static com.alboteanu.myapplicationdata.others.Constants.FIREBASE_LOCATION
 public class MainActivity extends BaseActivity {
     private static final String KEY_SAVED_CONTACTS = "saved_contacts";
     private HashMap<String, Contact> selected = new HashMap<>();
-    private FirebaseRecyclerAdapter<Contact, ContactHolder> adapter;
+    private FirebaseRecyclerAdapter<Contact, ContactHolder> firebaseRecyclerAdapter;
     private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
         findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -63,11 +73,9 @@ public class MainActivity extends BaseActivity {
         }
         populateRecyclerView();
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = firebaseAuth.getCurrentUser();
+        updateUser(user);
 
     }
 
@@ -82,45 +90,66 @@ public class MainActivity extends BaseActivity {
     }
 
     private void populateRecyclerView() {
-        Query postsQuery = getUserNode().child(FIREBASE_LOCATION_CONTACTS).orderByChild(FIREBASE_LOCATION_NAME);
-        adapter = new FirebaseRecyclerAdapter<Contact, ContactHolder>(Contact.class, R.layout.contact_view,
-                ContactHolder.class, postsQuery) {
-            @Override
-            protected void populateViewHolder(ContactHolder contactHolder, Contact contact, int position) {
-                final String key = getRef(position).getKey();
-                if (selected != null)
-                    contactHolder.checkBox.setChecked(selected.containsKey(key));
-                View.OnClickListener onClickListener = new View.OnClickListener() {
+        Query query = getMainNode().child(FIREBASE_LOCATION_CONTACTS).orderByChild(FIREBASE_LOCATION_NAME);
 
-                    @Override
-                    public void onClick(@NonNull View view) {
-                        if (view.getId() == R.id.checkBoxSelect) {
-                            if (((CheckBox) view).isChecked())
-                                addToSelected(key);
-                            else {
-                                selected.remove(key);
-                            }
-                        } else   // R.id.contact_view || R.id.icon_sandglass
-                            startActivity(new Intent(MainActivity.this, DetailsActivity.class).putExtra(EXTRA_CONTACT_KEY, key));
-                    }
-                };
-                if (contact.date > 0 && (System.currentTimeMillis() > contact.date)) {
-                    prepareIcons(contactHolder, key, onClickListener);
-                } else
-                    contactHolder.sandglass.setVisibility(View.GONE);
-                contactHolder.itemView.setOnClickListener(onClickListener);
-                contactHolder.checkBox.setOnClickListener(onClickListener);
-                contactHolder.bindContact(contact);
-            }
-        };
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.contact_list);
+        FirebaseRecyclerOptions<Contact> options =
+                new FirebaseRecyclerOptions.Builder<Contact>()
+                        .setQuery(query, Contact.class)
+                        .build();
+            firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Contact, ContactHolder>(options) {
+
+
+                @NonNull
+                @Override
+                public ContactHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                    // Create a new instance of the ViewHolder, in this case we are using a custom
+                    // layout called R.layout.contact_view for each item
+                    View view = LayoutInflater.from(parent.getContext())
+                            .inflate(R.layout.contact_view, parent, false);
+
+                    return new ContactHolder(view);
+                }
+
+                @Override
+                protected void onBindViewHolder(@NonNull ContactHolder contactHolder, int position, @NonNull Contact contact) {
+                    // Bind the Contact object to the ContactHolder
+                    final String key = getRef(position).getKey();
+                    if (selected != null)
+                        contactHolder.checkBox.setChecked(selected.containsKey(key));
+                    View.OnClickListener onClickListener = new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(@NonNull View view) {
+                            if (view.getId() == R.id.checkBoxSelect) {
+                                if (((CheckBox) view).isChecked())
+                                    addToSelected(key);
+                                else {
+                                    selected.remove(key);
+                                }
+                            } else   // R.id.contact_view || R.id.icon_sandglass
+                                startActivity(new Intent(MainActivity.this, DetailsActivity.class).putExtra(EXTRA_CONTACT_KEY, key));
+                        }
+                    };
+                    if (contact.date > 0 && (System.currentTimeMillis() > contact.date)) {
+                        prepareIcons(contactHolder, key, onClickListener);
+                    } else
+                        contactHolder.sandglass.setVisibility(View.GONE);
+                    contactHolder.itemView.setOnClickListener(onClickListener);
+                    contactHolder.checkBox.setOnClickListener(onClickListener);
+                    contactHolder.bindContact(contact);
+                }
+
+
+            };
+
+        RecyclerView recyclerView = findViewById(R.id.contact_list);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new MyLayoutManager(this));
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(firebaseRecyclerAdapter);
     }
 
     private void addAllToSelected() {
-        getUserNode().child(FIREBASE_LOCATION_CONTACTS)
+        getMainNode().child(FIREBASE_LOCATION_CONTACTS)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -128,7 +157,7 @@ public class MainActivity extends BaseActivity {
                             Contact contact = snapshot.getValue(Contact.class);
                             selected.put(snapshot.getKey(), contact);
                         }
-                        adapter.notifyDataSetChanged();
+                        firebaseRecyclerAdapter.notifyDataSetChanged();
                         menu.findItem(R.id.action_select_none).setVisible(true);
                         menu.findItem(R.id.action_select_all).setVisible(false);
                     }
@@ -141,7 +170,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void addToSelected(@NonNull final String key) {
-        getUserNode().child(FIREBASE_LOCATION_CONTACTS).child(key)
+        getMainNode().child(FIREBASE_LOCATION_CONTACTS).child(key)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -190,7 +219,7 @@ public class MainActivity extends BaseActivity {
                             case DragEvent.ACTION_DROP:
                                 if (view.getId() == R.id.icon_bin) {
                                     view.setBackgroundColor(Color.TRANSPARENT);
-                                    getUserNode().child(FIREBASE_LOCATION_CONTACTS + "/"
+                                    getMainNode().child(FIREBASE_LOCATION_CONTACTS + "/"
                                             + key + "/" + FIREBASE_LOCATION_DATE).removeValue();
                                 }
                                 return true;
@@ -269,21 +298,30 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.action_select_none:
                 selected.clear();
-                adapter.notifyDataSetChanged();
+                firebaseRecyclerAdapter.notifyDataSetChanged();
                 menu.findItem(R.id.action_select_none).setVisible(false);
                 menu.findItem(R.id.action_select_all).setVisible(true);
                 break;
             case R.id.action_logout:
-                FirebaseAuth.getInstance().signOut();
-                mGoogleSignInClient.signOut();
-                startActivity(new Intent(this, SignInGoogleActivity.class)
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
-                finish();
+                logOutAndGoToLoginPage();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    private void logOutAndGoToLoginPage() {
+        FirebaseAuth.getInstance().signOut();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        GoogleSignInClient mGoogleSignInClient;
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        mGoogleSignInClient.signOut();
+        startActivity(new Intent(this, LoginActivity.class)
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK));
+        finish();
+    }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -293,32 +331,66 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (adapter != null)
-            adapter.cleanup();
-    }
-
-    public GoogleSignInClient mGoogleSignInClient;
-
-    @Override
     protected void onStart() {
         super.onStart();
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         updateUI(account);
+        firebaseRecyclerAdapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        firebaseRecyclerAdapter.stopListening();
     }
 
     private void updateUI(GoogleSignInAccount account) {
-        if (account==null){
-            onAuthFail("");
-        } else {
-
+        if (account == null){
+            logOutAndGoToLoginPage();
         }
     }
 
-    protected void onAuthFail(String message) {
-        Toast.makeText(MainActivity.this, "Authentication failed. " + message,
-                Toast.LENGTH_SHORT).show();
+    void updateUser(final FirebaseUser firebaseUser) {
+        getMainNode().child(Constants.FIREBASE_USER).child(Constants.FIREBASE_LOCATION_EMAIL).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String email = dataSnapshot.getValue(String.class);
+                String labelVisit = "visited";
+                if (email == null){
+                    labelVisit = "created";
+                    pushFakeContacts();
+                }
+                Map<String, Object> userMap = new User(firebaseUser).toMap(labelVisit);
+                getMainNode().child(Constants.FIREBASE_USER).updateChildren(userMap);
+            }
+
+            private void pushFakeContacts() {
+                long now = System.currentTimeMillis();
+                Contact contact3 = new Contact("Christy Cloosterman (dummy contact)", "0664 217 01 21", "ChristyCloosterman@rhyta.com", "remember to congratulate on her birthday", (now - 86400000*15L));
+                Contact contact1 = new Contact("Jeffery E. Weiss (dummy contact)", "0734 857 2075", "JefferyEWeiss@rhyta.com", "invite to dinner on Friday evening", now + 86400000*9L);
+                Contact contact2 = new Contact("Nicole Pinto Pereira (dummy contact)", "2523 452 45 32", "NicolePintoPereira@jourrapide.com", "should come back for revision", now - 86400000*11L);
+
+                Map<String, Object> mapContact1 = contact1.toMap();
+                Map<String, Object> mapContact2 = contact2.toMap();
+                Map<String, Object> mapContact3 = contact3.toMap();
+
+                String key1 = getMainNode().child(FIREBASE_LOCATION_CONTACTS).push().getKey();  //generate new key
+                String key2 = getMainNode().child(FIREBASE_LOCATION_CONTACTS).push().getKey();
+                String key3 = getMainNode().child(FIREBASE_LOCATION_CONTACTS).push().getKey();
+
+                Map<String, Object> updates = new HashMap<>();
+                updates.put(FIREBASE_LOCATION_CONTACTS + "/" + key1, mapContact1);
+                updates.put(FIREBASE_LOCATION_CONTACTS + "/" + key2, mapContact2);
+                updates.put(FIREBASE_LOCATION_CONTACTS + "/" + key3, mapContact3);
+
+                getMainNode().updateChildren(updates);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 }

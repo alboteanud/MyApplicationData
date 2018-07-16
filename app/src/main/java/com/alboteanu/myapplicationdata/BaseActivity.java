@@ -19,25 +19,10 @@ public class BaseActivity extends AppCompatActivity {
         return mDatabase;
     }
 
-    protected static DatabaseReference getUserNode() {
-        return getDatabase().getReference().child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+    protected static DatabaseReference getMainNode() {
+        final DatabaseReference ref = getDatabase().getReference().child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        return ref;
     }
-
-    ProgressDialog mProgressDialog;
-    protected void showProgressDialog() {
-        if (mProgressDialog == null) {
-            mProgressDialog = new ProgressDialog(this);
-//            mProgressDialog.setMessage(getString(R.string.loading));
-            mProgressDialog.setIndeterminate(true);
-        }
-        mProgressDialog.show();
-    }
-
-    protected void hideProgressDialog() {
-        if (mProgressDialog != null && mProgressDialog.isShowing()) {
-            mProgressDialog.dismiss();
-        }
-    }
-
+//    https://my-application-data.firebaseio.com/XhxrXrPieVPE7qnDHyNachPhgmH2
 
 }

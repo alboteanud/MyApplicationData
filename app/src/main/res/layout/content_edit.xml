@@ -7,7 +7,7 @@
     android:fillViewport="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".EditActivity"
-    tools:showIn="@layout/activity_edit_contact">
+    tools:showIn="@layout/activity_edit">
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -102,33 +102,6 @@
                 android:layout_gravity="center"
                 android:background="?android:attr/selectableItemBackground"
                 android:contentDescription="clear date icon"
-                android:padding="16dp"
-                android:src="@drawable/ic_action_delete" />
-            <!--style="?android:attr/borderlessButtonStyle"-->
-
-        </TableRow>
-
-        <TableRow android:gravity="center_vertical">
-
-            <ImageView
-                android:clickable="true"
-                android:contentDescription="auto message icon"
-                android:padding="16dp"
-                android:src="@drawable/ic_action_text_sms" />
-
-            <EditText
-                android:layout_weight="1"
-                android:drawableEnd="@drawable/ic_action_drop_down"
-                android:focusable="false"
-                android:hint="@string/auto_message_hint"
-                android:inputType="none"
-
-                />
-
-            <ImageView
-                android:layout_gravity="center"
-                android:background="?android:attr/selectableItemBackground"
-                android:contentDescription="clear auto message icon"
                 android:padding="16dp"
                 android:src="@drawable/ic_action_delete" />
 

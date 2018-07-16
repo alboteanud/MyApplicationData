@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,10 +43,7 @@ public class EditActivity extends BaseActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_contact);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setContentView(R.layout.activity_edit);
         initViews();
         if (getIntent().hasExtra(EXTRA_CONTACT_KEY)) {
             key = getIntent().getStringExtra(EXTRA_CONTACT_KEY);
@@ -145,14 +141,10 @@ public class EditActivity extends BaseActivity
             return false;
         }
         Contact contact = new Contact(name);
-        Contact contactPhoneEmail = new Contact();
-        Contact contactNameDate = new Contact(name);
 
         String phone = phoneText.getText().toString();
-        contactPhoneEmail.phone = phone;  // even if null - to have complete list
         if (!phone.isEmpty())
             contact.phone = phone;
-
 
         String email = emailText.getText().toString();
         if (!email.isEmpty()) {
@@ -161,23 +153,21 @@ public class EditActivity extends BaseActivity
                 return false;
             }
             contact.email = email;
-            contactPhoneEmail.email = email;
         }
         String note = editTextNote.getText().toString();
         if (!note.isEmpty())
             contact.note = note;
 
         contact.date = longDate;
-        contactNameDate.date = longDate;
 
         Map<String, Object> updates = new HashMap<>();
         Map<String, Object> mapContact = contact.toMap();
 
         if (key == null)
-            key = getUserNode().child(FIREBASE_LOCATION_CONTACTS).push().getKey();  //generate new key
+            key = getMainNode().child(FIREBASE_LOCATION_CONTACTS).push().getKey();  //generate new key
 
         updates.put(FIREBASE_LOCATION_CONTACTS + "/" + key, mapContact);
-        getUserNode().updateChildren(updates);
+        getMainNode().updateChildren(updates);
         return true;
     }
 
@@ -210,7 +200,7 @@ public class EditActivity extends BaseActivity
     }
 
     void updateUIfromFirebase(@NonNull final String contactKey) {
-        final DatabaseReference ref = getUserNode().child(FIREBASE_LOCATION_CONTACTS).child(contactKey);
+        final DatabaseReference ref = getMainNode().child(FIREBASE_LOCATION_CONTACTS).child(contactKey);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
