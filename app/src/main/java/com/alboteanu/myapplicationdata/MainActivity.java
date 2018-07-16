@@ -2,12 +2,9 @@ package com.alboteanu.myapplicationdata;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.icu.util.DateInterval;
-import android.icu.util.TimeUnit;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.alboteanu.myapplicationdata.models.Contact;
 import com.alboteanu.myapplicationdata.models.ContactHolder;
@@ -39,9 +35,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -366,9 +360,9 @@ public class MainActivity extends BaseActivity {
 
             private void pushFakeContacts() {
                 long now = System.currentTimeMillis();
-                Contact contact3 = new Contact("Christy Cloosterman (dummy contact)", "0664 217 01 21", "ChristyCloosterman@rhyta.com", "remember to congratulate on her birthday", (now - 86400000*15L));
-                Contact contact1 = new Contact("Jeffery E. Weiss (dummy contact)", "0734 857 2075", "JefferyEWeiss@rhyta.com", "invite to dinner on Friday evening", now + 86400000*9L);
-                Contact contact2 = new Contact("Nicole Pinto Pereira (dummy contact)", "2523 452 45 32", "NicolePintoPereira@jourrapide.com", "should come back for revision", now - 86400000*11L);
+                Contact contact3 = new Contact("Christy Cloosterman (dummy contact)", "0664 217 01 21", "ChristyCloosterman@rhyta.com", "remember to congratulate on her birthday", (now + 86400000*15L));
+                Contact contact1 = new Contact("Jeffery E. Weiss (dummy contact)", "0734 857 2075", "JefferyEWeiss@rhyta.com", "invite to dinner on Friday evening", now - 86400000*9L);
+                Contact contact2 = new Contact("Nicole Pinto Pereira (dummy contact)", "2523 452 45 32", "NicolePintoPereira@jourrapide.com", "should come back for revision", now + 86400000*11L);
 
                 Map<String, Object> mapContact1 = contact1.toMap();
                 Map<String, Object> mapContact2 = contact2.toMap();
