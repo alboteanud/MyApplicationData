@@ -56,6 +56,20 @@ public class EditActivity extends BaseActivity
         }
         if (key != null && savedInstanceState == null)  // exista un contact si e prima data
             updateUIfromFirebase(key);
+
+        findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (canSaveToFirebase()) {
+                    Intent intent = new Intent(EditActivity.this, DetailsActivity.class);
+                    intent.putExtra(EXTRA_CONTACT_KEY, key);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
+
     }
 
     @Override
@@ -93,11 +107,9 @@ public class EditActivity extends BaseActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_contact_editor, menu);
-        if (key == null)
-            menu.findItem(R.id.action_delete_contact).setVisible(false);
-        return super.onCreateOptionsMenu(menu);
+    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.menu_quick_contact, menu);
+        return true;
     }
 
     @Override
@@ -107,18 +119,6 @@ public class EditActivity extends BaseActivity
             case android.R.id.home:
                 finish();
                 return true;
-            case R.id.action_delete_contact:
-                createDeleteDialogAlert(key);
-                break;
-            case R.id.action_save:
-                if (saveToFirebase()) {
-                    Intent intent = new Intent(this, DetailsActivity.class);
-                    intent.putExtra(EXTRA_CONTACT_KEY, key);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
-                    finish();
-                }
-                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -134,7 +134,7 @@ public class EditActivity extends BaseActivity
         findViewById(R.id.button_clear_date).setOnClickListener(this);
     }
 
-    private boolean saveToFirebase() {
+    private boolean canSaveToFirebase() {
         String name = nameText.getText().toString();
         if (name.isEmpty()) {
             nameText.setError(getString(R.string.required));
@@ -218,35 +218,10 @@ public class EditActivity extends BaseActivity
 
     }
 
-    void createDeleteDialogAlert(final String contactKey) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getString(R.string.confirmation_dialog_delete))
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User clicked OK button
-                        deleteContact(contactKey);
-                        Intent intent = new Intent(EditActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        intent.putExtra(ACTION_CONTACT_DELETED, contactKey);
-                        startActivity(intent);
-                        finish();
-                    }
-                });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(@NonNull DialogInterface dialog, int id) {
-                // User cancelled the dialog
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
     void showDatePickerDialog() {
         DialogFragment dialogFragment = new DatePickerFragment();
         dialogFragment.show(getFragmentManager(), "datePicker");
     }
-
 
 
 }

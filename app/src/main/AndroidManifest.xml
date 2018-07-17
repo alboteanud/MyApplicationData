@@ -24,8 +24,11 @@
             android:parentActivityName=".MainActivity"/>
         <activity
             android:name=".EditActivity"
-            android:label="@string/title_activity_edit_details"/>
-            <!--android:windowSoftInputMode="stateAlwaysHidden" />-->
+            android:parentActivityName=".DetailsActivity"
+            android:label="@string/title_activity_edit_details"
+            android:windowSoftInputMode="stateAlwaysHidden"
+            />
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

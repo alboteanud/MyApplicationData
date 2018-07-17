@@ -41,6 +41,12 @@ public class DetailsActivity extends BaseActivity implements View.OnClickListene
         findViewById(R.id.ic_action_email).setOnClickListener(this);
         findViewById(R.id.ic_action_date).setOnClickListener(this);
         findViewById(R.id.ic_action_note).setOnClickListener(this);
+        findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendUserToEditActivity();
+            }
+        });
 
     }
 
@@ -69,9 +75,6 @@ public class DetailsActivity extends BaseActivity implements View.OnClickListene
         switch (item.getItemId()) {
             case  R.id.action_delete_contact:
                 createDeleteDialogAlert(key);
-                return true;
-            case R.id.action_edit:
-                sendUserToEditActivity();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -163,7 +166,6 @@ public class DetailsActivity extends BaseActivity implements View.OnClickListene
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
 
     public static void deleteContact(String contactKey) {
         getMainNode().child(FIREBASE_LOCATION_CONTACTS + "/" + contactKey).removeValue();

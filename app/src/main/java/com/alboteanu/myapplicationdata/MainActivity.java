@@ -360,9 +360,9 @@ public class MainActivity extends BaseActivity {
 
             private void pushFakeContacts() {
                 long now = System.currentTimeMillis();
-                Contact contact3 = new Contact("Christy Cloosterman (dummy contact)", "0664 217 01 21", "ChristyCloosterman@rhyta.com", "remember to congratulate on her birthday", (now + 86400000*15L));
-                Contact contact1 = new Contact("Jeffery E. Weiss (dummy contact)", "0734 857 2075", "JefferyEWeiss@rhyta.com", "invite to dinner on Friday evening", now - 86400000*9L);
-                Contact contact2 = new Contact("Nicole Pinto Pereira (dummy contact)", "2523 452 45 32", "NicolePintoPereira@jourrapide.com", "should come back for revision", now + 86400000*11L);
+                Contact contact3 = new Contact("Christy (dummy contact)", "0664 217 01 21", "ChristyCloosterman@rhyta.com", "remember to congratulate on her birthday", (now + 86400000*15L));
+                Contact contact1 = new Contact("Jeffery Weiss (dummy contact)", "0734 857 2075", "JefferyEWeiss@rhyta.com", "invite to dinner on Friday evening", now - 86400000*9L);
+                Contact contact2 = new Contact("Nicole Pinto (dummy contact)", "2523 452 45 32", "NicolePintoPereira@jourrapide.com", "should come back for revision", now + 86400000*11L);
 
                 Map<String, Object> mapContact1 = contact1.toMap();
                 Map<String, Object> mapContact2 = contact2.toMap();
