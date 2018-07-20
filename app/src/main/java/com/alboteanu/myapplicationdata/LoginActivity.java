@@ -85,12 +85,13 @@ public class LoginActivity extends BaseActivity {
             } catch (ApiException e) {
                 Log.w("LoginActivity", "Google sign in failed", e);
                 hideProgressDialog();
-                Toast.makeText(LoginActivity.this, "Sign in error",
+                Toast.makeText(LoginActivity.this, "Sign in error catch: " + e.getStatusCode(),
                         Toast.LENGTH_SHORT).show();
+                Log.w("LoginActiviry", "signInResult:failed code=" + e.getStatusCode());
             }
         } else {
             hideProgressDialog();
-            Toast.makeText(LoginActivity.this, "Sign in error",
+            Toast.makeText(LoginActivity.this, "Sign in error else: " + requestCode,
                     Toast.LENGTH_SHORT).show();
         }
     }
@@ -146,6 +147,6 @@ public class LoginActivity extends BaseActivity {
         finish();
     }
 
-
+    // keytool -list -v -keystore C:\Users\albot\AndroidStudioProjects\upload_key_2.jks -alias key0
 
 }

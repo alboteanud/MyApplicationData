@@ -49,4 +49,14 @@
         android:text="@string/action_sign_out"
         android:title="@string/action_sign_out"
         app:showAsAction="never" />
+
+      <!--<item-->
+        <!--android:id="@+id/action_test"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:text="test"-->
+        <!--android:title="test"-->
+        <!--app:showAsAction="never" />-->
+
+
+
 </menu>

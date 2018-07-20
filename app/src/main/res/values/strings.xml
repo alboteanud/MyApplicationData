@@ -22,15 +22,22 @@
     <string name="note_hint">Note</string>
     <string name="return_date_hint">Reminder</string>
     <string name="action_email">Email</string>
-    <string name="action_sms">Text message</string>
+    <string name="action_sms">Message</string>
     <string name="action_select_none">Select none</string>
     <string name="action_select_all">Select all</string>
     <string name="title_activity_settings">Settings</string>
-    <string name="pref_header_general">General</string>
-    <string name="pref_title_custom_text">Message text</string>
-    <string name="pref_default_text_message">Dear Sir or Madam, </string>
+    <string name="pref_header_general">Customize</string>
+    <string name="pref_title_custom_text">Default message text</string>
+    <string name="pref_default_text_message">I have a great offer for you. </string>
     <string name="custom_message_text_key" translatable="false">my_custom_text</string>
     <string name="action_settings">Settings</string>
     <string name="wellcome_text">Sign in to get the most out of your device</string>
+    <string name="pref_header_about">About</string>
+    <string name="pref_default_about_text">When you use our services, you’re trusting us with your information. We understand this is a big responsibility and work hard to protect your information and put you in control. \n\n
+    The names, email addresses and phone numbers of the people you interact with on this app are NOT shared or used for commercial reasons. The data is stored on your device and on the Firebase servers (a trusted Google service) for backup in case that you lost your device. You can visit www.firebase.com/terms/privacy-policy.html
+    </string>
+    <string name="pref_title_privacy">Privacy Policy</string>
+    <string name="pref_about_key">about_key</string>
+    <string name="text_wellcome">Wellcome</string>
 
 </resources>

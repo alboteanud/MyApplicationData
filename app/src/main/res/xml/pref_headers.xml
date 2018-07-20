@@ -1,8 +1,13 @@
 <preference-headers xmlns:android="http://schemas.android.com/apk/res/android">
 
     <header
-        android:fragment="com.alboteanu.myapplicationdata.others.SettingsActivity$GeneralPreferenceFragment"
-        android:icon="@drawable/ic_info_black_24dp"
+        android:fragment="com.alboteanu.myapplicationdata.others.SettingsActivity$SettingsPreferenceFragment"
+        android:icon="@drawable/ic_settings_black_24dp"
         android:title="@string/pref_header_general" />
+
+    <header
+        android:fragment="com.alboteanu.myapplicationdata.others.SettingsActivity$AboutPreferenceFragment"
+        android:icon="@drawable/ic_info_black_24dp"
+        android:title="@string/pref_header_about" />
 
 </preference-headers>

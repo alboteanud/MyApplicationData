@@ -17,7 +17,7 @@ import com.alboteanu.myapplicationdata.R;
 
 import java.util.List;
 
-public class SettingsActivity extends AppCompatPreferenceActivity{
+public class SettingsActivity extends AppCompatPreferenceActivity {
 
     @Nullable
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
@@ -82,16 +82,37 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
 
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName);
+                || SettingsPreferenceFragment.class.getName().equals(fragmentName)
+                || AboutPreferenceFragment.class.getName().equals(fragmentName);
     }
 
-    public static class GeneralPreferenceFragment extends PreferenceFragment {
+    public static class SettingsPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_general);
+            addPreferencesFromResource(R.xml.pref_settings);
             setHasOptionsMenu(true);
             bindPreferenceSummaryToValue(findPreference(getString(R.string.custom_message_text_key)));
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+            int id = item.getItemId();
+            if (id == android.R.id.home) {
+                startActivity(new Intent(getActivity(), SettingsActivity.class));
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public static class AboutPreferenceFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_about);
+            setHasOptionsMenu(true);
+//            bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_about_key)));
         }
 
         @Override
